@@ -22,6 +22,11 @@
     <li>JAVA, Spring boot, Mybatis, MySQL, HTML, Javascript, Bootstrap</li>
  </ul>
 <br>
+<h2>구현 화면</h2>
+[기출문제 조회]
+<img src="https://blog.kakaocdn.net/dn/YvI0s/btsH39AgQfs/WxQ0Uk8OypJtpyKxN7GB40/img.gif">
+[기출문제 풀기]
+<img src="https://blog.kakaocdn.net/dn/Hgt2p/btsH6gS6xjU/enKUkaizu7YGxKXeb8nrh0/img.gif">
 <br>
 <h2>개발일지</h2>
  <ul>
