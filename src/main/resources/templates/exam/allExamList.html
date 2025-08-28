@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <title>기출문제 목록</title>
+    <script th:src="@{/js/searchSelect.js}"></script>
+</head>
+<style>
+    .table-group-divider th td {
+        text-align: center;
+    }
+</style>
+<body>
+<div class="container" id="content">
+    <div class="py-5 text-center">
+        <h2>기출문제 목록</h2>
+    </div>
+    <div class="row">
+        <div class="col">
+            <select id="departmentId" class="form-select">
+                <option value="">==학과==</option>
+            </select>
+        </div>
+        <div class="col">
+            <select id="subjectId" class="form-select" disabled>
+                <option selected>== 과목 ==</option>
+            </select>
+        </div>
+        <div class="col">
+            <select id="year" class="form-select" disabled>
+                <option selected>== 년도 ==</option>
+            </select>
+        </div>
+        <div class="col">
+            <select id="semester" class="form-select" disabled>
+                <option selected>== 학기 ==</option>
+            </select>
+        </div>
+        <div class="col">
+            <select id="category" class="form-select" disabled>
+                <option selected>== 구분 ==</option>
+            </select>
+        </div>
+    </div>
+    <hr class="my-4">
+    <span id="count" style="font-weight: bold;" th:text="|총 ${totalExams} 건|"></span>
+    <div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">학과</th>
+                <th scope="col">과목</th>
+                <th scope="col">과목구분</th>
+                <th scope="col">학년</th>
+                <th scope="col">시험년도</th>
+                <th scope="col">학기</th>
+                <th scope="col">구분</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            <tr th:each="exam : ${exams}">
+                <td><a th:text="${exam.departmentName}">학과</a></td>
+                <td><a th:text="${exam.subjectName}">과목</a></td>
+                <td>
+                    <a th:if="${exam.subjectCategory == 1}" th:text="'전공'">과목구분</a>
+                    <a th:if="${exam.subjectCategory == 2}" th:text="'교양'">과목구분</a>
+                    <a th:if="${exam.subjectCategory == 3}" th:text="'일반선택'">과목구분</a>
+                </td>
+                <td><a th:text="|${exam.grade} 학년|">학년</a></td>
+                <td><a th:text="|${exam.examYear} 년도|">시험년도</a></td>
+                <td><a th:text="|${exam.semester} 학기|">학기</a></td>
+                <td>
+                    <a th:if="${exam.examCategory == 1}" th:text="'기말'">구분</a>
+                    <a th:if="${exam.examCategory == 2}" th:text="'계절학기(동계)'">구분</a>
+                    <a th:if="${exam.examCategory == 3}" th:text="'계절학기(하계)'">구분</a>
+                </td>
+                <td><button type="button" class="btn btn-primary"
+                            th:onclick="|location.href='@{/exam/{examId}(examId=${exam.examId})}'|">풀기</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <hr class="my-4">
+    <nav aria-label="Page navigation example"
+         th:fragment="pagenation" id="pagination">
+        <ul class="pagination" style="display: flex; justify-content: center;">
+            <li class="page-item" th:classappend="${currentPage > 1} ? '' : 'disabled'">
+                <a class="page-link" th:href="@{/exam(page=1)}">First</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage > 1} ? '' : 'disabled'">
+                <a class="page-link" th:href="@{/exam(page=${currentPage - 1})}">Previous</a>
+            </li>
+            <li class="page-item" th:classappend="${page == currentPage} ? 'active' : ''"
+                th:each="page : ${#numbers.sequence(1, totalPages != null ? totalPages : 1)}">
+                <a class="page-link" th:href="@{/exam(page=${page})}" th:text="${page}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage < totalPages} ? '' : 'disabled'">
+                <a class="page-link" th:href="@{/exam(page=${currentPage + 1})}">Next</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage < totalPages} ? '' : 'disabled'">
+                <a class="page-link" th:href="@{/exam(page=${totalPages})}">Last</a>
+            </li>
+        </ul>
+    </nav>
+</div> <!-- /container -->
+</body>

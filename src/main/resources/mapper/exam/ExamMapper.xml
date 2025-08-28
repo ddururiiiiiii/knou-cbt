@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="knou.cbt.domain.exam.ExamMapper">
+
+    <select id="allExamList"
+    parameterType="knou.cbt.domain.exam.SearchCriteria"
+    resultType="knou.cbt.domain.exam.ExamInfo">
+        SELECT
+                EXAM_ID
+                , (SELECT DEPARTMENT_NAME
+                    FROM DEPARTMENT
+                    WHERE DEPARTMENT_ID = SUBSTR(EXAM_ID, 1, 1)) AS DEPARTMENT_NAME
+                , SUBSTR(EXAM_ID, 1, 1) AS DEPARTMENT_ID
+                , ( SELECT SUBJECT_NAME
+                    FROM SUBJECT
+                    WHERE SUBJECT_ID = E.SUBJECT_ID ) AS SUBJECT_NAME
+                , SUBJECT_ID
+                , ( SELECT SUBJECT_CATEGORY
+                    FROM SUBJECT
+                    WHERE SUBJECT_ID = E.SUBJECT_ID ) AS SUBJECT_CATEGORY
+                , EXAM_YEAR
+                , GRADE
+                , SEMESTER
+                , EXAM_CATEGORY
+        FROM EXAM E
+        WHERE USE_YN = 'Y'
+        <if test='searchCriteria.departmentId != null'>
+            AND SUBSTR(EXAM_ID, 1, 1) = #{searchCriteria.departmentId}
+        </if>
+        <if test='searchCriteria.subjectId != null'>
+            AND SUBJECT_ID = #{searchCriteria.subjectId}
+        </if>
+        <if test='searchCriteria.year != null'>
+            AND EXAM_YEAR = #{searchCriteria.year}
+        </if>
+        <if test='searchCriteria.semester != null'>
+            AND SEMESTER = #{searchCriteria.semester}
+        </if>
+        <if test='searchCriteria.category != null'>
+            AND EXAM_CATEGORY = #{searchCriteria.category}
+        </if>
+        ORDER BY EXAM_ID
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countExams" parameterType="knou.cbt.domain.exam.SearchCriteria" resultType="int">
+        SELECT COUNT(*)
+        FROM EXAM
+        WHERE USE_YN = 'Y'
+        <if test='searchCriteria.departmentId != null'>
+            AND SUBSTR(EXAM_ID, 1, 1) = #{searchCriteria.departmentId}
+        </if>
+        <if test='searchCriteria.subjectId != null'>
+            AND SUBJECT_ID = #{searchCriteria.subjectId}
+        </if>
+        <if test='searchCriteria.year != null'>
+            AND EXAM_YEAR = #{searchCriteria.year}
+        </if>
+        <if test='searchCriteria.semester != null'>
+            AND SEMESTER = #{searchCriteria.semester}
+        </if>
+        <if test='searchCriteria.category != null'>
+            AND EXAM_CATEGORY = #{searchCriteria.category}
+        </if>
+        ORDER BY EXAM_ID
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="findByExamId" parameterType="java.lang.String"
+            resultType="knou.cbt.domain.exam.ExamDetail">
+        SELECT    E.EXAM_ID
+             , (SELECT DEPARTMENT_NAME
+                FROM DEPARTMENT
+                WHERE department_id = SUBSTR(E.SUBJECT_ID, 1, 1) ) AS DEPARTMENT_NAME
+             , E.SUBJECT_ID
+             , ( SELECT SUBJECT_NAME
+                 FROM SUBJECT
+                 WHERE SUBJECT_ID = E.SUBJECT_ID ) AS SUBJECT_NAME
+             , E.EXAM_YEAR
+             , E.GRADE
+             , E.SEMESTER
+             , E.EXAM_CATEGORY
+             , EQ.QUESTION_NO
+             , EQ.QUESTION
+             , EQ.CHOICE_1
+             , EQ.CHOICE_2
+             , EQ.CHOICE_3
+             , EQ.CHOICE_4
+             , EQ.ANSWER
+        FROM EXAM E LEFT OUTER JOIN EXAM_QUESTIONS EQ
+        ON E.EXAM_ID = EQ.EXAM_ID
+        WHERE E.USE_YN = 'Y'
+          AND EQ.USE_YN = 'Y'
+          AND E.EXAM_ID  = #{examId}
+        ORDER BY QUESTION_NO;
+    </select>
+
+    <insert id="saveExamInput" parameterType="java.util.Map">
+        INSERT INTO EXAM_HISTORY
+        (	  EXAM_ID
+            , STUDENT_ID
+            , QUSESTION_NO
+            , STUDENT_ANSWER
+            , TAKEN_TIME
+            , EXAM_DATE
+        ) VALUES (
+              #{examId}
+            , #{studentId}
+            , #{inputAnswer.questionNo}
+            , #{inputAnswer.inputAnswer}
+            , #{takenTime}
+            , #{examDate}
+         )
+    </insert>
+
+
+
+
+</mapper>

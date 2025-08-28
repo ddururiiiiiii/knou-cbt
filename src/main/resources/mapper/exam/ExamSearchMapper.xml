@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="knou.cbt.domain.exam.ExamSearchMapper">
+
+    <select id="searchDepartmentId" resultType="knou.cbt.domain.exam.SearchResult">
+        SELECT DISTINCT SUBSTR(EXAM_ID, 1, 1) AS SEARCH_KEY
+                      , ( SELECT DISTINCT DEPARTMENT_NAME
+                          FROM DEPARTMENT
+                          WHERE USE_YN = 'Y'
+                           AND DEPARTMENT_ID = SUBSTR(EXAM_ID, 1, 1) ) AS SEARCH_VALUE
+        FROM EXAM
+        WHERE USE_YN = 'Y'
+    </select>
+
+    <select id="searchSubjectId"
+            parameterType="java.lang.String"
+            resultType="knou.cbt.domain.exam.SearchResult">
+        SELECT   SUBJECT_ID AS SEARCH_KEY
+             , ( SELECT SUBJECT_NAME
+                 FROM SUBJECT S
+                 WHERE USE_YN = 'Y'
+                   AND SUBJECT_ID = SUBSTR(EXAM_ID, 1, 4))  AS SEARCH_VALUE
+        FROM EXAM
+        WHERE USE_YN = 'Y'
+          AND SUBSTR(EXAM_ID, 1, 1)  = #{searchValue}
+    </select>
+
+    <select id="searchYear"
+            parameterType="java.lang.String"
+            resultType="knou.cbt.domain.exam.SearchResult">
+        SELECT DISTINCT  EXAM_YEAR AS SEARCH_KEY
+                       , EXAM_YEAR AS SEARCH_VALUE
+        FROM EXAM
+        WHERE USE_YN = 'Y'
+          AND SUBSTR(EXAM_ID, 1, 4)  = #{searchValue}
+    </select>
+
+    <select id="searchSemester"
+            parameterType="java.lang.String"
+            resultType="knou.cbt.domain.exam.SearchResult">
+        SELECT DISTINCT   SEMESTER AS SEARCH_KEY
+                        , SEMESTER AS SEARCH_VALUE
+        FROM EXAM
+        WHERE USE_YN = 'Y'
+          AND SUBSTR(EXAM_ID, 1, 8)  = #{searchValue}
+    </select>
+
+    <select id="searchCategory"
+            parameterType="java.lang.String"
+            resultType="knou.cbt.domain.exam.SearchResult">
+        SELECT DISTINCT EXAM_CATEGORY AS SEARCH_KEY
+                        , CASE
+                            WHEN EXAM_CATEGORY = 1 THEN '기말'
+                            WHEN EXAM_CATEGORY = 2 THEN '동계계절'
+                            ELSE '하계계절'
+                          END AS SEARCH_VALUE
+        FROM EXAM
+        WHERE USE_YN = 'Y'
+          AND SUBSTR(EXAM_ID, 1, 9) = #{searchValue}
+    </select>
+
+</mapper>
