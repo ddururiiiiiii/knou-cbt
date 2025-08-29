@@ -2,13 +2,73 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="knou.cbt.domain.department.DepartmentMapper">
+<mapper namespace="knou.cbt.domain.department.mapper.DepartmentMapper">
 
-    <select id="allSearchDepartmentList" resultType="knou.cbt.domain.department.Department">
-        SELECT DEPARTMENT_ID
-             , DEPARTMENT_NAME
-        FROM DEPARTMENT
-        WHERE USE_YN = 'Y'
+    <sql id="DepartmentFilter">
+        <if test="keyword != null and keyword != ''">
+            AND d.department_name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="useYn != null and useYn != ''">
+            AND d.use_yn = #{useYn}
+        </if>
+    </sql>
+
+    <sql id="BaseSelectColumns">
+        SELECT
+            d.id,
+            d.department_name,
+            d.use_yn
+        FROM department d
+    </sql>
+
+    <resultMap id="DepartmentResultMap" type="knou.cbt.domain.department.model.Department">
+        <id property="id" column="id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="useYn" column="use_yn"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="DepartmentResultMap">
+        <include refid="BaseSelectColumns"/>
+        WHERE 1=1
+        <include refid="DepartmentFilter"/>
+        ORDER BY d.id
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*)
+        FROM department d
+        WHERE 1=1
+        <include refid="DepartmentFilter"/>
+    </select>
+
+    <select id="findById" parameterType="long" resultMap="DepartmentResultMap">
+        <include refid="BaseSelectColumns"/>
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="knou.cbt.domain.department.model.Department">
+        INSERT INTO department (department_name, use_yn)
+        VALUES (#{departmentName}, COALESCE(#{useYn}, 'Y'))
+    </insert>
+
+    <update id="update" parameterType="knou.cbt.domain.department.model.Department">
+        UPDATE department
+        SET department_name = #{departmentName}
+        <if test="useYn != null">
+            , use_yn = #{useYn}
+        </if>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM department WHERE id = #{id}
+    </delete>
+
+    <select id="findByName" parameterType="string" resultMap="DepartmentResultMap">
+        <include refid="BaseSelectColumns"/>
+        WHERE department_name = #{name}
+        LIMIT 1
     </select>
 
 </mapper>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <title th:text="${formTitle}">학과 폼</title>
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h2 th:text="${formTitle}">학과 등록/수정</h2>
+    </div>
+
+    <form th:action="@{${actionUrl}}" th:object="${department}" method="post">
+        <input type="hidden" name="_method" th:if="${method != 'post'}" th:value="${method}"/>
+
+        <div class="mb-3">
+            <label for="departmentName" class="form-label">학과명</label>
+            <input type="text"
+                   th:field="*{departmentName}"
+                   id="departmentName"
+                   class="form-control"
+                   th:classappend="${#fields.hasErrors('departmentName')} ? ' is-invalid'">
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('departmentName')}">
+                <small th:errors="*{departmentName}"></small>
+            </div>
+        </div>
+
+        <div class="mb-3" th:if="${mode == 'edit'}">
+            <label for="useYn" class="form-label">사용 여부</label>
+            <select class="form-select" id="useYn" th:field="*{useYn}">
+                <option value="Y">Y</option>
+                <option value="N">N</option>
+            </select>
+        </div>
+
+        <div class="mb-3" style="text-align: right;">
+            <button type="submit" class="btn btn-primary" th:text="${formTitle}"></button>
+            <a th:href="@{/departments}" class="btn btn-secondary">취소</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+
