@@ -8,6 +8,7 @@
         <if test="keyword != null and keyword != ''">
             AND s.subject_name LIKE CONCAT('%', #{keyword}, '%')
         </if>
+        <!-- TODO : 검색조건 추가 -->
 <!--        <if test="subjectCategory != null and subjectCategory != ''">-->
 <!--            AND s.subject_category = #{subjectCategory}-->
 <!--        </if>-->
@@ -31,7 +32,7 @@
                  JOIN department d ON s.department_id = d.id
     </sql>
 
-    <resultMap id="SubjectResultMap" type="knou.cbt.domain.subject.dto.SubjectResponse">
+    <resultMap id="SubjectResultMap" type="knou.cbt.domain.subject.dto.SubjectDto">
         <id property="id" column="id"/>
         <result property="subjectName" column="subject_name"/>
         <result property="subjectCategory" column="subject_category"/>

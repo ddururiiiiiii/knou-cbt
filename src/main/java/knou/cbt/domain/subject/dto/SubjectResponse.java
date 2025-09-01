@@ -15,14 +15,14 @@ public class SubjectResponse {
     private Long departmentId;
     private String departmentName;
     private UseYn useYn;
-    public static SubjectResponse of(SubjectResponse subjectResponse) {
+    public static SubjectResponse of(SubjectDto dto) {
         return new SubjectResponse(
-                subjectResponse.getId(),
-                subjectResponse.getSubjectName(),
-                subjectResponse.getSubjectCategory(),
-                subjectResponse.getDepartmentId(),
-                subjectResponse.getDepartmentName(),
-                subjectResponse.getUseYn()
+                dto.getId(),
+                dto.getSubjectName(),
+                dto.getSubjectCategory(),
+                dto.getDepartmentId(),
+                dto.getDepartmentName(),
+                dto.getUseYn()
         );
     }
 }

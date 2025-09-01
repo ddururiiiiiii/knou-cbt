@@ -54,7 +54,7 @@
                     th:field="*{departmentId}"
                     th:classappend="${#fields.hasErrors('departmentId')} ? ' is-invalid'">
 
-            <option value="0">학과 선택</option>
+                <option value="0">학과 선택</option>
                 <option th:each="dept : ${departments}"
                         th:value="${dept.id}"
                         th:text="${dept.departmentName}">

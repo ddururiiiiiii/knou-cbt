@@ -2,6 +2,7 @@ package knou.cbt.domain.subject.service;
 
 import knou.cbt.common.api.PageRequest;
 import knou.cbt.common.api.PageResponse;
+import knou.cbt.domain.subject.dto.SubjectDto;
 import knou.cbt.domain.subject.dto.SubjectRequest;
 import knou.cbt.domain.subject.dto.SubjectResponse;
 
