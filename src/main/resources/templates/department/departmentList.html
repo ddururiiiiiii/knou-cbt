@@ -15,26 +15,29 @@
     <div class="mb-3 d-flex justify-content-between">
         <!-- 검색 폼 -->
         <form th:action="@{/departments}" method="get" class="d-flex">
-            <input type="text" class="form-control-sm me-2" name="keyword"
-                   placeholder="학과명 검색" th:value="${keyword}">
+            <input type="text"
+                   class="form-control-sm me-2"
+                   name="keyword"
+                   placeholder="학과명 검색"
+                   th:value="${keyword}">
             <input type="hidden" name="useYn" th:value="${param.useYn}">
             <button type="submit" class="btn btn-primary btn-sm">검색</button>
         </form>
 
         <!-- 등록 버튼 -->
-        <a class="btn btn-success" th:href="@{/departments/new}">학과 등록</a>
+        <a class="btn btn-success btn-sm" th:href="@{/departments/new}">등록</a>
     </div>
 
     <span style="font-weight: bold;" th:text="|총 ${pagination.totalElements} 건|"></span>
     <div>
-        <table class="table table-bordered">
-            <thead>
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
             <tr style="text-align: center;">
                 <th>No</th>
                 <th>학과ID</th>
                 <th>학과명</th>
                 <th>사용여부</th>
-                <th></th>
+                <th>관리</th>
             </tr>
             </thead>
             <tbody>
@@ -42,7 +45,7 @@
                 <td th:text="${stat.index + 1}" style="text-align: center;">1</td>
                 <td th:text="${dept.id}">ID</td>
                 <td th:text="${dept.departmentName}">이름</td>
-                <td th:text="${dept.displayStatus}"></td>
+                <td th:text="${dept.useYn.description}" style="text-align: center;">사용</td>
                 <td>
                     <!-- 수정 -->
                     <a th:href="@{/departments/{id}/edit(id=${dept.id})}" class="btn btn-primary btn-sm">수정</a>

@@ -1,6 +1,7 @@
 package knou.cbt.domain.department.dto;
 
 import jakarta.validation.constraints.Pattern;
+import knou.cbt.domain.common.model.UseYn;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class DepartmentUpdateRequest extends DepartmentBaseRequest {
 
-        @Pattern(regexp = "^[YN]$")
-        private String useYn;
+        private UseYn useYn;
 
 }

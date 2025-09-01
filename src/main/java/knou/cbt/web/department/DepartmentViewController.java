@@ -3,6 +3,7 @@ package knou.cbt.web.department;
 import jakarta.validation.Valid;
 import knou.cbt.common.api.PageRequest;
 import knou.cbt.common.api.PageResponse;
+import knou.cbt.domain.common.model.UseYn;
 import knou.cbt.domain.department.dto.DepartmentCreateRequest;
 import knou.cbt.domain.department.dto.DepartmentResponse;
 import knou.cbt.domain.department.dto.DepartmentUpdateRequest;
@@ -159,6 +160,7 @@ public class DepartmentViewController {
         model.addAttribute("method", method);
         model.addAttribute("mode", mode);
         model.addAttribute("department", req);
+        model.addAttribute("useYnValues", UseYn.values());
         if (departmentId != null) {
             model.addAttribute("departmentId", departmentId);
         }

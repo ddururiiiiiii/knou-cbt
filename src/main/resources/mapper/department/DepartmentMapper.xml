@@ -29,6 +29,12 @@
 
     <select id="findAll" resultMap="DepartmentResultMap">
         <include refid="BaseSelectColumns"/>
+        WHERE d.use_yn = 'Y'
+        ORDER BY d.department_name
+    </select>
+
+    <select id="findAllPaged" resultMap="DepartmentResultMap">
+        <include refid="BaseSelectColumns"/>
         WHERE 1=1
         <include refid="DepartmentFilter"/>
         ORDER BY d.id
@@ -45,6 +51,12 @@
     <select id="findById" parameterType="long" resultMap="DepartmentResultMap">
         <include refid="BaseSelectColumns"/>
         WHERE id = #{id}
+    </select>
+
+    <select id="findByName" parameterType="string" resultMap="DepartmentResultMap">
+        <include refid="BaseSelectColumns"/>
+        WHERE department_name = #{name}
+        LIMIT 1
     </select>
 
     <insert id="insert" parameterType="knou.cbt.domain.department.model.Department">
@@ -64,11 +76,5 @@
     <delete id="delete" parameterType="long">
         DELETE FROM department WHERE id = #{id}
     </delete>
-
-    <select id="findByName" parameterType="string" resultMap="DepartmentResultMap">
-        <include refid="BaseSelectColumns"/>
-        WHERE department_name = #{name}
-        LIMIT 1
-    </select>
 
 </mapper>

@@ -1,5 +1,6 @@
 package knou.cbt.domain.department.dto.mapper;
 
+import knou.cbt.domain.common.model.UseYn;
 import knou.cbt.domain.department.dto.DepartmentCreateRequest;
 import knou.cbt.domain.department.dto.DepartmentResponse;
 import knou.cbt.domain.department.dto.DepartmentUpdateRequest;
@@ -12,8 +13,8 @@ public class DepartmentDtoMapper {
     }
 
     // DTO -> Entity
-    public static Department fromCreateRequest(DepartmentCreateRequest req) {
-        return Department.create(null, req.getDepartmentName(), "Y");
+    public static Department fromCreateRequest(DepartmentCreateRequest request) {
+        return Department.create(null, request.getDepartmentName(), UseYn.Y);
     }
 
     public static Department fromUpdateRequest(Long id, DepartmentUpdateRequest req) {

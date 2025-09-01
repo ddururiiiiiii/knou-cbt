@@ -11,10 +11,13 @@ import java.util.List;
 
 public interface DepartmentService {
 
+    List<DepartmentResponse> findAll();
     PageResponse<DepartmentResponse> listPage(String keyword, String useYn, PageRequest pageRequest);
     int count(String keyword, String useYn);
     DepartmentResponse get(Long id);
     void create(DepartmentCreateRequest req);
     void update(Long id, DepartmentUpdateRequest req);
     void delete(Long id);
+
+
 }

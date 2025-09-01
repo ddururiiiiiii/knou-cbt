@@ -25,10 +25,16 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private final DepartmentMapper mapper;
 
+
+    @Override
+    public List<DepartmentResponse> findAll() {
+        return mapper.findAll();
+    }
+
     @Override
     @Transactional(readOnly = true)
     public PageResponse<DepartmentResponse> listPage(String keyword, String useYn, PageRequest pageRequest) {
-        List<DepartmentResponse> content = mapper.findAll(
+        List<DepartmentResponse> content = mapper.findAllPaged(
                         pageRequest.offset(),
                         pageRequest.sizeOrDefault(),
                         keyword,
@@ -61,10 +67,10 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public void create(DepartmentCreateRequest req) {
-        validateDuplicateName(req.getDepartmentName(), null);
+    public void create(DepartmentCreateRequest request) {
+        validateDuplicateName(request.getDepartmentName(), null);
 
-        Department department = DepartmentDtoMapper.fromCreateRequest(req);
+        Department department = DepartmentDtoMapper.fromCreateRequest(request);
         mapper.insert(department);
     }
 
@@ -81,7 +87,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         findDepartmentOrThrow(id);
         mapper.delete(id);
     }
-
 
     private void validateDuplicateName(String name, Long excludeId) {
         Department existing = mapper.findByName(name);

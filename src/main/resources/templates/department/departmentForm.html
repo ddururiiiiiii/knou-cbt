@@ -29,11 +29,13 @@
         <div class="mb-3" th:if="${mode == 'edit'}">
             <label for="useYn" class="form-label">사용 여부</label>
             <select class="form-select" id="useYn" th:field="*{useYn}">
-                <option value="Y">Y</option>
-                <option value="N">N</option>
+                <option value="">선택하세요</option>
+                <option th:each="yn : ${useYnValues}"
+                        th:value="${yn}"
+                        th:text="${yn.description}">
+                </option>
             </select>
         </div>
-
         <div class="mb-3" style="text-align: right;">
             <button type="submit" class="btn btn-primary" th:text="${formTitle}"></button>
             <a th:href="@{/departments}" class="btn btn-secondary">취소</a>
