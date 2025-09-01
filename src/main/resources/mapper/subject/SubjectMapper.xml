@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="knou.cbt.domain.subject.mapper.SubjectMapper">
+
+    <sql id="SubjectFilter">
+        <if test="keyword != null and keyword != ''">
+            AND s.subject_name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+<!--        <if test="subjectCategory != null and subjectCategory != ''">-->
+<!--            AND s.subject_category = #{subjectCategory}-->
+<!--        </if>-->
+        <if test="useYn != null and useYn != ''">
+            AND s.use_yn = #{useYn}
+        </if>
+<!--        <if test="departmentId != null">-->
+<!--            AND s.department_id = #{departmentId}-->
+<!--        </if>-->
+    </sql>
+
+    <sql id="BaseSelectColumns">
+        SELECT
+            s.id,
+            s.subject_name,
+            s.subject_category,
+            s.department_id,
+            d.department_name,
+            s.use_yn
+        FROM subject s
+                 JOIN department d ON s.department_id = d.id
+    </sql>
+
+    <resultMap id="SubjectResultMap" type="knou.cbt.domain.subject.dto.SubjectResponse">
+        <id property="id" column="id"/>
+        <result property="subjectName" column="subject_name"/>
+        <result property="subjectCategory" column="subject_category"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="useYn" column="use_yn"/>
+    </resultMap>
+
+    <select id="findAllWithDepartment" resultMap="SubjectResultMap">
+        <include refid="BaseSelectColumns"/>
+        WHERE 1=1
+        <include refid="SubjectFilter"/>
+        ORDER BY s.id
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*)
+        FROM subject s
+        WHERE 1=1
+        <include refid="SubjectFilter"/>
+    </select>
+
+    <select id="findByIdWithDepartment" parameterType="long" resultMap="SubjectResultMap">
+        <include refid="BaseSelectColumns"/>
+        WHERE s.id = #{id}
+    </select>
+
+    <select id="findByNameWithDepartment" parameterType="string" resultMap="SubjectResultMap">
+        <include refid="BaseSelectColumns"/>
+        WHERE s.subject_name = #{name}
+        LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="knou.cbt.domain.subject.model.Subject">
+        INSERT INTO subject (subject_name, subject_category, department_id, use_yn)
+        VALUES (
+                   #{subjectName},
+                   #{subjectCategory},
+                   #{departmentId},
+                   COALESCE(#{useYn}, 'Y')
+               )
+    </insert>
+
+    <update id="update" parameterType="knou.cbt.domain.subject.model.Subject">
+        UPDATE subject
+        SET subject_name = #{subjectName},
+        subject_category = #{subjectCategory},
+        department_id = #{departmentId}
+        <if test="useYn != null">
+            , use_yn = #{useYn}
+        </if>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM subject WHERE id = #{id}
+    </delete>
+
+</mapper>
