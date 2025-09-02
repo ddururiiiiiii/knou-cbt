@@ -27,7 +27,10 @@
             s.subject_category,
             s.department_id,
             d.department_name,
-            s.use_yn
+            s.grade,
+            s.use_yn,
+            s.created_at,
+            s.updated_at
         FROM subject s
                  JOIN department d ON s.department_id = d.id
     </sql>
@@ -40,6 +43,12 @@
         <result property="departmentName" column="department_name"/>
         <result property="useYn" column="use_yn"/>
     </resultMap>
+
+    <select id="findAll" resultMap="SubjectResultMap">
+        <include refid="BaseSelectColumns"/>
+        WHERE s.use_yn = 'Y'
+        ORDER BY s.subject_name
+    </select>
 
     <select id="findAllWithDepartment" resultMap="SubjectResultMap">
         <include refid="BaseSelectColumns"/>
@@ -67,11 +76,20 @@
         LIMIT 1
     </select>
 
+    <select id="findByDepartmentId" resultType="knou.cbt.domain.subject.dto.SubjectDto">
+        SELECT s.id, s.subject_name, s.subject_category, s.department_id, s.use_yn
+        FROM subject s
+        WHERE s.department_id = #{deptId}
+          AND s.use_yn = 'Y'
+        ORDER BY s.subject_name
+    </select>
+
     <insert id="insert" parameterType="knou.cbt.domain.subject.model.Subject">
-        INSERT INTO subject (subject_name, subject_category, department_id, use_yn)
+        INSERT INTO subject (subject_name, subject_category, grade, department_id, use_yn)
         VALUES (
                    #{subjectName},
                    #{subjectCategory},
+                   #{grade},
                    #{departmentId},
                    COALESCE(#{useYn}, 'Y')
                )
@@ -79,9 +97,9 @@
 
     <update id="update" parameterType="knou.cbt.domain.subject.model.Subject">
         UPDATE subject
-        SET subject_name = #{subjectName},
-        subject_category = #{subjectCategory},
-        department_id = #{departmentId}
+        SET subject_name     = #{subjectName},
+            subject_category = #{subjectCategory},
+            department_id    = #{departmentId}
         <if test="useYn != null">
             , use_yn = #{useYn}
         </if>

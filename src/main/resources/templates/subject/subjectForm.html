@@ -46,6 +46,24 @@
             </div>
         </div>
 
+        <!-- 학년 선택 -->
+        <div class="mb-3">
+            <label for="grade" class="form-label">학년</label>
+            <select class="form-select"
+                    id="grade"
+                    th:field="*{grade}"
+                    th:classappend="${#fields.hasErrors('grade')} ? ' is-invalid'">
+                <option value="">학년 선택</option>
+                <option th:each="i : ${#numbers.sequence(1,4)}"
+                        th:value="${i}"
+                        th:text="|${i}학년|">
+                </option>
+            </select>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('grade')}">
+                <small th:errors="*{grade}"></small>
+            </div>
+        </div>
+
         <!-- 학과 선택 -->
         <div class="mb-3">
             <label for="departmentId" class="form-label">학과</label>

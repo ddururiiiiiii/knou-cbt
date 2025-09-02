@@ -36,6 +36,7 @@
             <th>번호</th>
             <th>과목명</th>
             <th>과목 구분</th>
+            <th>학년</th>
             <th>학과명</th>
             <th>사용 여부</th>
             <th>관리</th>
@@ -46,6 +47,7 @@
             <td th:text="${stat.index + 1}" style="text-align: center;"></td>
             <td th:text="${subject.subjectName}"></td>
             <td th:text="${subject.subjectCategory.description}"></td>
+            <td th:text="|${subject.grade}학년|" style="text-align: center;"></td>
             <td th:text="${subject.departmentName}"></td>
             <td th:text="${subject.useYn.description}" style="text-align: center;"></td>
             <td>

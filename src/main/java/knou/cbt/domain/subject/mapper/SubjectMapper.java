@@ -10,6 +10,8 @@ import java.util.List;
 @Mapper
 public interface SubjectMapper {
 
+    List<SubjectDto> findAll();
+
     List<SubjectDto> findAllWithDepartment(@Param("offset") int offset, @Param("limit") int limit,
                                            @Param("keyword") String keyword, @Param("useYn") String useYn);
 
@@ -19,6 +21,8 @@ public interface SubjectMapper {
     SubjectDto findByIdWithDepartment(Long id);
 
     SubjectDto findByNameWithDepartment(String name);
+
+    List<SubjectDto> findByDepartmentId(@Param("deptId") Long deptId);
 
     void insert(Subject subject);
 

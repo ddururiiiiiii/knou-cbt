@@ -1,5 +1,6 @@
 package knou.cbt.domain.subject.dto.mapper;
 
+import knou.cbt.domain.common.model.UseYn;
 import knou.cbt.domain.subject.dto.SubjectRequest;
 import knou.cbt.domain.subject.model.Subject;
 
@@ -12,12 +13,12 @@ public class SubjectDtoMapper {
     // DTO -> Entity
     public static Subject fromCreateRequest(SubjectRequest request){
         return Subject.create(null, request.getSubjectName(),
-                request.getSubjectCategory(), request.getDepartmentId(), request.getUseYn());
+                request.getSubjectCategory(), request.getDepartmentId(), request.getGrade(), UseYn.Y);
     }
 
     public static Subject fromUpdateRequest(Long id, SubjectRequest request){
         return Subject.create(id, request.getSubjectName(),
-                request.getSubjectCategory(), request.getDepartmentId(), request.getUseYn());
+                request.getSubjectCategory(), request.getDepartmentId(), request.getGrade(), request.getUseYn());
     }
 
 }

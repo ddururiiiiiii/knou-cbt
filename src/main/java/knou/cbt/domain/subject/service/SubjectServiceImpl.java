@@ -2,6 +2,7 @@ package knou.cbt.domain.subject.service;
 
 import knou.cbt.common.api.PageRequest;
 import knou.cbt.common.api.PageResponse;
+import knou.cbt.domain.subject.dto.SubjectDto;
 import knou.cbt.domain.subject.dto.SubjectRequest;
 import knou.cbt.domain.subject.dto.SubjectResponse;
 import knou.cbt.domain.subject.dto.mapper.SubjectDtoMapper;
@@ -23,6 +24,11 @@ public class SubjectServiceImpl implements SubjectService{
     private final SubjectMapper mapper;
 
     @Override
+    public List<SubjectDto> findAll() {
+        return mapper.findAll();
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public PageResponse<SubjectResponse> listPage(
             String keyword,
@@ -30,13 +36,13 @@ public class SubjectServiceImpl implements SubjectService{
             PageRequest pageRequest
     ) {
         List<SubjectResponse> content = mapper.findAllWithDepartment(
-                pageRequest.offset(),
-                pageRequest.sizeOrDefault(),
-                keyword,
-                useYn
-        ).stream()
-        .map(row -> SubjectResponse.of(row))
-        .toList();
+                        pageRequest.offset(),
+                        pageRequest.sizeOrDefault(),
+                        keyword,
+                        useYn
+                ).stream()
+                .map(SubjectResponse::of) // SubjectDto → SubjectResponse 변환
+                .toList();
 
         int total = mapper.countAll(keyword, useYn);
         int totalPages = (int) Math.ceil((double) total / pageRequest.sizeOrDefault());
@@ -50,6 +56,7 @@ public class SubjectServiceImpl implements SubjectService{
         );
     }
 
+
     @Override
     @Transactional(readOnly = true)
     public int count(String keyword, String useYn) {
@@ -59,6 +66,11 @@ public class SubjectServiceImpl implements SubjectService{
     @Override
     public SubjectResponse get(Long id) {
         return findSubjectOrThrow(id);
+    }
+
+    @Override
+    public List<SubjectDto> findByDepartmentId(Long deptId) {
+        return mapper.findByDepartmentId(deptId);
     }
 
     @Override
@@ -82,17 +94,17 @@ public class SubjectServiceImpl implements SubjectService{
     }
 
     private void validateDuplicateName(String name, Long excludeId) {
-        Subject existing = mapper.findByNameWithDepartment(name);
+        SubjectDto existing = mapper.findByNameWithDepartment(name);
         if (existing != null && (excludeId == null || !existing.getId().equals(excludeId))) {
             throw new DuplicateSubjectNameException(name);
         }
     }
 
     private SubjectResponse findSubjectOrThrow(Long id) {
-        SubjectResponse subject = mapper.findByIdWithDepartment(id);
-        if (subject == null) {
+        SubjectDto dto = mapper.findByIdWithDepartment(id);
+        if (dto == null) {
             throw new SubjectNotFoundException(id);
         }
-        return subject;
+        return SubjectResponse.of(dto); // DTO → Response 변환
     }
 }

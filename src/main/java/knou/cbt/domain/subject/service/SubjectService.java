@@ -6,7 +6,11 @@ import knou.cbt.domain.subject.dto.SubjectDto;
 import knou.cbt.domain.subject.dto.SubjectRequest;
 import knou.cbt.domain.subject.dto.SubjectResponse;
 
+import java.util.List;
+
 public interface SubjectService {
+
+    List<SubjectDto> findAll();
 
     PageResponse<SubjectResponse> listPage(
             String keyword,
@@ -15,6 +19,8 @@ public interface SubjectService {
     );
 
     int count(String keyword, String useYn);
+
+    List<SubjectDto> findByDepartmentId(Long deptId);
 
     SubjectResponse get(Long id);
 

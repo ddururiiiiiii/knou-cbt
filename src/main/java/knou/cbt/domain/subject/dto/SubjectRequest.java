@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import knou.cbt.domain.common.model.UseYn;
 import knou.cbt.domain.subject.model.SubjectCategory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +21,14 @@ public class SubjectRequest {
     @NotNull(message = "과목 구분은 필수 입력 값입니다.")
     private SubjectCategory subjectCategory;
 
+    @NotNull(message = "학년 선택은 필수 입력 값입니다.")
+    @Min(value = 1, message = "학년 선택은 필수 입력 값입니다.")
+    private Integer grade;
+
     @NotNull(message = "학과 선택은 필수 입력 값입니다.")
     @Min(value = 1, message = "학과 선택은 필수 입력 값입니다.")
     private Long departmentId;
 
-    private String useYn;
+    private UseYn useYn;
 
 }

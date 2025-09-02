@@ -3,8 +3,6 @@ package knou.cbt.web.subject;
 import jakarta.validation.Valid;
 import knou.cbt.common.api.PageRequest;
 import knou.cbt.common.api.PageResponse;
-import knou.cbt.domain.department.dto.DepartmentUpdateRequest;
-import knou.cbt.domain.department.exception.DuplicateDepartmentNameException;
 import knou.cbt.domain.department.service.DepartmentService;
 import knou.cbt.domain.subject.dto.SubjectRequest;
 import knou.cbt.domain.subject.dto.SubjectResponse;
