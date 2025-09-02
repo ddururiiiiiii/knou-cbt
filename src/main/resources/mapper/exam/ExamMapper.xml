@@ -2,120 +2,108 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="knou.cbt.domain.exam.ExamMapper">
+<mapper namespace="knou.cbt.domain.exam.mapper.ExamMapper">
 
-    <select id="allExamList"
-    parameterType="knou.cbt.domain.exam.SearchCriteria"
-    resultType="knou.cbt.domain.exam.ExamInfo">
+    <sql id="ExamFilter">
+        <if test="useYn != null and useYn != ''">
+            AND e.use_yn = #{useYn}
+        </if>
+        <if test="departmentId != null">
+            AND d.id = #{departmentId}
+        </if>
+        <if test="subjectId != null">
+            AND s.id = #{subjectId}
+        </if>
+        <if test="examType != null">
+            AND e.exam_type = #{examType}
+        </if>
+        <if test="year != null">
+            AND e.year = #{year}
+        </if>
+    </sql>
+
+    <sql id="BaseSelectColumns">
         SELECT
-                EXAM_ID
-                , (SELECT DEPARTMENT_NAME
-                    FROM DEPARTMENT
-                    WHERE DEPARTMENT_ID = SUBSTR(EXAM_ID, 1, 1)) AS DEPARTMENT_NAME
-                , SUBSTR(EXAM_ID, 1, 1) AS DEPARTMENT_ID
-                , ( SELECT SUBJECT_NAME
-                    FROM SUBJECT
-                    WHERE SUBJECT_ID = E.SUBJECT_ID ) AS SUBJECT_NAME
-                , SUBJECT_ID
-                , ( SELECT SUBJECT_CATEGORY
-                    FROM SUBJECT
-                    WHERE SUBJECT_ID = E.SUBJECT_ID ) AS SUBJECT_CATEGORY
-                , EXAM_YEAR
-                , GRADE
-                , SEMESTER
-                , EXAM_CATEGORY
-        FROM EXAM E
-        WHERE USE_YN = 'Y'
-        <if test='searchCriteria.departmentId != null'>
-            AND SUBSTR(EXAM_ID, 1, 1) = #{searchCriteria.departmentId}
-        </if>
-        <if test='searchCriteria.subjectId != null'>
-            AND SUBJECT_ID = #{searchCriteria.subjectId}
-        </if>
-        <if test='searchCriteria.year != null'>
-            AND EXAM_YEAR = #{searchCriteria.year}
-        </if>
-        <if test='searchCriteria.semester != null'>
-            AND SEMESTER = #{searchCriteria.semester}
-        </if>
-        <if test='searchCriteria.category != null'>
-            AND EXAM_CATEGORY = #{searchCriteria.category}
-        </if>
-        ORDER BY EXAM_ID
+            e.id,
+            e.subject_id,
+            s.subject_name,
+            d.id AS department_id,
+            d.department_name,
+            e.exam_type,
+            s.grade,
+            e.year,
+            e.use_yn,
+            e.created_at,
+            e.updated_at
+        FROM exam e
+                 JOIN subject s ON e.subject_id = s.id
+                 JOIN department d ON s.department_id = d.id
+    </sql>
+
+    <resultMap id="ExamResultMap" type="knou.cbt.domain.exam.dto.ExamDto">
+        <id property="id" column="id"/>
+        <result property="subjectId" column="subject_id"/>
+        <result property="subjectName" column="subject_name"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="examType" column="exam_type"/>
+        <result property="grade" column="grade"/>
+        <result property="year" column="year"/>
+        <result property="useYn" column="use_yn"/>
+    </resultMap>
+
+    <select id="findAllExamDetails" resultMap="ExamResultMap">
+        <include refid="BaseSelectColumns"/>
+        WHERE 1=1
+        <include refid="ExamFilter"/>
+        ORDER BY e.id
         LIMIT #{offset}, #{limit}
     </select>
 
-    <select id="countExams" parameterType="knou.cbt.domain.exam.SearchCriteria" resultType="int">
+    <select id="countAll" resultType="int">
         SELECT COUNT(*)
-        FROM EXAM
-        WHERE USE_YN = 'Y'
-        <if test='searchCriteria.departmentId != null'>
-            AND SUBSTR(EXAM_ID, 1, 1) = #{searchCriteria.departmentId}
-        </if>
-        <if test='searchCriteria.subjectId != null'>
-            AND SUBJECT_ID = #{searchCriteria.subjectId}
-        </if>
-        <if test='searchCriteria.year != null'>
-            AND EXAM_YEAR = #{searchCriteria.year}
-        </if>
-        <if test='searchCriteria.semester != null'>
-            AND SEMESTER = #{searchCriteria.semester}
-        </if>
-        <if test='searchCriteria.category != null'>
-            AND EXAM_CATEGORY = #{searchCriteria.category}
-        </if>
-        ORDER BY EXAM_ID
-        LIMIT #{offset}, #{limit}
+        FROM exam e
+        JOIN subject s ON e.subject_id = s.id
+        JOIN department d ON s.department_id = d.id
+        WHERE 1=1
+        <include refid="ExamFilter"/>
     </select>
 
-    <select id="findByExamId" parameterType="java.lang.String"
-            resultType="knou.cbt.domain.exam.ExamDetail">
-        SELECT    E.EXAM_ID
-             , (SELECT DEPARTMENT_NAME
-                FROM DEPARTMENT
-                WHERE department_id = SUBSTR(E.SUBJECT_ID, 1, 1) ) AS DEPARTMENT_NAME
-             , E.SUBJECT_ID
-             , ( SELECT SUBJECT_NAME
-                 FROM SUBJECT
-                 WHERE SUBJECT_ID = E.SUBJECT_ID ) AS SUBJECT_NAME
-             , E.EXAM_YEAR
-             , E.GRADE
-             , E.SEMESTER
-             , E.EXAM_CATEGORY
-             , EQ.QUESTION_NO
-             , EQ.QUESTION
-             , EQ.CHOICE_1
-             , EQ.CHOICE_2
-             , EQ.CHOICE_3
-             , EQ.CHOICE_4
-             , EQ.ANSWER
-        FROM EXAM E LEFT OUTER JOIN EXAM_QUESTIONS EQ
-        ON E.EXAM_ID = EQ.EXAM_ID
-        WHERE E.USE_YN = 'Y'
-          AND EQ.USE_YN = 'Y'
-          AND E.EXAM_ID  = #{examId}
-        ORDER BY QUESTION_NO;
+    <select id="findExamExtendedById" parameterType="long" resultMap="ExamResultMap">
+        <include refid="BaseSelectColumns"/>
+        WHERE e.id = #{id}
     </select>
 
-    <insert id="saveExamInput" parameterType="java.util.Map">
-        INSERT INTO EXAM_HISTORY
-        (	  EXAM_ID
-            , STUDENT_ID
-            , QUSESTION_NO
-            , STUDENT_ANSWER
-            , TAKEN_TIME
-            , EXAM_DATE
-        ) VALUES (
-              #{examId}
-            , #{studentId}
-            , #{inputAnswer.questionNo}
-            , #{inputAnswer.inputAnswer}
-            , #{takenTime}
-            , #{examDate}
-         )
+    <select id="findDuplicate" resultMap="ExamResultMap">
+        <include refid="BaseSelectColumns"/>
+        WHERE e.year = #{year}
+        AND e.exam_type = #{examType}
+        AND e.subject_id = #{subjectId}
+        LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="knou.cbt.domain.exam.model.Exam" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO exam (subject_id, exam_type, year, use_yn)
+        VALUES (#{subjectId},
+                #{examType},
+                #{year},
+                COALESCE(#{useYn}, 'Y')
+               )
     </insert>
 
+    <update id="update" parameterType="knou.cbt.domain.exam.model.Exam">
+        UPDATE exam
+        SET subject_id = #{subjectId},
+            exam_type  = #{examType},
+            year       = #{year}
+        <if test="useYn != null">
+            , use_yn = #{useYn}
+        </if>
+        WHERE id = #{id}
+    </update>
 
-
+    <delete id="delete" parameterType="long">
+        DELETE FROM exam WHERE id = #{id}
+    </delete>
 
 </mapper>

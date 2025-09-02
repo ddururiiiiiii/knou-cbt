@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <title>시험 관리</title>
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>시험 목록</h2>
+    </div>
+
+    <div class="mb-3 d-flex justify-content-between align-items-center">
+        <!-- 왼쪽: 검색 + 초기화 -->
+        <div class="d-flex align-items-center">
+            <form th:action="@{/exams}" method="get" id="searchForm" class="d-flex align-items-center">
+
+                <!-- 학과 -->
+                <select class="form-select form-select-sm me-2" name="departmentId" id="departmentSelect">
+                    <option value="">학과 선택</option>
+                    <option th:each="dept : ${departments}"
+                            th:value="${dept.id}"
+                            th:text="${dept.departmentName}"
+                            th:selected="${departmentId != null and departmentId == dept.id}">
+                    </option>
+                </select>
+
+                <!-- 과목 -->
+                <select class="form-select form-select-sm me-2" name="subjectId" id="subjectSelect"
+                        th:disabled="${departmentId == null}">
+                    <option value="">과목 선택</option>
+                    <option th:each="subj : ${subjects}"
+                            th:value="${subj.id}"
+                            th:text="${subj.subjectName}"
+                            th:selected="${subjectId != null and subjectId == subj.id}">
+                    </option>
+                </select>
+
+                <!-- 구분 -->
+                <select class="form-select form-select-sm me-2" name="examType"
+                        onchange="document.getElementById('searchForm').submit()">
+                    <option value="">구분 선택</option>
+                    <option th:each="type : ${examTypes}"
+                            th:value="${type}"
+                            th:text="${type.description}"
+                            th:selected="${examType != null and examType == type}">
+                    </option>
+                </select>
+
+                <!-- 년도 -->
+                <select class="form-select form-select-sm me-2" name="year"
+                        onchange="document.getElementById('searchForm').submit()">
+                    <option value="">년도 선택</option>
+                    <option th:each="y : ${#numbers.sequence(2001, 2010)}"
+                            th:value="${y}"
+                            th:text="${y}"
+                            th:selected="${year != null and year == y}">
+                    </option>
+                </select>
+            </form>
+
+            <!-- 초기화 버튼 -->
+            <button type="button" class="btn btn-secondary btn-sm ms-2" id="resetBtn">초기화</button>
+        </div>
+
+        <!-- 오른쪽: 등록 버튼 -->
+        <a class="btn btn-success btn-sm" th:href="@{/exams/new}">등록</a>
+    </div>
+
+    <span style="font-weight: bold;" th:text="|총 ${pagination.totalElements} 건|"></span>
+
+    <!-- 시험 테이블 -->
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+        <tr style="text-align: center;">
+            <th>번호</th>
+            <th>과목명</th>
+            <th>학과명</th>
+            <th>시험 구분</th>
+            <th>학년</th>
+            <th>년도</th>
+            <th>사용 여부</th>
+            <th>관리</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="exam, stat : ${pagination.content}">
+            <td th:text="${stat.index + 1}" style="text-align: center;"></td>
+            <td th:text="${exam.subjectName}"></td>
+            <td th:text="${exam.departmentName}"></td>
+            <td th:text="${exam.examType.description}"></td>
+            <td th:text="${exam.grade}" style="text-align: center;"></td>
+            <td th:text="${exam.year}" style="text-align: center;"></td>
+            <td th:text="${exam.useYn.description}" style="text-align: center;"></td>
+            <td>
+                <a th:href="@{'/exams/' + ${exam.id} + '/edit'}"
+                   class="btn btn-sm btn-primary">수정</a>
+                <form th:action="@{'/exams/' + ${exam.id}}" method="post"
+                      style="display:inline;">
+                    <input type="hidden" name="_method" value="delete"/>
+                    <button type="submit" class="btn btn-sm btn-danger"
+                            onclick="return confirm('삭제하시겠습니까?');">삭제</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${pagination.content.size() == 0}">
+            <td colspan="8" class="text-center">등록된 시험이 없습니다.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 페이지네이션 -->
+    <nav aria-label="Page navigation" th:if="${pagination.totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${pagination.currentPage > 1} ? '' : 'disabled'">
+                <a class="page-link"
+                   th:href="@{/exams(page=1, keyword=${keyword}, useYn=${param.useYn})}">First</a>
+            </li>
+            <li class="page-item" th:classappend="${pagination.currentPage > 1} ? '' : 'disabled'">
+                <a class="page-link"
+                   th:href="@{/exams(page=${pagination.currentPage - 1}, keyword=${keyword}, useYn=${param.useYn})}">Previous</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, pagination.totalPages)}"
+                th:classappend="${i == pagination.currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/exams(page=${i}, keyword=${keyword}, useYn=${param.useYn})}"
+                   th:text="${i}"></a>
+            </li>
+            <li class="page-item" th:classappend="${pagination.currentPage < pagination.totalPages} ? '' : 'disabled'">
+                <a class="page-link"
+                   th:href="@{/exams(page=${pagination.currentPage + 1}, keyword=${keyword}, useYn=${param.useYn})}">Next</a>
+            </li>
+            <li class="page-item" th:classappend="${pagination.currentPage < pagination.totalPages} ? '' : 'disabled'">
+                <a class="page-link"
+                   th:href="@{/exams(page=${pagination.totalPages}, keyword=${keyword}, useYn=${param.useYn})}">Last</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const deptSelect = document.getElementById("departmentSelect");
+        const subjectSelect = document.getElementById("subjectSelect");
+        const form = document.getElementById("searchForm");
+        const resetBtn = document.getElementById("resetBtn");
+
+        // 초기화 버튼 이벤트
+        resetBtn.addEventListener("click", function() {
+            // 모든 select를 초기화
+            deptSelect.value = "";
+            subjectSelect.innerHTML = '<option value="">과목 선택</option>';
+            subjectSelect.disabled = true;
+            form.querySelector("select[name='examType']").value = "";
+            form.querySelector("select[name='year']").value = "";
+            // 검색 조건 초기화 후 폼 submit
+            form.submit();
+        });
+
+        // 페이지 로딩 시 과목 유지 (param 값 있을 때)
+        const selectedDeptId = new URLSearchParams(window.location.search).get("departmentId");
+        const selectedSubjectId = new URLSearchParams(window.location.search).get("subjectId");
+
+        if (selectedDeptId) {
+            fetch(`/api/departments/${selectedDeptId}/subjects`)
+                .then(res => res.json())
+                .then(data => {
+                    let options = '<option value="">과목 선택</option>';
+                    data.forEach(subj => {
+                        const selected = subj.id == selectedSubjectId ? "selected" : "";
+                        options += `<option value="${subj.id}" ${selected}>${subj.subjectName}</option>`;
+                    });
+                    subjectSelect.innerHTML = options;
+                    subjectSelect.disabled = false;
+                });
+        }
+
+        deptSelect.addEventListener("change", function() {
+            const deptId = this.value;
+            if (!deptId) {
+                subjectSelect.innerHTML = '<option value="">과목 선택</option>';
+                subjectSelect.disabled = true;
+                form.submit();
+                return;
+            }
+
+            fetch(`/api/departments/${deptId}/subjects`)
+                .then(res => res.json())
+                .then(data => {
+                    let options = '<option value="">과목 선택</option>';
+                    data.forEach(subj => {
+                        options += `<option value="${subj.id}">${subj.subjectName}</option>`;
+                    });
+                    subjectSelect.innerHTML = options;
+                    subjectSelect.disabled = false;
+                    form.submit();
+                });
+        });
+
+        subjectSelect.addEventListener("change", function() {
+            form.submit();
+        });
+    });
+
+</script>
+</html>

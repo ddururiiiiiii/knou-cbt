@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <title th:text="${formTitle}">시험 폼</title>
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h2 th:text="${formTitle}">시험 등록/수정</h2>
+    </div>
+
+    <form th:action="@{${actionUrl}}" th:object="${exam}" method="post">
+        <input type="hidden" name="_method" th:if="${method != 'post'}" th:value="${method}"/>
+        <input type="hidden" th:if="${examId != null}" th:field="*{id}"/>
+
+        <!-- 글로벌 에러 메시지 -->
+        <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+            <ul>
+                <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
+            </ul>
+        </div>
+
+        <!-- 과목 선택 -->
+        <div class="mb-3">
+            <label for="subjectId" class="form-label">과목</label>
+            <select class="form-select"
+                    id="subjectId"
+                    th:field="*{subjectId}"
+                    th:classappend="${#fields.hasErrors('subjectId')} ? ' is-invalid'">
+                <option value="">과목 선택</option>
+                <option th:each="subj : ${subjects}"
+                        th:value="${subj.id}"
+                        th:text="${subj.subjectName}">
+                </option>
+            </select>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('subjectId')}">
+                <small th:errors="*{subjectId}"></small>
+            </div>
+        </div>
+
+        <!-- 시험 구분 -->
+        <div class="mb-3">
+            <label for="examType" class="form-label">시험 구분</label>
+            <select class="form-select"
+                    id="examType"
+                    th:field="*{examType}"
+                    th:classappend="${#fields.hasErrors('examType')} ? ' is-invalid'">
+                <option value="">구분 선택</option>
+                <option th:each="type : ${examTypes}"
+                        th:value="${type}"
+                        th:text="${type.description}">
+                </option>
+            </select>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('examType')}">
+                <small th:errors="*{examType}"></small>
+            </div>
+        </div>
+
+        <!-- 시험 년도 -->
+        <div class="mb-3">
+            <label for="year" class="form-label">년도</label>
+            <select class="form-select"
+                    id="year"
+                    th:field="*{year}"
+                    th:classappend="${#fields.hasErrors('year')} ? ' is-invalid'">
+                <option value="">년도 선택</option>
+                <option th:each="y : ${#numbers.sequence(2001, 2010)}"
+                        th:value="${y}"
+                        th:text="${y}">
+                </option>
+            </select>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('year')}">
+                <small th:errors="*{year}"></small>
+            </div>
+        </div>
+
+        <!-- 사용 여부 (수정 모드에서만 노출) -->
+        <div class="mb-3" th:if="${mode == 'edit'}">
+            <label for="useYn" class="form-label">사용 여부</label>
+            <select class="form-select" id="useYn" th:field="*{useYn}">
+                <option value="Y">Y</option>
+                <option value="N">N</option>
+            </select>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="mb-3" style="text-align: right;">
+            <button type="submit" class="btn btn-primary" th:text="${formTitle}"></button>
+            <a th:href="@{/exams}" class="btn btn-secondary">취소</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
