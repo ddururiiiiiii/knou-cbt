@@ -14,11 +14,11 @@ public class DepartmentDtoMapper {
 
     // DTO -> Entity
     public static Department fromCreateRequest(DepartmentCreateRequest request) {
-        return Department.create(null, request.getDepartmentName(), UseYn.Y);
+        return Department.create(null, request.getDepartmentName(), UseYn.Y, null, null);
     }
 
     public static Department fromUpdateRequest(Long id, DepartmentUpdateRequest req) {
-        return Department.create(id, req.getDepartmentName(), req.getUseYn());
+        return Department.create(id, req.getDepartmentName(), req.getUseYn(), null, null);
     }
 
     public static DepartmentUpdateRequest toUpdateRequest(DepartmentResponse resp) {

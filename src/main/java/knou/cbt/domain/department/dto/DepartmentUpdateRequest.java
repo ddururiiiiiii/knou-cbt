@@ -1,8 +1,6 @@
 package knou.cbt.domain.department.dto;
 
-import jakarta.validation.constraints.Pattern;
 import knou.cbt.domain.common.model.UseYn;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

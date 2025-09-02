@@ -17,7 +17,9 @@
         SELECT
             d.id,
             d.department_name,
-            d.use_yn
+            d.use_yn,
+            d.created_at,
+            d.updated_at
         FROM department d
     </sql>
 
