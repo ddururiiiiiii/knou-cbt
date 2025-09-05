@@ -1,4 +1,4 @@
-package knou.cbt.web.subject;
+package knou.cbt.web.department;
 
 import knou.cbt.domain.subject.dto.SubjectDto;
 import knou.cbt.domain.subject.service.SubjectService;

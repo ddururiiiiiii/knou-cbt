@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="knou.cbt.domain.examquestion.mapper.ExamQuestionMapper">
+
+    <resultMap id="ExamQuestionDtoMap" type="knou.cbt.domain.examquestion.dto.ExamQuestionDto">
+        <id property="id" column="id"/>
+        <result property="examId" column="exam_id"/>
+        <result property="questionNo" column="question_no"/>
+        <result property="questionText" column="question_text"/>
+        <result property="option1" column="option1"/>
+        <result property="option2" column="option2"/>
+        <result property="option3" column="option3"/>
+        <result property="option4" column="option4"/>
+        <result property="answers" column="answers"/>
+    </resultMap>
+
+    <select id="findByExamId" resultMap="ExamQuestionDtoMap">
+        SELECT q.id,
+               q.exam_id,
+               q.question_no,
+               q.question_text,
+               q.option1,
+               q.option2,
+               q.option3,
+               q.option4,
+               GROUP_CONCAT(a.option_no ORDER BY a.option_no ASC) AS answers
+        FROM exam_question q
+                 LEFT JOIN exam_question_answer a ON q.id = a.question_id
+        WHERE q.exam_id = #{examId}
+        GROUP BY q.id
+        ORDER BY q.question_no
+    </select>
+
+    <delete id="deleteByExamId">
+        DELETE FROM exam_question WHERE exam_id = #{examId}
+    </delete>
+
+    <insert id="insertQuestion" parameterType="knou.cbt.domain.examquestion.model.ExamQuestion"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO exam_question (exam_id, question_no, question_text,
+                                   option1, option2, option3, option4)
+        VALUES (#{examId}, #{questionNo}, #{questionText},
+                #{option1}, #{option2}, #{option3}, #{option4})
+    </insert>
+
+    <insert id="insertAnswer" parameterType="knou.cbt.domain.examquestion.model.ExamQuestionAnswer"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO exam_question_answer (question_id, option_no)
+        VALUES (#{questionId}, #{optionNo})
+    </insert>
+
+</mapper>

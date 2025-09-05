@@ -102,6 +102,10 @@
                     <button type="submit" class="btn btn-sm btn-danger"
                             onclick="return confirm('삭제하시겠습니까?');">삭제</button>
                 </form>
+                <button type="button" class="btn btn-sm btn-warning"
+                        th:onclick="|location.href='@{/exams/{examId}/questions(examId=${exam.id})}'|">
+                    문제 관리
+                </button>
             </td>
         </tr>
         <tr th:if="${pagination.content.size() == 0}">

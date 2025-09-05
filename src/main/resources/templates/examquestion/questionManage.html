@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <title>시험 문제 관리</title>
+    <style>
+        .table td input {
+            width: 100%;
+            border: none;
+            background: transparent;
+        }
+        .table td input:focus {
+            outline: 1px solid #0d6efd;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="content">
+    <div class="py-4 text-center">
+        <h2>시험 문제 관리</h2>
+    </div>
+
+    <div th:if="${saveSuccess}" class="alert alert-success" role="alert">
+        저장이 완료되었습니다!
+    </div>
+
+    <!-- 시험 기본 정보 -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">시험 정보</h5>
+            <p class="card-text">
+                <strong th:text="${exam.departmentName}">학과</strong> /
+                <span th:text="${exam.subjectName}">과목</span> /
+                <span th:text="${exam.examType.description}">구분</span> /
+                <span th:text="|${exam.grade} 학년|">학년</span> /
+                <span th:text="|${exam.year} 년도|">년도</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- 엑셀 관련 버튼 -->
+    <div class="d-flex justify-content-start mb-3 gap-2">
+        <a th:href="@{/exams/{examId}/questions/excel-template(examId=${exam.id})}"
+           class="btn btn-outline-success">엑셀 양식 다운로드</a>
+
+        <form th:action="@{/exams/{examId}/questions/excel-upload(examId=${exam.id})}"
+              method="post" enctype="multipart/form-data" class="d-inline">
+            <input type="file" id="excelFile" name="file" accept=".xlsx,.xls"
+                   style="display: none;" onchange="this.form.submit();">
+            <button type="button" class="btn btn-outline-primary" onclick="confirmAndUpload()">
+                엑셀 업로드
+            </button>
+        </form>
+    </div>
+
+    <form id="questionForm"
+          th:action="@{/exams/{examId}/questions/save(examId=${examId})}"
+          method="post">
+
+        <div class="d-flex justify-content-between mb-3">
+            <div>
+                <button type="button" class="btn btn-success" onclick="addRow()">행 추가</button>
+                <button type="button" class="btn btn-danger" onclick="deleteSelectedRows()">선택 행 삭제</button>
+                <button type="button" class="btn btn-info" onclick="sortRows()">번호 자동정렬</button>
+            </div>
+            <div>
+                <a th:href="@{/exams}" class="btn btn-secondary">목록으로</a>
+                <button type="submit" class="btn btn-primary">저장</button>
+            </div>
+        </div>
+
+        <span id="questionCount" class="me-3 fw-bold">총 <span id="countValue" th:text="${#lists.size(questions)}">0</span> 문제</span>
+
+        <table class="table table-bordered text-center align-middle">
+            <colgroup>
+                <col style="width: 5%;">   <!-- 선택 -->
+                <col style="width: 5%;">   <!-- 번호 -->
+                <col style="width: 35%;">  <!-- 문제 -->
+                <col style="width: 10%;">  <!-- 보기1 -->
+                <col style="width: 10%;">  <!-- 보기2 -->
+                <col style="width: 10%;">  <!-- 보기3 -->
+                <col style="width: 10%;">  <!-- 보기4 -->
+                <col style="width: 10%;">  <!-- 정답 -->
+                <col style="width: 5%;">   <!-- 삭제 -->
+            </colgroup>
+            <thead class="table-light">
+            <tr>
+                <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)"/></th>
+                <th>번호</th>
+                <th>문제</th>
+                <th>보기1</th>
+                <th>보기2</th>
+                <th>보기3</th>
+                <th>보기4</th>
+                <th>정답</th>
+                <th>삭제</th>
+            </tr>
+            </thead>
+            <tbody id="questionTable">
+            <tr th:each="q, iterStat : ${questions}">
+                <td><input type="checkbox" class="row-check"/></td>
+                <td>
+                    <input type="text" class="form-control" th:name="|questions[${iterStat.index}].questionNo|"
+                           th:value="${q.questionNo}" oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
+                    <div class="invalid-feedback">숫자만 입력</div>
+                </td>
+                <td><input type="text" class="form-control" th:name="|questions[${iterStat.index}].questionText|" th:value="${q.questionText}"/></td>
+                <td><input type="text" class="form-control" th:name="|questions[${iterStat.index}].option1|" th:value="${q.option1}"/></td>
+                <td><input type="text" class="form-control" th:name="|questions[${iterStat.index}].option2|" th:value="${q.option2}"/></td>
+                <td><input type="text" class="form-control" th:name="|questions[${iterStat.index}].option3|" th:value="${q.option3}"/></td>
+                <td><input type="text" class="form-control" th:name="|questions[${iterStat.index}].option4|" th:value="${q.option4}"/></td>
+                <td>
+                    <input type="text" class="form-control"
+                           th:name="|questions[${iterStat.index}].answers|"
+                           th:value="${q.answers}" oninput="this.value = this.value.replace(/[^0-9,]/g, '')"/>
+                    <div class="invalid-feedback">숫자(쉼표 구분)만 입력</div>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">삭제</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </form>
+</div>
+
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+        updateQuestionCount();
+    });
+    function updateQuestionCount() {
+        const tbody = document.getElementById('questionTable');
+        const count = tbody.rows.length;
+        document.getElementById('countValue').textContent = count;
+    }
+
+    function addRow() {
+        const tbody = document.getElementById('questionTable');
+        const rowCount = tbody.rows.length;
+
+        if (rowCount >= 35) {
+            alert("더 이상 행을 추가할 수 없습니다. (최대 35문제)");
+            return;
+        }
+
+        const row = tbody.insertRow();
+
+        // 체크박스 열
+        let cell = row.insertCell();
+        cell.innerHTML = `<input type="checkbox" class="row-check"/>`;
+
+        // 컬럼 정의
+        const cols = ['questionNo','questionText','option1','option2','option3','option4','answers'];
+
+        cols.forEach((col, i) => {
+            cell = row.insertCell();
+            if (col === 'questionNo') {
+                cell.innerHTML = `
+                <input type="text"
+                       class="form-control"
+                       name="questions[${rowCount}].${col}"
+                       value="${rowCount+1}"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
+                <div class="invalid-feedback">숫자만 입력</div>
+            `;
+            } else if (col === 'answers') {
+                cell.innerHTML = `
+                <input type="text"
+                       class="form-control"
+                       name="questions[${rowCount}].${col}"
+                       oninput="this.value = this.value.replace(/[^0-9,]/g, '')"/>
+                <div class="invalid-feedback">숫자(쉼표 구분)만 입력</div>
+            `;
+            } else {
+                cell.innerHTML = `
+                <input type="text"
+                       class="form-control"
+                       name="questions[${rowCount}].${col}"/>
+            `;
+            }
+        });
+
+        // 삭제 버튼 열
+        cell = row.insertCell();
+        cell.innerHTML = `<button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">삭제</button>`;
+        updateQuestionCount();
+    }
+
+
+    function deleteRow(btn) {
+        const row = btn.closest("tr");
+        row.remove();
+        updateQuestionCount();
+    }
+
+    function deleteSelectedRows() {
+        const checks = document.querySelectorAll('.row-check:checked');
+        if (checks.length === 0) {
+            alert("삭제할 문제를 선택해주세요.");
+            return;
+        }
+        checks.forEach(chk => chk.closest('tr').remove());
+        updateQuestionCount();
+    }
+
+    function sortRows() {
+        const tbody = document.getElementById('questionTable');
+        const rows = Array.from(tbody.rows);
+
+        // 번호 기준으로 오름차순 정렬
+        rows.sort((a, b) => {
+            const aVal = parseInt(a.querySelector("input[name*='.questionNo']").value) || 0;
+            const bVal = parseInt(b.querySelector("input[name*='.questionNo']").value) || 0;
+            return aVal - bVal;
+        });
+
+        // 기존 tbody 비우고 정렬된 순서대로 다시 append
+        tbody.innerHTML = "";
+        rows.forEach((row, index) => {
+            // 번호 input도 순서대로 다시 세팅
+            row.querySelector("input[name*='.questionNo']").value = index + 1;
+            tbody.appendChild(row);
+        });
+        updateQuestionCount();
+    }
+
+    function toggleAll(master) {
+        const checks = document.querySelectorAll('.row-check');
+        checks.forEach(chk => chk.checked = master.checked);
+    }
+
+    function confirmAndUpload() {
+        if (confirm("엑셀 파일을 업로드하면 화면의 기존 데이터는 지워지고 업로드한 데이터로 대체됩니다. 진행하시겠습니까?")) {
+            document.getElementById('excelFile').click();
+        }
+    }
+
+    function validateBeforeSave() {
+        let valid = true;
+        const rows = document.querySelectorAll("#questionTable tr");
+
+        rows.forEach((row, i) => {
+            const noInput = row.querySelector("input[name*='.questionNo']");
+            const answerInput = row.querySelector("input[name*='.answers']");
+
+            // 번호 숫자 체크
+            if (noInput) {
+                if (!/^\d+$/.test(noInput.value.trim())) {
+                    noInput.classList.add("is-invalid");
+                    valid = false;
+                } else {
+                    noInput.classList.remove("is-invalid");
+                }
+            }
+
+            // 정답 숫자 or 쉼표 구분 숫자 체크
+            if (answerInput) {
+                if (!/^\d+(,\d+)*$/.test(answerInput.value.trim())) {
+                    answerInput.classList.add("is-invalid");
+                    valid = false;
+                } else {
+                    answerInput.classList.remove("is-invalid");
+                }
+            }
+        });
+
+        return valid;
+    }
+
+    // 저장 버튼에 validate 추가
+    document.getElementById("questionForm")
+        .addEventListener("submit", function (e) {
+            if (!validateBeforeSave()) {
+                e.preventDefault();
+                alert("입력값을 다시 확인해주세요.");
+            }
+        });
+</script>
+</body>
+</html>
