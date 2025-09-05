@@ -8,16 +8,9 @@
         <if test="keyword != null and keyword != ''">
             AND s.subject_name LIKE CONCAT('%', #{keyword}, '%')
         </if>
-        <!-- TODO : 검색조건 추가 -->
-<!--        <if test="subjectCategory != null and subjectCategory != ''">-->
-<!--            AND s.subject_category = #{subjectCategory}-->
-<!--        </if>-->
         <if test="useYn != null and useYn != ''">
             AND s.use_yn = #{useYn}
         </if>
-<!--        <if test="departmentId != null">-->
-<!--            AND s.department_id = #{departmentId}-->
-<!--        </if>-->
     </sql>
 
     <sql id="BaseSelectColumns">
