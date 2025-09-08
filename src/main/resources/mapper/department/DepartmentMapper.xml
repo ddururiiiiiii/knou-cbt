@@ -27,18 +27,23 @@
         <id property="id" column="id"/>
         <result property="departmentName" column="department_name"/>
         <result property="useYn" column="use_yn"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
     <select id="findAll" resultMap="DepartmentResultMap">
         <include refid="BaseSelectColumns"/>
-        WHERE d.use_yn = 'Y'
+        <where>
+            d.use_yn = 'Y'
+        </where>
         ORDER BY d.department_name
     </select>
 
     <select id="findAllPaged" resultMap="DepartmentResultMap">
         <include refid="BaseSelectColumns"/>
-        WHERE 1=1
-        <include refid="DepartmentFilter"/>
+        <where>
+            <include refid="DepartmentFilter"/>
+        </where>
         ORDER BY d.id
         LIMIT #{offset}, #{limit}
     </select>
@@ -46,18 +51,23 @@
     <select id="countAll" resultType="int">
         SELECT COUNT(*)
         FROM department d
-        WHERE 1=1
-        <include refid="DepartmentFilter"/>
+        <where>
+            <include refid="DepartmentFilter"/>
+        </where>
     </select>
 
     <select id="findById" parameterType="long" resultMap="DepartmentResultMap">
         <include refid="BaseSelectColumns"/>
-        WHERE id = #{id}
+        <where>
+            id = #{id}
+        </where>
     </select>
 
     <select id="findByName" parameterType="string" resultMap="DepartmentResultMap">
         <include refid="BaseSelectColumns"/>
-        WHERE department_name = #{name}
+        <where>
+            department_name = #{name}
+        </where>
         LIMIT 1
     </select>
 

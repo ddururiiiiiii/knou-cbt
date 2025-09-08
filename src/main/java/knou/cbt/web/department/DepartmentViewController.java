@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/departments")
+@RequestMapping("/admin/departments")
 public class DepartmentViewController {
 
     private final DepartmentService service;
@@ -43,7 +43,7 @@ public class DepartmentViewController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("useYn", useYn);
 
-        return "department/departmentList";
+        return "admin/department/departmentList";
     }
 
     /**
@@ -55,12 +55,12 @@ public class DepartmentViewController {
     public String createForm(Model model) {
         setupFormModel(model,
                 "학과 등록",
-                "/departments",
+                "/admin/departments",
                 "post",
                 "create",
                 new DepartmentCreateRequest()
         , null);
-        return "department/departmentForm";
+        return "admin/department/departmentForm";
     }
 
     /**
@@ -73,17 +73,17 @@ public class DepartmentViewController {
     public String create(@Valid @ModelAttribute("department") DepartmentCreateRequest req,
                          BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            setupFormModel(model, "학과 등록", "/departments", "post", "create", req, null);
-            return "department/departmentForm";
+            setupFormModel(model, "학과 등록", "/admin/departments", "post", "create", req, null);
+            return "admin/department/departmentForm";
         }
         try {
             service.create(req);
         } catch (DuplicateDepartmentNameException e) {
             bindingResult.rejectValue("departmentName", "duplicate", e.getMessage());
-            setupFormModel(model, "학과 등록", "/departments", "post", "create", req, null);
-            return "department/departmentForm";
+            setupFormModel(model, "학과 등록", "/admin/departments", "post", "create", req, null);
+            return "admin/department/departmentForm";
         }
-        return "redirect:/departments";
+        return "redirect:/admin/departments";
     }
 
     /**
@@ -99,13 +99,13 @@ public class DepartmentViewController {
 
         setupFormModel(model,
                 "학과 수정",
-                "/departments/" + id,
+                "/admin/departments/" + id,
                 "patch",
                 "edit",
                 req,
                 id);
         model.addAttribute("departmentId", id);
-        return "department/departmentForm";
+        return "admin/department/departmentForm";
     }
 
 
@@ -121,19 +121,19 @@ public class DepartmentViewController {
                          @Valid @ModelAttribute("department") DepartmentUpdateRequest req,
                          BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            setupFormModel(model, "학과 수정", "/departments/" + id, "patch", "edit", req, id);
-            return "department/departmentForm";
+            setupFormModel(model, "학과 수정", "/admin/departments/" + id, "patch", "edit", req, id);
+            return "admin/department/departmentForm";
         }
         try {
             service.update(id, req);
         } catch (DuplicateDepartmentNameException e) {
             bindingResult.rejectValue("departmentName", "duplicate", e.getMessage());
-            setupFormModel(model, "학과 수정", "/departments/" + id, "patch", "edit", req, id);
+            setupFormModel(model, "학과 수정", "/admin/departments/" + id, "patch", "edit", req, id);
             model.addAttribute("departmentId", id);
-            return "department/departmentForm";
+            return "admin/department/departmentForm";
         }
 
-        return "redirect:/departments";
+        return "redirect:/admin/departments";
     }
 
     /**
@@ -144,7 +144,7 @@ public class DepartmentViewController {
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") Long id) {
         service.delete(id);
-        return "redirect:/departments";
+        return "redirect:/admin/departments";
     }
 
     // 공통 Form 세팅 메서드

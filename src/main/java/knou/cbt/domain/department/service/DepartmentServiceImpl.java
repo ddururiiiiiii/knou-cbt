@@ -6,10 +6,12 @@ import knou.cbt.domain.department.dto.DepartmentCreateRequest;
 import knou.cbt.domain.department.dto.DepartmentResponse;
 import knou.cbt.domain.department.dto.DepartmentUpdateRequest;
 import knou.cbt.domain.department.dto.mapper.DepartmentDtoMapper;
+import knou.cbt.domain.department.exception.DepartmentDeleteNotAllowedException;
 import knou.cbt.domain.department.exception.DepartmentNotFoundException;
 import knou.cbt.domain.department.exception.DuplicateDepartmentNameException;
 import knou.cbt.domain.department.mapper.DepartmentMapper;
 import knou.cbt.domain.department.model.Department;
+import knou.cbt.domain.subject.mapper.SubjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,7 @@ import java.util.List;
 public class DepartmentServiceImpl implements DepartmentService {
 
     private final DepartmentMapper mapper;
-
+    private final SubjectMapper subjectMapper;
 
     @Override
     public List<DepartmentResponse> findAll() {
@@ -40,7 +42,10 @@ public class DepartmentServiceImpl implements DepartmentService {
                         keyword,
                         useYn
                 ).stream()
-                .map(DepartmentResponse::of)
+                .map(dept -> {
+                    boolean hasSubjects = subjectMapper.existsByDepartmentId(dept.getId());
+                    return DepartmentResponse.of(dept, hasSubjects);
+                })
                 .toList();
 
         int total = mapper.countAll(keyword, useYn);
@@ -85,6 +90,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public void delete(Long id) {
         findDepartmentOrThrow(id);
+        validateNoSubjects(id);
         mapper.delete(id);
     }
 
@@ -101,5 +107,11 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new DepartmentNotFoundException(id);
         }
         return dept;
+    }
+
+    private void validateNoSubjects(Long deptId) {
+        if (subjectMapper.existsByDepartmentId(deptId)) {
+            throw new DepartmentDeleteNotAllowedException(deptId);
+        }
     }
 }

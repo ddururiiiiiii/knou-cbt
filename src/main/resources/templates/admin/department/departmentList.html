@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="ko"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+
 <head>
     <meta charset="UTF-8">
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
     <title>학과 관리</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container">
+<div layout:fragment="content">
     <div class="py-5 text-center">
         <h2>학과 목록</h2>
     </div>
 
     <div class="mb-3 d-flex justify-content-between">
         <!-- 검색 폼 -->
-        <form th:action="@{/departments}" method="get" class="d-flex">
+        <form th:action="@{/admin/departments}" method="get" class="d-flex">
             <input type="text"
                    class="form-control-sm me-2"
                    name="keyword"
@@ -25,7 +27,7 @@
         </form>
 
         <!-- 등록 버튼 -->
-        <a class="btn btn-success btn-sm" th:href="@{/departments/new}">등록</a>
+        <a class="btn btn-success btn-sm" th:href="@{/admin/departments/new}">등록</a>
     </div>
 
     <span style="font-weight: bold;" th:text="|총 ${pagination.totalElements} 건|"></span>
@@ -48,13 +50,24 @@
                 <td th:text="${dept.useYn.description}" style="text-align: center;">사용</td>
                 <td>
                     <!-- 수정 -->
-                    <a th:href="@{/departments/{id}/edit(id=${dept.id})}" class="btn btn-primary btn-sm">수정</a>
-                    <!-- 삭제 -->
-                    <form th:action="@{/departments/{id}(id=${dept.id})}" method="post" style="display:inline;"
+                    <a th:href="@{/admin/departments/{id}/edit(id=${dept.id})}" class="btn btn-primary btn-sm">수정</a>
+                    <!-- 삭제 가능 -->
+                    <form th:if="${!dept.hasSubjects}"
+                          th:action="@{/admin/departments/{id}(id=${dept.id})}"
+                          method="post"
+                          style="display:inline;"
                           onsubmit="return confirm('정말 삭제하시겠습니까?');">
                         <input type="hidden" name="_method" value="delete"/>
                         <button type="submit" class="btn btn-danger btn-sm">삭제</button>
                     </form>
+
+                    <!-- 삭제 불가 -->
+                    <button th:if="${dept.hasSubjects}"
+                            type="button"
+                            class="btn btn-secondary btn-sm"
+                            onclick="alert('해당 학과에 과목이 있어 삭제할 수 없습니다.');">
+                        삭제 불가
+                    </button>
                 </td>
             </tr>
 
@@ -71,25 +84,25 @@
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${pagination.currentPage > 1} ? '' : 'disabled'">
                 <a class="page-link"
-                   th:href="@{/departments(page=1, keyword=${keyword}, useYn=${param.useYn})}">First</a>
+                   th:href="@{/admin/departments(page=1, keyword=${keyword}, useYn=${param.useYn})}">First</a>
             </li>
             <li class="page-item" th:classappend="${pagination.currentPage > 1} ? '' : 'disabled'">
                 <a class="page-link"
-                   th:href="@{/departments(page=${pagination.currentPage - 1}, keyword=${keyword}, useYn=${param.useYn})}">Previous</a>
+                   th:href="@{/admin/departments(page=${pagination.currentPage - 1}, keyword=${keyword}, useYn=${param.useYn})}">Previous</a>
             </li>
             <li class="page-item" th:each="i : ${#numbers.sequence(1, pagination.totalPages)}"
                 th:classappend="${i == pagination.currentPage} ? 'active'">
                 <a class="page-link"
-                   th:href="@{/departments(page=${i}, keyword=${keyword}, useYn=${param.useYn})}"
+                   th:href="@{/admin/departments(page=${i}, keyword=${keyword}, useYn=${param.useYn})}"
                    th:text="${i}"></a>
             </li>
             <li class="page-item" th:classappend="${pagination.currentPage < pagination.totalPages} ? '' : 'disabled'">
                 <a class="page-link"
-                   th:href="@{/departments(page=${pagination.currentPage + 1}, keyword=${keyword}, useYn=${param.useYn})}">Next</a>
+                   th:href="@{/admin/departments(page=${pagination.currentPage + 1}, keyword=${keyword}, useYn=${param.useYn})}">Next</a>
             </li>
             <li class="page-item" th:classappend="${pagination.currentPage < pagination.totalPages} ? '' : 'disabled'">
                 <a class="page-link"
-                   th:href="@{/departments(page=${pagination.totalPages}, keyword=${keyword}, useYn=${param.useYn})}">Last</a>
+                   th:href="@{/admin/departments(page=${pagination.totalPages}, keyword=${keyword}, useYn=${param.useYn})}">Last</a>
             </li>
         </ul>
     </nav>
