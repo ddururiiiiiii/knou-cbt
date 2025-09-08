@@ -2,18 +2,23 @@ package knou.cbt.web.exam;
 
 import jakarta.validation.Valid;
 import knou.cbt.domain.department.service.DepartmentService;
+import knou.cbt.domain.exam.dto.AnswerForm;
 import knou.cbt.domain.exam.dto.ExamRequest;
 import knou.cbt.domain.exam.dto.ExamResponse;
 import knou.cbt.domain.exam.dto.mapper.ExamDtoMapper;
 import knou.cbt.domain.exam.exception.DuplicateExamException;
 import knou.cbt.domain.exam.model.ExamType;
 import knou.cbt.domain.exam.service.ExamService;
+import knou.cbt.domain.examquestion.dto.ExamQuestionResponse;
+import knou.cbt.domain.examquestion.service.ExamQuestionService;
 import knou.cbt.domain.subject.service.SubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,6 +28,7 @@ public class AdminExamViewController {
     private final ExamService examService;
     private final SubjectService subjectService;
     private final DepartmentService departmentService;
+    private final ExamQuestionService examQuestionService;
 
     /**
      * 시험 등록 화면
@@ -146,5 +152,22 @@ public class AdminExamViewController {
         if (examId != null) {
             model.addAttribute("examId", examId);
         }
+    }
+
+    /**
+     * 시험 미리보기
+     * @param examId
+     * @param model
+     * @return
+     */
+    @GetMapping("/{examId}/preview")
+    public String preview(@PathVariable("examId") Long examId, Model model) {
+        ExamResponse exam = examService.get(examId);
+        List<ExamQuestionResponse> questions = examQuestionService.getQuestions(examId);
+
+        model.addAttribute("exam", exam);
+        model.addAttribute("questions", questions);
+        model.addAttribute("answerForm", new AnswerForm());
+        return "admin/exam/preview";
     }
 }

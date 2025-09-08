@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <title>시험 미리보기</title>
+    <style>
+        .container {
+            max-width: 1100px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .question-container {
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .option {
+            margin-left: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <!-- 안내 문구 -->
+    <div class="alert alert-info text-center fw-bold">
+        이 화면은 미리보기 화면입니다
+    </div>
+
+    <!-- 시험 정보 -->
+    <div class="mb-3">
+        <h3 th:text="|${exam.subjectName} (${exam.examType.description})|"></h3>
+        <p class="mb-1 text-muted" th:text="|${exam.year}년도 ${exam.grade}학기|"></p>
+    </div>
+
+    <div class="row">
+        <!-- 좌측: 문제 영역 -->
+        <div class="col-md-12 question-container" id="questionList">
+            <div th:each="q, iterStat : ${questions}" class="card mb-4 p-3">
+                <h5 class="fw-bold mb-3" th:text="|${iterStat.index + 1}. ${q.questionText}|"></h5>
+
+                <!-- 문제 이미지 -->
+                <div th:if="${q.imageUrl != null}" class="mt-2 mb-3">
+                    <img th:src="${q.imageUrl}" alt="문제 이미지" style="max-width: 100%; height: auto;">
+                </div>
+
+                <!-- 보기 -->
+                <div class="option" th:if="${q.option1 != null}" th:text="|① ${q.option1}|"></div>
+                <div class="option" th:if="${q.option2 != null}" th:text="|② ${q.option2}|"></div>
+                <div class="option" th:if="${q.option3 != null}" th:text="|③ ${q.option3}|"></div>
+                <div class="option" th:if="${q.option4 != null}" th:text="|④ ${q.option4}|"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
