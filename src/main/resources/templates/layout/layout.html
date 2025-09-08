@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <title layout:title-pattern="$CONTENT_TITLE : KNOU - CBT">KNOU - CBT</title>
+</head>
+<th:block layout:fragment="script"></th:block>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- 공통 네비게이션 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">KNOU - CBT</a>
+        <div class="nav-item d-flex align-items-center" sec:authorize="hasRole('ADMIN')">
+            <span class="nav-link disabled text-info fw-bold">(관리자모드)</span>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/exams}">시험보기</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/notices}">공지사항</a></li>
+
+                <!-- 관리자 전용 메뉴 -->
+
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link text-info fw-bold" th:href="@{/admin/departments}">학과관리</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link text-info fw-bold" th:href="@{/admin/subjects}">과목관리</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <form th:action="@{/logout}" method="post" style="display:inline;">
+                        <button class="btn btn-sm btn-outline-light ms-2">로그아웃</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 페이지별 컨텐츠 -->
+<div class="container mt-4 flex-grow-1" layout:fragment="content">
+    <!-- 기본 내용 자리 -->
+</div>
+
+
+<!-- 풋터 -->
+<footer class="bg-dark text-center text-light py-4 border-top mt-auto">
+    <div class="container">
+        <p class="mb-1">© 2025 KNOU-CBT. All rights reserved. 💻</p>
+
+        <p class="mb-1" style="font-size: 0.9em;">
+            ✉️ <a href="mailto:workingsg913@gmail.com" class="text-decoration-none text-info">workingsg913@gmail.com</a>
+        </p>
+        <p class="mb-0" style="font-size: 0.9em;">
+            🐙 <a href="https://github.com/ddururiiiiiii/knou-cbt" target="_blank" class="text-decoration-none text-info">
+            GitHub
+        </a>
+        </p>
+
+        <p class="mt-2 mb-0" style="font-size: 0.9em;">
+            🎓 이 서비스는 한국방송통신대학교 학생들을 위한 <strong>비공식 전자 기출문제집</strong>입니다. 📘
+        </p>
+    </div>
+</footer>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
