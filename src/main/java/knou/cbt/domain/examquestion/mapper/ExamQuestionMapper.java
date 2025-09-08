@@ -18,4 +18,5 @@ public interface ExamQuestionMapper {
 
     void insertAnswer(ExamQuestionAnswer answer);
 
+    boolean existsByExamId(Long examId);
 }

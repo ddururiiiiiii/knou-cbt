@@ -102,15 +102,25 @@
                    class="btn btn-sm btn-primary"
                    sec:authorize="hasRole('ADMIN')">수정</a>
 
-                <!-- 삭제 버튼 (관리자 전용) -->
-                <form th:action="@{'/admin/exams/' + ${exam.id}}"
+                <!-- 삭제 가능 (관리자 전용) -->
+                <form th:if="${!exam.hasExamQuestions}"
+                      th:action="@{'/admin/exams/' + ${exam.id}}"
                       method="post"
                       style="display:inline;"
                       sec:authorize="hasRole('ADMIN')">
                     <input type="hidden" name="_method" value="delete"/>
                     <button type="submit" class="btn btn-sm btn-danger"
-                            onclick="return confirm('삭제하시겠습니까?');">삭제</button>
+                            onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
                 </form>
+
+                <!-- 삭제 불가 (관리자 전용) -->
+                <button th:if="${exam.hasExamQuestions}"
+                        type="button"
+                        class="btn btn-sm btn-secondary"
+                        onclick="alert('해당 시험에 문제가 있어 삭제할 수 없습니다.');"
+                        sec:authorize="hasRole('ADMIN')">
+                    삭제 불가
+                </button>
 
                 <!-- 문제 관리 버튼 (관리자 전용) -->
                 <button type="button"

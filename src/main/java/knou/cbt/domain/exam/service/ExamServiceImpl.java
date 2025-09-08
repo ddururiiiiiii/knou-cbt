@@ -7,10 +7,12 @@ import knou.cbt.domain.exam.dto.ExamRequest;
 import knou.cbt.domain.exam.dto.ExamResponse;
 import knou.cbt.domain.exam.dto.mapper.ExamDtoMapper;
 import knou.cbt.domain.exam.exception.DuplicateExamException;
+import knou.cbt.domain.exam.exception.ExamHasQuestionsException;
 import knou.cbt.domain.exam.exception.ExamNotFoundException;
 import knou.cbt.domain.exam.mapper.ExamMapper;
 import knou.cbt.domain.exam.model.Exam;
 import knou.cbt.domain.exam.model.ExamType;
+import knou.cbt.domain.examquestion.mapper.ExamQuestionMapper;
 import knou.cbt.domain.subject.dto.SubjectDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import java.util.List;
 public class ExamServiceImpl implements ExamService {
 
     private final ExamMapper mapper;
+    private final ExamQuestionMapper examQuestionMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -33,16 +36,21 @@ public class ExamServiceImpl implements ExamService {
                                                String useYn,
                                                PageRequest pageRequest) {
 
-        List<ExamResponse> content = mapper.findAllExamDetails(
-                        pageRequest.offset(),
-                        pageRequest.sizeOrDefault(),
-                        useYn,
-                        departmentId,
-                        subjectId,
-                        examType,
-                        year
-                ).stream()
-                .map(ExamResponse::of)
+        List<ExamDto> exams = mapper.findAllExamDetails(
+                pageRequest.offset(),
+                pageRequest.sizeOrDefault(),
+                useYn,
+                departmentId,
+                subjectId,
+                examType,
+                year
+        );
+
+        List<ExamResponse> content = exams.stream()
+                .map(exam -> ExamResponse.of(
+                        exam,
+                        examQuestionMapper.existsByExamId(exam.getId())
+                ))
                 .toList();
 
         int total = mapper.countAll(useYn, departmentId, subjectId, examType, year);
@@ -90,10 +98,8 @@ public class ExamServiceImpl implements ExamService {
     @Override
     @Transactional
     public void delete(Long id) {
-        ExamDto existing = mapper.findExamExtendedById(id);
-        if (existing == null) {
-            throw new ExamNotFoundException(id);
-        }
+        validateExamExists(id);
+        validateNoQuestions(id);
         mapper.delete(id);
     }
 
@@ -115,5 +121,18 @@ public class ExamServiceImpl implements ExamService {
             throw new ExamNotFoundException(id);
         }
         return ExamResponse.of(dto); // DTO → Response 변환
+    }
+
+    private void validateExamExists(Long id) {
+        ExamDto existing = mapper.findExamExtendedById(id);
+        if (existing == null) {
+            throw new ExamNotFoundException(id);
+        }
+    }
+
+    private void validateNoQuestions(Long examId) {
+        if (examQuestionMapper.existsByExamId(examId)) {
+            throw new ExamHasQuestionsException(examId);
+        }
     }
 }
