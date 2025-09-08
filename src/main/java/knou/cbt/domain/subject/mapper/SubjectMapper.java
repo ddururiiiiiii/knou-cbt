@@ -29,4 +29,6 @@ public interface SubjectMapper {
     void update(Subject subject);
 
     void delete(Long id);
+
+    boolean existsByDepartmentId(@Param("deptId") Long deptId);
 }

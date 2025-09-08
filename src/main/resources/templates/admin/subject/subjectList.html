@@ -1,19 +1,22 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+
 <head>
     <meta charset="UTF-8">
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
     <title>과목 관리</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container">
+<div layout:fragment="content">
     <div class="py-5 text-center">
         <h2>과목 목록</h2>
     </div>
 
     <div class="mb-3 d-flex justify-content-between">
         <!-- 검색 폼 -->
-        <form th:action="@{/subjects}" method="get" class="d-flex">
+        <form th:action="@{/admin/subjects}" method="get" class="d-flex">
             <input type="text"
                    class="form-control-sm me-2"
                    name="keyword"
@@ -24,7 +27,7 @@
         </form>
 
         <!-- 등록 버튼 -->
-        <a class="btn btn-success btn-sm" th:href="@{/subjects/new}">등록</a>
+        <a class="btn btn-success btn-sm" th:href="@{/admin/subjects/new}">등록</a>
     </div>
 
     <span style="font-weight: bold;" th:text="|총 ${pagination.totalElements} 건|"></span>
@@ -51,14 +54,24 @@
             <td th:text="${subject.departmentName}"></td>
             <td th:text="${subject.useYn.description}" style="text-align: center;"></td>
             <td>
-                <a th:href="@{'/subjects/' + ${subject.id} + '/edit'}"
+                <a th:href="@{'/admin/subjects/' + ${subject.id} + '/edit'}"
                    class="btn btn-sm btn-primary">수정</a>
-                <form th:action="@{'/subjects/' + ${subject.id}}" method="post"
-                      style="display:inline;">
+                <!-- 삭제 가능 -->
+                <form th:if="${!subject.hasExams}"
+                      th:action="@{'/admin/subjects/' + ${subject.id}}"
+                      method="post" style="display:inline;"
+                      onsubmit="return confirm('삭제하시겠습니까?');">
                     <input type="hidden" name="_method" value="delete"/>
-                    <button type="submit" class="btn btn-sm btn-danger"
-                            onclick="return confirm('삭제하시겠습니까?');">삭제</button>
+                    <button type="submit" class="btn btn-sm btn-danger">삭제</button>
                 </form>
+
+                <!-- 삭제 불가 -->
+                <button th:if="${subject.hasExams}"
+                        type="button"
+                        class="btn btn-sm btn-secondary"
+                        onclick="alert('해당 과목에 시험이 있어 삭제할 수 없습니다.');">
+                    삭제 불가
+                </button>
             </td>
         </tr>
         <tr th:if="${pagination.content.size() == 0}">

@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+
 <head>
     <meta charset="UTF-8">
+    <title th:text="${formTitle}">과목 등록/수정</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <title th:text="${formTitle}">과목 폼</title>
 </head>
 <body>
-<div class="container">
+<div layout:fragment="content">
     <div class="py-5 text-center">
         <h2 th:text="${formTitle}">과목 등록/수정</h2>
     </div>
@@ -95,7 +98,7 @@
         <!-- 버튼 영역 -->
         <div class="mb-3" style="text-align: right;">
             <button type="submit" class="btn btn-primary" th:text="${formTitle}"></button>
-            <a th:href="@{/subjects}" class="btn btn-secondary">취소</a>
+            <a th:href="@{/admin/subjects}" class="btn btn-secondary">취소</a>
         </div>
     </form>
 </div>

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/subjects")
+@RequestMapping("/admin/subjects")
 public class SubjectViewController {
 
     private final SubjectService subjectService;
@@ -44,7 +44,7 @@ public class SubjectViewController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("useYn", useYn);
 
-        return "subject/subjectList";
+        return "admin/subject/subjectList";
     }
 
     /**
@@ -56,12 +56,12 @@ public class SubjectViewController {
     public String createForm(Model model) {
         setupFormModel(model,
                 "과목 등록",
-                "/subjects",
+                "/admin/subjects",
                 "post",
                 "create",
                 new SubjectRequest()
                 , null);
-        return "subject/subjectForm";
+        return "admin/subject/subjectForm";
     }
 
     /**
@@ -75,17 +75,17 @@ public class SubjectViewController {
     public String create(@Valid @ModelAttribute("subject") SubjectRequest req,
                          BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            setupFormModel(model, "과목 등록", "/subjects", "post", "create", req, null);
-            return "subject/subjectForm";
+            setupFormModel(model, "과목 등록", "/admin/subjects", "post", "create", req, null);
+            return "admin/subject/subjectForm";
         }
         try {
             subjectService.create(req);
         } catch (DuplicateSubjectNameException e) {
             bindingResult.rejectValue("subjectName", "duplicate", e.getMessage());
-            setupFormModel(model, "과목 등록", "/subjects", "post", "create", req, null);
-            return "subject/subjectForm";
+            setupFormModel(model, "과목 등록", "/admin/subjects", "post", "create", req, null);
+            return "admin/subject/subjectForm";
         }
-        return "redirect:/subjects";
+        return "redirect:/admin/subjects";
     }
 
     /**
@@ -100,13 +100,13 @@ public class SubjectViewController {
 
         setupFormModel(model,
                 "과목 수정",
-                "/subjects/" + id,
+                "/admin/subjects/" + id,
                 "patch",
                 "edit",
                 subjectResponse,
                 id);
         model.addAttribute("subjectId", id);
-        return "subject/subjectForm";
+        return "admin/subject/subjectForm";
     }
 
     /**
@@ -122,19 +122,19 @@ public class SubjectViewController {
                          @Valid @ModelAttribute("subject") SubjectRequest req,
                          BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            setupFormModel(model, "과목 수정", "/subjects/" + id, "patch", "edit", req, id);
-            return "subject/subjectForm";
+            setupFormModel(model, "과목 수정", "/admin/subjects/" + id, "patch", "edit", req, id);
+            return "admin/subject/subjectForm";
         }
         try {
             subjectService.update(id, req);
         } catch (DuplicateSubjectNameException e) {
             bindingResult.rejectValue("subjectName", "duplicate", e.getMessage());
-            setupFormModel(model, "과목 수정", "/subjects/" + id, "patch", "edit", req, id);
+            setupFormModel(model, "과목 수정", "/admin/subjects/" + id, "patch", "edit", req, id);
             model.addAttribute("subjectId", id);
-            return "subject/subjectForm";
+            return "admin/subject/subjectForm";
         }
 
-        return "redirect:/subjects";
+        return "redirect:/admin/subjects";
     }
 
     /**
@@ -145,7 +145,7 @@ public class SubjectViewController {
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") Long id) {
         subjectService.delete(id);
-        return "redirect:/subjects";
+        return "redirect:/admin/subjects";
     }
 
     // 공통 Form 세팅 메서드
