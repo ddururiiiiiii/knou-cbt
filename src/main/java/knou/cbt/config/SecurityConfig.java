@@ -16,21 +16,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .headers(headers -> headers
-                        .cacheControl(cache -> cache.disable())
-                ) //캐시 방지 필터
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**") // ← API는 CSRF 체크 제외
+                )
+                .headers(headers -> headers.cacheControl(cache -> cache.disable()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/exams/**", "/requests/**", "/notices/**", "/api/**",
-                                "/css/**", "/js/**", "/error/**").permitAll()
-                        .requestMatchers("/admin/login", "/login").permitAll()   // 로그인은 열어줌
-                        .requestMatchers("/admin/**").hasRole("ADMIN")           // 관리자 전용
+                                "/css/**", "/js/**", "/error/**", "/uploads/**").permitAll()
+                        .requestMatchers("/admin/login", "/login").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/notices/new", "/notices/*/edit", "/notices/*/delete").hasRole("ADMIN")
-                        .anyRequest().authenticated()                           // 그 외는 인증 필요
+                        .anyRequest().authenticated()
                 )
                 .formLogin(login -> login
-                        .loginPage("/admin/login")   // GET: 로그인 폼
-                        .loginProcessingUrl("/login") // POST: 로그인 처리 (기본값 그대로 둠)
-                        .defaultSuccessUrl("/admin/departments", true)
+                        .loginPage("/admin/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/exams", true)
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -41,6 +42,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
