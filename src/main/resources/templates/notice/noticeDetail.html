@@ -8,6 +8,15 @@
   <meta charset="UTF-8">
   <title>공지사항 상세</title>
   <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .notice-content img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+
+  </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -23,7 +32,7 @@
   </div>
 
   <!-- 내용 -->
-  <div class="mb-4 border p-3" th:utext="${notice.content}">
+  <div class="mb-4 border p-3 notice-content" th:utext="${notice.content}">
     공지사항 내용
   </div>
 

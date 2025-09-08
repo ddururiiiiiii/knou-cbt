@@ -70,9 +70,25 @@
             height: '400px',
             initialEditType: 'wysiwyg',
             previewStyle: 'vertical',
-            initialValue: content
-        });
+            initialValue: content,
+            hooks: {
+                addImageBlobHook: async (blob, callback) => {
+                    const formData = new FormData();
+                    formData.append("file", blob);
 
+                    const response = await fetch("/api/notices/image", {
+                        method: "POST",
+                        body: formData
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        callback(result.url, blob.name); // 본문에 <img src="..."> 삽입
+                    } else {
+                        alert("이미지 업로드 실패");
+                    }
+                }
+            }
+        });
 
         // 폼 제출 시 hidden textarea에 저장
         const form = document.getElementById("noticeForm");
