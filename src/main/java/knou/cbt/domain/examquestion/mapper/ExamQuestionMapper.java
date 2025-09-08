@@ -17,4 +17,5 @@ public interface ExamQuestionMapper {
     void insertQuestion(ExamQuestion question);
 
     void insertAnswer(ExamQuestionAnswer answer);
+
 }

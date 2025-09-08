@@ -38,5 +38,5 @@ public interface ExamMapper {
 
     void delete(Long id);
 
-
+    boolean existsBySubjectId(@Param("subjectId") Long subjectId);
 }

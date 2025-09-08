@@ -15,6 +15,8 @@
         <result property="option3" column="option3"/>
         <result property="option4" column="option4"/>
         <result property="answers" column="answers"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
     <select id="findByExamId" resultMap="ExamQuestionDtoMap">

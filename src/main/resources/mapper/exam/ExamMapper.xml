@@ -50,12 +50,15 @@
         <result property="grade" column="grade"/>
         <result property="year" column="year"/>
         <result property="useYn" column="use_yn"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
     <select id="findAllExamDetails" resultMap="ExamResultMap">
         <include refid="BaseSelectColumns"/>
-        WHERE 1=1
-        <include refid="ExamFilter"/>
+        <where>
+            <include refid="ExamFilter"/>
+        </where>
         ORDER BY e.id
         LIMIT #{offset}, #{limit}
     </select>
@@ -65,20 +68,25 @@
         FROM exam e
         JOIN subject s ON e.subject_id = s.id
         JOIN department d ON s.department_id = d.id
-        WHERE 1=1
-        <include refid="ExamFilter"/>
+        <where>
+            <include refid="ExamFilter"/>
+        </where>
     </select>
 
     <select id="findExamExtendedById" parameterType="long" resultMap="ExamResultMap">
         <include refid="BaseSelectColumns"/>
-        WHERE e.id = #{id}
+        <where>
+            e.id = #{id}
+        </where>
     </select>
 
     <select id="findDuplicate" resultMap="ExamResultMap">
         <include refid="BaseSelectColumns"/>
-        WHERE e.year = #{year}
-        AND e.exam_type = #{examType}
-        AND e.subject_id = #{subjectId}
+        <where>
+            e.year = #{year}
+            AND e.exam_type = #{examType}
+            AND e.subject_id = #{subjectId}
+        </where>
         LIMIT 1
     </select>
 
@@ -105,5 +113,13 @@
     <delete id="delete" parameterType="long">
         DELETE FROM exam WHERE id = #{id}
     </delete>
+
+    <select id="existsBySubjectId" resultType="boolean" parameterType="long">
+        SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+        FROM exam
+        <where>
+            subject_id = #{subjectId}
+        </where>
+    </select>
 
 </mapper>

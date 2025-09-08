@@ -1,4 +1,4 @@
-package knou.cbt.web.examquestion;
+package knou.cbt.web.exam;
 
 import jakarta.servlet.http.HttpServletResponse;
 import knou.cbt.common.excel.ExcelParser;
@@ -25,8 +25,8 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/exams/{examId}/questions")
-public class ExamQuestionViewController {
+@RequestMapping("/admin/exams/{examId}/questions")
+public class AdminExamQuestionViewController {
 
     private final ExamQuestionService examQuestionService;
     private final ExamService examService;
@@ -46,7 +46,7 @@ public class ExamQuestionViewController {
         model.addAttribute("questions", questions);
         model.addAttribute("exam", exam);
 
-        return "examquestion/questionManage";
+        return "admin/exam/questionManage";
     }
 
     /**
@@ -63,12 +63,12 @@ public class ExamQuestionViewController {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("errorMessage", "입력값이 올바르지 않습니다.");
-            return "redirect:/exams/{examId}/questions";
+            return "redirect:/admin/exams/{examId}/questions";
         }
 
         examQuestionService.saveAll(examId, wrapper.getQuestions());
         redirectAttributes.addFlashAttribute("saveSuccess", true);
-        return "redirect:/exams/{examId}/questions";
+        return "redirect:/admin/exams/{examId}/questions";
     }
 
     /**
@@ -115,6 +115,6 @@ public class ExamQuestionViewController {
         model.addAttribute("exam", examService.get(examId));
         model.addAttribute("questions", questions);
 
-        return "examquestion/questionManage";
+        return "admin/exam/questionManage";
     }
 }

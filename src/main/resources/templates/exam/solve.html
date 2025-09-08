@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <title>문제 풀기</title>
+    <style>
+        .container {
+            max-width: 1100px;
+        }
+        .option span {
+            cursor: pointer;
+        }
+        .choice {
+            font-size: 35px;
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .choice.selected {
+            background: #333;
+            color: #fff;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        /* 문제 영역 스크롤 */
+        .question-container {
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        /* 답안지 스크롤 */
+        .answer-sheet {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <!-- 시험 정보 -->
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h3 th:text="|${exam.subjectName} (${exam.examType.description})|"></h3>
+                <p class="mb-1 text-muted" th:text="|${exam.year}년도 ${exam.grade}학기|"></p>
+            </div>
+            <div class="d-flex align-items-center gap-1 mb-0">
+                <button type="button" class="btn btn-danger btn-sm" onclick="confirmSubmit()">시험 종료</button>
+                <a th:href="@{/exams}" class="btn btn-secondary btn-sm">돌아가기</a>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-2" style="font-size: 20px;">
+            <div>
+                전체문제 <span id="totalQ">[[${questions.size()}]]</span> /
+                푼문제 <span id="progress" style="color: blue;">0</span>
+            </div>
+            <div>
+                전체시간 : <span id="totalTime"></span> /
+                남은시간 : <span id="timeLeft" class="text-danger">00:00</span>
+            </div>
+        </div>
+
+        <!-- 프로그레스 바 -->
+        <div class="d-flex align-items-center mt-3" style="margin-bottom: 20px;">
+            <span class="me-2" style="font-weight: bold;">진행율 :</span>
+            <div class="progress flex-grow-1" style="height: 25px;">
+                <div id="progressBar"
+                     class="progress-bar bg-info"
+                     role="progressbar"
+                     style="width: 0%;"
+                     aria-valuenow="0"
+                     aria-valuemin="0"
+                     aria-valuemax="100">
+                    0%
+                </div>
+            </div>
+        </div>
+
+    <div class="row">
+        <!-- 좌측: 문제 영역 -->
+        <div class="col-md-9 question-container" id="questionList">
+            <form id="solveForm" th:action="@{/exams/{examId}/solve(examId=${exam.id})}"
+                  th:object="${answerForm}" method="post">
+                <div th:each="q, iterStat : ${questions}" class="card mb-4 p-3" th:id="|question-${iterStat.index}|">
+                    <h5 class="fw-bold mb-3" th:text="|${iterStat.index + 1}. ${q.questionText}|"></h5>
+                    <div class="ms-3" style="font-size: 20px;">
+                        <div class="option" th:if="${q.option1 != null}">
+                            <input type="radio" class="d-none"
+                                   th:field="*{answers[__${iterStat.index}__]}"
+                                   value="1"
+                                   th:attr="onchange=|markAnswered(${iterStat.index}, this)|">
+                            <span th:onclick="|selectAnswer(${iterStat.index},1)|" th:text="|① ${q.option1}|"></span>
+                        </div>
+                        <div class="option" th:if="${q.option2 != null}">
+                            <input type="radio" class="d-none"
+                                   th:field="*{answers[__${iterStat.index}__]}"
+                                   value="2"
+                                   th:attr="onchange=|markAnswered(${iterStat.index}, this)|">
+                            <span th:onclick="|selectAnswer(${iterStat.index},2)|" th:text="|② ${q.option2}|"></span>
+                        </div>
+                        <div class="option" th:if="${q.option3 != null}">
+                            <input type="radio" class="d-none"
+                                   th:field="*{answers[__${iterStat.index}__]}"
+                                   value="3"
+                                   th:attr="onchange=|markAnswered(${iterStat.index}, this)|">
+                            <span th:onclick="|selectAnswer(${iterStat.index},3)|" th:text="|③ ${q.option3}|"></span>
+                        </div>
+                        <div class="option" th:if="${q.option4 != null}">
+                            <input type="radio" class="d-none"
+                                   th:field="*{answers[__${iterStat.index}__]}"
+                                   value="4"
+                                   th:attr="onchange=|markAnswered(${iterStat.index}, this)|">
+                            <span th:onclick="|selectAnswer(${iterStat.index},4)|" th:text="|④ ${q.option4}|"></span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 우측: 답안지 -->
+        <div class="col-md-3">
+            <div class="card answer-sheet p-3">
+                <h4>답안지</h4>
+                <div th:each="q, iterStat : ${questions}">
+                    <div th:if="${iterStat.index % 5 == 0}" class="mt-2 mb-2" th:unless="${iterStat.index == 0}">
+                        <hr>
+                    </div>
+                    <div class="symbols" th:id="|ans-${iterStat.index}|">
+                        <span class="question-no" style="font-size: 35px;">[[${iterStat.index + 1}]]. </span>
+                        <span class="choice" th:onclick="|selectAnswer(${iterStat.index},1)|">①</span>
+                        <span class="choice" th:onclick="|selectAnswer(${iterStat.index},2)|">②</span>
+                        <span class="choice" th:onclick="|selectAnswer(${iterStat.index},3)|">③</span>
+                        <span class="choice" th:onclick="|selectAnswer(${iterStat.index},4)|">④</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const totalQuestions = [[${questions.size()}]];
+    const totalSeconds = totalQuestions * 60;
+    let timeLeft = totalSeconds;
+
+    const totalTimeEl = document.getElementById("totalTime");
+    const timeLeftEl = document.getElementById("timeLeft");
+    const progressEl = document.getElementById("progress");
+    const form = document.getElementById("solveForm");
+
+    totalTimeEl.textContent = formatTime(totalSeconds);
+    updateProgress();
+
+    const timer = setInterval(() => {
+        timeLeft--;
+        timeLeftEl.textContent = formatTime(timeLeft);
+        if (timeLeft < 0) {
+            clearInterval(timer);
+            alert("시간이 종료되었습니다. 자동으로 제출됩니다.");
+            form.submit();
+        }
+    }, 1000);
+
+    function formatTime(sec) {
+        const minutes = String(Math.floor(sec / 60)).padStart(2, "0");
+        const seconds = String(sec % 60).padStart(2, "0");
+        return `${minutes}:${seconds}`;
+    }
+
+    function markAnswered(index, input) {
+        const selected = parseInt(input.value);
+
+        // ===== 답안지 갱신 =====
+        const ansDiv = document.getElementById(`ans-${index}`);
+        const choiceSpans = ansDiv.querySelectorAll(".choice");
+        choiceSpans.forEach((span, i) => {
+            span.classList.toggle("selected", i + 1 === selected);
+        });
+
+        // ===== 문제 보기 갱신 =====
+        const symbols = ["①", "②", "③", "④"];
+        const symbolsMarked = ["❶", "❷", "❸", "❹"];
+
+        const optionSpans = input.closest(".ms-3").querySelectorAll(".option span");
+        optionSpans.forEach((span, i) => {
+            const text = span.textContent.substring(2);
+            span.textContent = (i + 1 === selected)
+                ? symbolsMarked[i] + " " + text
+                : symbols[i] + " " + text;
+        });
+
+        updateProgress();
+    }
+
+    function selectAnswer(index, choice) {
+        const radios = document.getElementsByName(`answers[${index}]`);
+        if (!radios || radios.length === 0) return;
+        const target = [...radios].find(r => r.value == choice);
+        if (target) {
+            target.checked = true;
+            target.dispatchEvent(new Event("change"));
+        }
+    }
+
+    function updateProgress() {
+        let answeredCount = 0;
+        for (let i = 0; i < totalQuestions; i++) {
+            const radios = document.getElementsByName(`answers[${i}]`);
+            if ([...radios].some(r => r.checked)) {
+                answeredCount++;
+            }
+        }
+        progressEl.textContent = answeredCount;
+        // ===== 프로그레스 바 갱신 =====
+        const percent = Math.round((answeredCount / totalQuestions) * 100);
+        const progressBar = document.getElementById("progressBar");
+        progressBar.style.width = percent + "%";
+        progressBar.setAttribute("aria-valuenow", percent);
+        progressBar.textContent = percent + "%";
+    }
+
+    function confirmSubmit() {
+        const unanswered = [];
+        for (let i = 0; i < totalQuestions; i++) {
+            const radios = document.getElementsByName(`answers[${i}]`);
+            if (![...radios].some(r => r.checked)) {
+                unanswered.push(i + 1);
+            }
+        }
+
+        if (unanswered.length > 0) {
+            if (confirm(`안 푼 문제가 있습니다: ${unanswered.join(", ")}\n그래도 제출하시겠습니까?`)) {
+                clearInterval(timer);
+                form.submit();
+            } else {
+                document.getElementById(`question-${unanswered[0]-1}`)
+                    .scrollIntoView({behavior: "smooth"});
+            }
+            return;
+        }
+
+        if (confirm("정말 시험을 종료하고 제출하시겠습니까?")) {
+            clearInterval(timer);
+            form.submit();
+        }
+    }
+</script>
+</body>
+</html>

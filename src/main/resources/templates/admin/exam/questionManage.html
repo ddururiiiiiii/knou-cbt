@@ -42,10 +42,10 @@
 
     <!-- 엑셀 관련 버튼 -->
     <div class="d-flex justify-content-start mb-3 gap-2">
-        <a th:href="@{/exams/{examId}/questions/excel-template(examId=${exam.id})}"
+        <a th:href="@{/admin/exams/{examId}/questions/excel-template(examId=${exam.id})}"
            class="btn btn-outline-success">엑셀 양식 다운로드</a>
 
-        <form th:action="@{/exams/{examId}/questions/excel-upload(examId=${exam.id})}"
+        <form th:action="@{/admin/exams/{examId}/questions/excel-upload(examId=${exam.id})}"
               method="post" enctype="multipart/form-data" class="d-inline">
             <input type="file" id="excelFile" name="file" accept=".xlsx,.xls"
                    style="display: none;" onchange="this.form.submit();">
@@ -56,7 +56,7 @@
     </div>
 
     <form id="questionForm"
-          th:action="@{/exams/{examId}/questions/save(examId=${examId})}"
+          th:action="@{/admin/exams/{examId}/questions/save(examId=${examId})}"
           method="post">
 
         <div class="d-flex justify-content-between mb-3">

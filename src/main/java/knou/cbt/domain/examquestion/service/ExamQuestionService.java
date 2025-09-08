@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ExamQuestionService {
     List<ExamQuestionResponse> getQuestions(Long examId);
+
     void saveAll(Long examId, List<ExamQuestionRequest> requests);
 }

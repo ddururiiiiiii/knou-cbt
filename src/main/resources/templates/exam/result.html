@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <title>시험 결과</title>
+  <style>
+    .result-table th, .result-table td {
+      text-align: center;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-5">
+  <h2 class="mb-4">시험 결과</h2>
+
+  <!-- 시험 요약 -->
+  <table class="table table-bordered result-table">
+    <tr>
+      <th>학과</th>
+      <td th:text="${exam.departmentName}"></td>
+      <th>과목</th>
+      <td th:text="${exam.subjectName}"></td>
+      <th>구분</th>
+      <td th:text="${exam.examType.description}"></td>
+      <th>학년·학기</th>
+      <td th:text="|${exam.year}년도 ${exam.grade}학기|"></td>
+    </tr>
+    <tr>
+      <th>총 문제</th>
+      <td th:text="${questions.size()}"></td>
+      <th>맞은 개수</th>
+      <td class="text-success fw-bold" th:text="${score}"></td>
+      <th>틀린 개수</th>
+      <td class="text-danger fw-bold" th:text="${questions.size() - score}"></td>
+      <td colspan="3" class="text-center">
+        <a th:href="@{/exams/{examId}/solve(examId=${exam.id})}"
+           class="btn btn-success btn-sm me-2">문제 다시풀기</a>
+        <a th:href="@{/exams/{examId}/review(examId=${exam.id})}"
+           class="btn btn-warning btn-sm me-2">답안 확인하기</a>
+        <a th:href="@{/exams}"
+           class="btn btn-secondary btn-sm">돌아가기</a>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>
