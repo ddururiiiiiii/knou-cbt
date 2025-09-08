@@ -91,6 +91,9 @@
                   th:object="${answerForm}" method="post">
                 <div th:each="q, iterStat : ${questions}" class="card mb-4 p-3" th:id="|question-${iterStat.index}|">
                     <h5 class="fw-bold mb-3" th:text="|${iterStat.index + 1}. ${q.questionText}|"></h5>
+                    <div th:if="${q.imageUrl != null}" class="mt-2">
+                        <img th:src="${q.imageUrl}" alt="문제 이미지" style="max-width: 100%; height: auto;">
+                    </div>
                     <div class="ms-3" style="font-size: 20px;">
                         <div class="option" th:if="${q.option1 != null}">
                             <input type="radio" class="d-none"
@@ -162,6 +165,11 @@
     const timer = setInterval(() => {
         timeLeft--;
         timeLeftEl.textContent = formatTime(timeLeft);
+
+        if (timeLeft <= 300) {
+            timeLeftEl.classList.add("fw-bold", "blink");
+        }
+
         if (timeLeft < 0) {
             clearInterval(timer);
             alert("시간이 종료되었습니다. 자동으로 제출됩니다.");
@@ -252,6 +260,10 @@
             form.submit();
         }
     }
+    window.addEventListener("beforeunload", function (e) {
+        e.preventDefault();
+        e.returnValue = "시험이 아직 종료되지 않았습니다. 나가시겠습니까?";
+    });
 </script>
 </body>
 </html>

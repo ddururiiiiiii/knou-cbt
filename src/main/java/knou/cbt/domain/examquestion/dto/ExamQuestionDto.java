@@ -15,4 +15,5 @@ public class ExamQuestionDto {
     private String option3;
     private String option4;
     private String answers;
+    private String imageUrl;
 }

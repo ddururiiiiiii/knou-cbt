@@ -9,7 +9,9 @@ public record ExamQuestionResponse(
         String option2,
         String option3,
         String option4,
-        String answers
+        String answers,
+        String imageUrl
+
 ) {
     public static ExamQuestionResponse of(ExamQuestionDto dto) {
         return new ExamQuestionResponse(
@@ -21,7 +23,8 @@ public record ExamQuestionResponse(
                 dto.getOption2(),
                 dto.getOption3(),
                 dto.getOption4(),
-                dto.getAnswers()
+                dto.getAnswers(),
+                dto.getImageUrl()
         );
     }
 }

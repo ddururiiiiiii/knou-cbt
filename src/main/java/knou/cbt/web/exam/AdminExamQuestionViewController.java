@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,8 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -30,6 +33,9 @@ public class AdminExamQuestionViewController {
 
     private final ExamQuestionService examQuestionService;
     private final ExamService examService;
+
+    @Value("${file.exam-dir}")
+    private String examUploadDir;
 
     /**
      * 특정 시험 문제 조회 및 수정 화면
@@ -65,6 +71,29 @@ public class AdminExamQuestionViewController {
             redirectAttributes.addFlashAttribute("errorMessage", "입력값이 올바르지 않습니다.");
             return "redirect:/admin/exams/{examId}/questions";
         }
+
+        // === 파일 저장 처리 ===
+        for (ExamQuestionRequest req : wrapper.getQuestions()) {
+            MultipartFile file = req.getImageFile();
+            if (file != null && !file.isEmpty()) {
+                try {
+                    String uploadDir = examUploadDir + "/" + examId;
+                    File dir = new File(uploadDir);
+                    if (!dir.exists()) dir.mkdirs();
+
+                    String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                    File dest = new File(dir, filename);
+                    file.transferTo(dest);
+
+                    req.setImageUrl("/uploads/questions/" + examId + "/" + filename);
+
+                } catch (IOException e) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "파일 업로드 중 오류가 발생했습니다.");
+                    return "redirect:/admin/exams/{examId}/questions";
+                }
+            }
+        }
+
 
         examQuestionService.saveAll(examId, wrapper.getQuestions());
         redirectAttributes.addFlashAttribute("saveSuccess", true);

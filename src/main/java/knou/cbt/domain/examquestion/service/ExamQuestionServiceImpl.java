@@ -37,7 +37,8 @@ public class ExamQuestionServiceImpl implements ExamQuestionService {
                     null, examId, req.getQuestionNo(),
                     req.getQuestionText(),
                     req.getOption1(), req.getOption2(),
-                    req.getOption3(), req.getOption4()
+                    req.getOption3(), req.getOption4(),
+                    req.getImageUrl()
             );
             mapper.insertQuestion(question);
 

@@ -15,8 +15,7 @@
         <result property="option3" column="option3"/>
         <result property="option4" column="option4"/>
         <result property="answers" column="answers"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
+        <result property="imageUrl" column="image_url"/>
     </resultMap>
 
     <select id="findByExamId" resultMap="ExamQuestionDtoMap">
@@ -28,6 +27,7 @@
                q.option2,
                q.option3,
                q.option4,
+               q.image_url,
                GROUP_CONCAT(a.option_no ORDER BY a.option_no ASC) AS answers
         FROM exam_question q
                  LEFT JOIN exam_question_answer a ON q.id = a.question_id
@@ -43,9 +43,9 @@
     <insert id="insertQuestion" parameterType="knou.cbt.domain.examquestion.model.ExamQuestion"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO exam_question (exam_id, question_no, question_text,
-                                   option1, option2, option3, option4)
+                                   option1, option2, option3, option4, image_url)
         VALUES (#{examId}, #{questionNo}, #{questionText},
-                #{option1}, #{option2}, #{option3}, #{option4})
+                #{option1}, #{option2}, #{option3}, #{option4}, #{imageUrl})
     </insert>
 
     <insert id="insertAnswer" parameterType="knou.cbt.domain.examquestion.model.ExamQuestionAnswer"
@@ -53,5 +53,11 @@
         INSERT INTO exam_question_answer (question_id, option_no)
         VALUES (#{questionId}, #{optionNo})
     </insert>
+
+    <select id="existsByExamId" resultType="boolean" parameterType="long">
+        SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+        FROM exam_question
+        WHERE exam_id = #{examId}
+    </select>
 
 </mapper>

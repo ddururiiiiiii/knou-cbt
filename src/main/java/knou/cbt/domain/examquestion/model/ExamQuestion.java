@@ -17,12 +17,13 @@ public class ExamQuestion {
     private String option2;
     private String option3;
     private String option4;
+    private String imageUrl;
 
     public static ExamQuestion create(Long id, Long examId, int questionNo,
                                       String questionText,
                                       String option1, String option2,
-                                      String option3, String option4) {
+                                      String option3, String option4, String imageUrl) {
         return new ExamQuestion(id, examId, questionNo, questionText,
-                option1, option2, option3, option4);
+                option1, option2, option3, option4, imageUrl);
     }
 }
