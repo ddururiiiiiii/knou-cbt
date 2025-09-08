@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${formTitle}">공지사항 등록</title>
+    <!-- Toast UI Editor CSS -->
+    <link rel="stylesheet"
+          href="https://uicdn.toast.com/editor/3.2.2/toastui-editor.min.css" />
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="py-5 text-center">
+        <h2 th:text="${formTitle}">공지사항 등록</h2>
+    </div>
+
+    <form id="noticeForm" th:action="@{${actionUrl}}" th:method="${method}" th:object="${notice}">
+        <!-- 제목 -->
+        <div class="mb-3">
+            <label for="title" class="form-label">제목</label>
+            <input type="text" id="title" th:field="*{title}" class="form-control"
+                   placeholder="제목을 입력하세요" required>
+        </div>
+
+        <!-- 내용 (Toast UI Editor) -->
+        <div class="mb-3">
+            <label class="form-label">내용</label>
+            <div id="editor"></div>
+            <!-- hidden textarea에 최종 content 저장 -->
+            <textarea id="content" th:field="*{content}" hidden></textarea>
+        </div>
+
+        <!-- 상단 고정 여부 -->
+        <div class="mb-3 form-check">
+            <input type="checkbox" id="pinned" th:field="*{pinned}" class="form-check-input">
+            <label class="form-check-label" for="pinned">상단 고정</label>
+        </div>
+
+        <!-- 등록 시에는 hidden -->
+        <input type="hidden" th:if="${method == 'post'}" th:field="*{useYn}" value="Y">
+
+        <!-- 수정 시에만 select 노출 -->
+        <div class="mb-3" th:if="${method == 'patch'}">
+            <label for="useYn" class="form-label">공개 여부</label>
+            <select id="useYn" th:field="*{useYn}" class="form-select">
+                <option value="Y" th:selected="${notice.useYn == 'Y'}">공개</option>
+                <option value="N" th:selected="${notice.useYn == 'N'}">비공개</option>
+            </select>
+        </div>
+
+        <!-- 버튼 -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary">등록</button>
+            <a th:href="@{/notices}" class="btn btn-secondary">취소</a>
+        </div>
+    </form>
+</div>
+
+<!-- Toast UI Editor JS -->
+<script src="https://uicdn.toast.com/editor/3.2.2/toastui-editor-all.min.js"></script>
+<th:block layout:fragment="script">
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const content = document.querySelector('#content')?.value || '';
+
+        const editor = new toastui.Editor({
+            el: document.querySelector('#editor'),
+            height: '400px',
+            initialEditType: 'wysiwyg',
+            previewStyle: 'vertical',
+            initialValue: content
+        });
+
+
+        // 폼 제출 시 hidden textarea에 저장
+        const form = document.getElementById("noticeForm");
+        form.addEventListener("submit", (e) => {
+            e.preventDefault(); // 브라우저 기본 제출 막기
+            document.getElementById("content").value = editor.getHTML();
+            console.log("폼 데이터 최종:", document.getElementById("content").value);
+            form.submit(); // 값 세팅한 뒤 수동으로 전송
+        });
+    });
+</script>
+<script src="https://uicdn.toast.com/editor/3.2.2/toastui-editor-all.min.js"></script>
+</th:block>
+</body>
+</html>

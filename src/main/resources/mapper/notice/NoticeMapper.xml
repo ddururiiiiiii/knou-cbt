@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="knou.cbt.domain.notice.mapper.NoticeMapper">
+
+    <sql id="NoticeFilter">
+        <if test="keyword != null and keyword != ''">
+            AND (n.title LIKE CONCAT('%', #{keyword}, '%')
+            OR n.content LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="useYn != null and useYn != ''">
+            AND n.use_yn = #{useYn}
+        </if>
+    </sql>
+
+    <sql id="BaseSelectColumns">
+        SELECT
+            n.id,
+            n.title,
+            n.content,
+            n.is_pinned,
+            n.use_yn,
+            n.created_at,
+            n.updated_at
+        FROM notice n
+    </sql>
+
+    <resultMap id="NoticeResultMap" type="knou.cbt.domain.notice.model.Notice">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="pinned" column="is_pinned"/>
+        <result property="useYn" column="use_yn"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findAllPaged" resultMap="NoticeResultMap">
+        <include refid="BaseSelectColumns"/>
+        <where>
+            <include refid="NoticeFilter"/>
+        </where>
+        ORDER BY n.is_pinned DESC, n.created_at DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*)
+        FROM notice n
+        <where>
+            <include refid="NoticeFilter"/>
+        </where>
+    </select>
+
+    <select id="findById" parameterType="long" resultMap="NoticeResultMap">
+        <include refid="BaseSelectColumns"/>
+        <where>
+             n.id = #{id}
+        </where>
+    </select>
+
+    <insert id="insert" parameterType="knou.cbt.domain.notice.model.Notice"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO notice (title, content, is_pinned, use_yn)
+        VALUES (#{title}, #{content}, #{pinned}, COALESCE(#{useYn}, 'Y'))
+    </insert>
+
+    <update id="update" parameterType="knou.cbt.domain.notice.model.Notice">
+        UPDATE notice
+        SET title = #{title},
+            content = #{content},
+            is_pinned = #{pinned}
+        <if test="useYn != null">
+            , use_yn = #{useYn}
+        </if>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM notice WHERE id = #{id}
+    </delete>
+
+    <select id="findPinned" resultMap="NoticeResultMap">
+        <include refid="BaseSelectColumns"/>
+        <where>
+            n.is_pinned = true
+        </where>
+        ORDER BY n.created_at DESC
+        LIMIT 3
+    </select>
+
+    <select id="findPinnedAll" resultMap="NoticeResultMap">
+        <include refid="BaseSelectColumns"/>
+        <where>
+            n.is_pinned = true
+        </where>
+        ORDER BY n.created_at DESC
+    </select>
+
+    <select id="findRecentNormal" resultMap="NoticeResultMap">
+        <include refid="BaseSelectColumns"/>
+        <where>
+            n.is_pinned = false
+        </where>
+        ORDER BY n.created_at DESC
+        LIMIT #{limit}
+    </select>
+</mapper>

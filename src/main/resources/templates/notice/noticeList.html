@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/layout}">
+
+<head>
+  <meta charset="UTF-8">
+  <title>공지사항</title>
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="py-5 text-center">
+    <h2>공지사항</h2>
+  </div>
+
+  <div class="mb-3 d-flex justify-content-between">
+    <!-- 검색 폼 -->
+    <form th:action="@{/notices}" method="get" class="d-flex">
+      <input type="text"
+             class="form-control-sm me-2"
+             name="keyword"
+             placeholder="제목/내용 검색"
+             th:value="${keyword}">
+      <button type="submit" class="btn btn-primary btn-sm">검색</button>
+    </form>
+
+    <!-- 등록 버튼 (관리자만 보임) -->
+    <a class="btn btn-success btn-sm"
+       th:href="@{/notices/new}"
+       sec:authorize="hasRole('ADMIN')">등록</a>
+  </div>
+
+  <span style="font-weight: bold;" th:text="|총 ${pagination.totalElements} 건|"></span>
+
+  <div>
+    <table class="table table-bordered table-hover">
+      <colgroup>
+        <col style="width:8%; text-align:center;">   <!-- No -->
+        <col style="width:67%;">                     <!-- 제목 -->
+        <col style="width:25%; text-align:center;">  <!-- 작성일 -->
+      </colgroup>
+      <thead class="table-light">
+      <tr style="text-align: center;">
+        <th>No</th>
+        <th>제목</th>
+        <th>작성일</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="notice, stat : ${pagination.content}">
+        <td th:text="${stat.index + 1}" style="text-align: center;"></td>
+        <td>
+          <a th:href="@{/notices/{id}(id=${notice.id})}"
+             th:text="${notice.title}"></a>
+          <span th:if="${notice.pinned}" class="badge bg-warning text-dark ms-1">공지</span>
+        </td>
+        <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd')}" style="text-align: center;"></td>
+      </tr>
+
+      <!-- 검색 결과 없을 때 -->
+      <tr th:if="${#lists.isEmpty(pagination.content)}">
+        <td colspan="3" class="text-center text-muted">등록된 공지사항이 없습니다.</td>
+        <td sec:authorize="hasRole('ADMIN')"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 페이지네이션 -->
+  <nav aria-label="Page navigation" th:if="${pagination.totalPages > 1}">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" th:classappend="${pagination.currentPage > 1} ? '' : 'disabled'">
+        <a class="page-link"
+           th:href="@{/notices(page=1, keyword=${keyword})}">First</a>
+      </li>
+      <li class="page-item" th:classappend="${pagination.currentPage > 1} ? '' : 'disabled'">
+        <a class="page-link"
+           th:href="@{/notices(page=${pagination.currentPage - 1}, keyword=${keyword})}">Previous</a>
+      </li>
+      <li class="page-item" th:each="i : ${#numbers.sequence(1, pagination.totalPages)}"
+          th:classappend="${i == pagination.currentPage} ? 'active'">
+        <a class="page-link"
+           th:href="@{/notices(page=${i}, keyword=${keyword})}"
+           th:text="${i}"></a>
+      </li>
+      <li class="page-item" th:classappend="${pagination.currentPage < pagination.totalPages} ? '' : 'disabled'">
+        <a class="page-link"
+           th:href="@{/notices(page=${pagination.currentPage + 1}, keyword=${keyword})}">Next</a>
+      </li>
+      <li class="page-item" th:classappend="${pagination.currentPage < pagination.totalPages} ? '' : 'disabled'">
+        <a class="page-link"
+           th:href="@{/notices(page=${pagination.totalPages}, keyword=${keyword})}">Last</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+</body>
+</html>
