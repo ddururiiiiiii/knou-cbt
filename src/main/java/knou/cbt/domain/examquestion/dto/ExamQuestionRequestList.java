@@ -3,10 +3,11 @@ package knou.cbt.domain.examquestion.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 public class ExamQuestionRequestList {
-    private List<ExamQuestionRequest> questions;
+    private List<ExamQuestionRequest> questions = new ArrayList<>();
 }

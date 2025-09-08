@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -57,13 +58,20 @@ public class ExamSolveController {
 
         int score = 0;
         for (int i = 0; i < questions.size(); i++) {
-            String userAnswer = answers.get(i);
+            // answers가 비어있거나 인덱스 범위를 벗어나면 null 처리
+            String userAnswer = (answers != null && i < answers.size()) ? answers.get(i) : null;
             String correctAnswer = questions.get(i).answers();
 
             if (userAnswer != null && userAnswer.equals(correctAnswer)) {
                 score++;
             }
         }
+
+        // 문제 개수와 동일한 길이로 보정 (리뷰 화면에서 IndexError 방지)
+        while (answers.size() < questions.size()) {
+            answers.add(null);
+        }
+
         session.setAttribute("userAnswers", answers);
         model.addAttribute("exam", exam);
         model.addAttribute("questions", questions);
@@ -88,15 +96,26 @@ public class ExamSolveController {
         ExamResponse exam = examService.get(examId);
         List<ExamQuestionResponse> questions = examQuestionService.getQuestions(examId);
 
-        // 세션에서 꺼내기
         List<String> answers = (List<String>) session.getAttribute("userAnswers");
+        if (answers == null) {
+            answers = new ArrayList<>();
+        }
 
         int score = 0;
         for (int i = 0; i < questions.size(); i++) {
-            if (answers != null && answers.get(i).equals(questions.get(i).answers())) {
+            String userAnswer = (i < answers.size()) ? answers.get(i) : null;
+            String correctAnswer = questions.get(i).answers();
+
+            if (userAnswer != null && userAnswer.equals(correctAnswer)) {
                 score++;
             }
         }
+
+        // 리뷰에서도 길이 보정
+        while (answers.size() < questions.size()) {
+            answers.add(null);
+        }
+
         model.addAttribute("exam", exam);
         model.addAttribute("questions", questions);
         model.addAttribute("userAnswers", answers);

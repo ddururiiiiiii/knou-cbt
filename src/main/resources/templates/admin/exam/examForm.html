@@ -69,7 +69,7 @@
                     th:field="*{year}"
                     th:classappend="${#fields.hasErrors('year')} ? ' is-invalid'">
                 <option value="">년도 선택</option>
-                <option th:each="y : ${#numbers.sequence(2001, 2010)}"
+                <option th:each="y : ${#numbers.sequence(2001, 2019)}"
                         th:value="${y}"
                         th:text="${y}">
                 </option>
