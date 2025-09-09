@@ -93,3 +93,4 @@
 - [[개발일지#008] 시험(Exam) 도메인 리빌딩 (리팩토링X)](https://ddururiiiiiii.tistory.com/702)
 - [[개발일지#009] 시험문제/정답(ExamQuestion, ExamQuestionAnswer) 도메인 리빌딩 (리팩토링X)](https://ddururiiiiiii.tistory.com/705)
 - [[개발일지#010] 공지(Notice) 도메인 CRUD + 화면](https://ddururiiiiiii.tistory.com/706)
+- [[개발일지#011] 운영/배포에 대비한 Spring Boot 프로젝트 준비 (1)](https://ddururiiiiiii.tistory.com/707)
