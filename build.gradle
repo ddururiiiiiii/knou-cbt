@@ -47,6 +47,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+	/* jsoup (HTML parser + Sanitizer) */
+	implementation 'org.jsoup:jsoup:1.17.2'
 }
 
 tasks.named('test') {
