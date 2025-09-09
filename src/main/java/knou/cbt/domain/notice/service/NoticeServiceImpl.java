@@ -9,6 +9,8 @@ import knou.cbt.domain.notice.exception.NoticeNotFoundException;
 import knou.cbt.domain.notice.mapper.NoticeMapper;
 import knou.cbt.domain.notice.model.Notice;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,12 +60,18 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public void create(NoticeRequest request) {
+        // HTML 정화
+        String safeContent = Jsoup.clean(request.getContent(), Safelist.relaxed());
+        request.setContent(safeContent);
         Notice notice = NoticeDtoMapper.fromCreateRequest(request);
         mapper.insert(notice);
     }
 
     @Override
     public void update(Long id, NoticeRequest request) {
+        // HTML 정화
+        String safeContent = Jsoup.clean(request.getContent(), Safelist.relaxed());
+        request.setContent(safeContent);
         findNoticeOrThrow(id);
         Notice notice = NoticeDtoMapper.fromUpdateRequest(id, request);
         mapper.update(notice);
