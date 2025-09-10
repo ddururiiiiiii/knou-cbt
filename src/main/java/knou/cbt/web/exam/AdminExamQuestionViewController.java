@@ -132,11 +132,11 @@ public class AdminExamQuestionViewController {
     public String uploadExcel(@PathVariable("examId") Long examId,
                               @RequestParam("file") MultipartFile file,
                               Model model) {
-        boolean withExamId = (examId == 0); // examId=0 이면 "전체 업로드" 모드로 간주
-        List<ExamQuestionRequest> questions = ExcelParser.parse(file, withExamId);
+        // 무조건 엑셀에는 시험ID가 들어있다고 가정
+        List<ExamQuestionRequest> questions = ExcelParser.parse(file, true);
 
-        if (!withExamId) {
-            // 특정 시험 모드일 때는 examId 덮어쓰기
+        // 특정 시험 업로드일 경우 → examId 덮어쓰기
+        if (examId != 0) {
             questions.forEach(q -> q.setExamId(examId));
         }
 

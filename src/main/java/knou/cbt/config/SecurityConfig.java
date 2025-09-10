@@ -25,14 +25,15 @@ public class SecurityConfig {
                         .cacheControl(cache -> cache.disable())
                         // XSS 대응: Content Security Policy 적용
                         // → script는 오직 현재 서버('self')에서만 로드 가능
-                        .contentSecurityPolicy(csp ->
-                                csp.policyDirectives(
-                                        "default-src 'self'; " +
-                                        "script-src 'self' uicdn.toast.com; " +
-                                        "style-src 'self' cdn.jsdelivr.net uicdn.toast.com 'unsafe-inline'; " +
-                                        "font-src 'self' cdn.jsdelivr.net uicdn.toast.com"
-                                )
-                        )
+//                        .contentSecurityPolicy(csp ->
+//                                csp.policyDirectives(
+//                                        "default-src 'self'; " +
+//                                        "script-src 'self' uicdn.toast.com cdn.jsdelivr.net; " +
+//                                        "style-src 'self' cdn.jsdelivr.net uicdn.toast.com 'unsafe-inline'; " +
+//                                        "font-src 'self' cdn.jsdelivr.net uicdn.toast.com; " +
+//                                        "img-src 'self' data:;"
+//                                )
+//                        )
                 )
                 .authorizeHttpRequests(auth -> auth
                         // 누구나 접근 가능

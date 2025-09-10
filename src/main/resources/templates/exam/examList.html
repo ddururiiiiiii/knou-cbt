@@ -174,74 +174,74 @@
 </div>
 </body>
 <th:block layout:fragment="script">
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const deptSelect = document.getElementById("departmentSelect");
-        const subjectSelect = document.getElementById("subjectSelect");
-        const form = document.getElementById("searchForm");
-        const resetBtn = document.getElementById("resetBtn");
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const deptSelect = document.getElementById("departmentSelect");
+            const subjectSelect = document.getElementById("subjectSelect");
+            const form = document.getElementById("searchForm");
+            const resetBtn = document.getElementById("resetBtn");
 
-        // 초기화 버튼 이벤트
-        resetBtn.addEventListener("click", function() {
-            // 모든 select를 초기화
-            deptSelect.value = "";
-            subjectSelect.innerHTML = '<option value="">과목 선택</option>';
-            subjectSelect.disabled = true;
-            form.querySelector("select[name='examType']").value = "";
-            form.querySelector("select[name='year']").value = "";
-            // 검색 조건 초기화 후 폼 submit
-            form.submit();
-        });
-
-        // 페이지 로딩 시 과목 유지 (param 값 있을 때)
-        const selectedDeptId = new URLSearchParams(window.location.search).get("departmentId");
-        const selectedSubjectId = new URLSearchParams(window.location.search).get("subjectId");
-
-        if (selectedDeptId) {
-            fetch(`/api/departments/${selectedDeptId}/subjects`)
-                .then(res => res.json())
-                .then(data => {
-                    let options = '<option value="">과목 선택</option>';
-                    data.forEach(subj => {
-                        const selected = subj.id == selectedSubjectId ? "selected" : "";
-                        options += `<option value="${subj.id}" ${selected}>${subj.subjectName}</option>`;
-                    });
-                    subjectSelect.innerHTML = options;
-                    subjectSelect.disabled = false;
-                });
-        }
-
-        deptSelect.addEventListener("change", function() {
-            const deptId = this.value;
-            if (!deptId) {
+            // 초기화 버튼 이벤트
+            resetBtn.addEventListener("click", function() {
+                // 모든 select를 초기화
+                deptSelect.value = "";
                 subjectSelect.innerHTML = '<option value="">과목 선택</option>';
                 subjectSelect.disabled = true;
+                form.querySelector("select[name='examType']").value = "";
+                form.querySelector("select[name='year']").value = "";
+                // 검색 조건 초기화 후 폼 submit
                 form.submit();
-                return;
+            });
+
+            // 페이지 로딩 시 과목 유지 (param 값 있을 때)
+            const selectedDeptId = new URLSearchParams(window.location.search).get("departmentId");
+            const selectedSubjectId = new URLSearchParams(window.location.search).get("subjectId");
+
+            if (selectedDeptId) {
+                fetch(`/api/departments/${selectedDeptId}/subjects`)
+                    .then(res => res.json())
+                    .then(data => {
+                        let options = '<option value="">과목 선택</option>';
+                        data.forEach(subj => {
+                            const selected = subj.id == selectedSubjectId ? "selected" : "";
+                            options += `<option value="${subj.id}" ${selected}>${subj.subjectName}</option>`;
+                        });
+                        subjectSelect.innerHTML = options;
+                        subjectSelect.disabled = false;
+                    });
             }
 
-            fetch(`/api/departments/${deptId}/subjects`)
-                .then(res => res.json())
-                .then(data => {
-                    let options = '<option value="">과목 선택</option>';
-                    data.forEach(subj => {
-                        options += `<option value="${subj.id}">${subj.subjectName}</option>`;
-                    });
-                    subjectSelect.innerHTML = options;
-                    subjectSelect.disabled = false;
+            deptSelect.addEventListener("change", function() {
+                const deptId = this.value;
+                if (!deptId) {
+                    subjectSelect.innerHTML = '<option value="">과목 선택</option>';
+                    subjectSelect.disabled = true;
                     form.submit();
-                });
-        });
+                    return;
+                }
 
-        subjectSelect.addEventListener("change", function() {
-            form.submit();
-        });
+                fetch(`/api/departments/${deptId}/subjects`)
+                    .then(res => res.json())
+                    .then(data => {
+                        let options = '<option value="">과목 선택</option>';
+                        data.forEach(subj => {
+                            options += `<option value="${subj.id}">${subj.subjectName}</option>`;
+                        });
+                        subjectSelect.innerHTML = options;
+                        subjectSelect.disabled = false;
+                        form.submit();
+                    });
+            });
 
-    });
-    function startExam(url) {
-        alert("시험을 시작합니다.");
-        window.location.href = url;
-    }
-</script>
+            subjectSelect.addEventListener("change", function() {
+                form.submit();
+            });
+
+        });
+        function startExam(url) {
+            alert("시험을 시작합니다.");
+            window.location.href = url;
+        }
+    </script>
 </th:block>
 </html>

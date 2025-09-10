@@ -58,16 +58,21 @@ public class ExamSolveController {
 
         int score = 0;
         for (int i = 0; i < questions.size(); i++) {
-            // answers가 비어있거나 인덱스 범위를 벗어나면 null 처리
             String userAnswer = (answers != null && i < answers.size()) ? answers.get(i) : null;
             String correctAnswer = questions.get(i).answers();
 
-            if (userAnswer != null && userAnswer.equals(correctAnswer)) {
-                score++;
+            if (userAnswer != null && correctAnswer != null) {
+                List<String> correctList = List.of(correctAnswer.split(","))
+                        .stream()
+                        .map(String::trim)
+                        .toList();
+                if (correctList.contains(userAnswer.trim())) {
+                    score++;
+                }
             }
         }
 
-        // 문제 개수와 동일한 길이로 보정 (리뷰 화면에서 IndexError 방지)
+        // 문제 개수와 동일한 길이로 보정
         while (answers.size() < questions.size()) {
             answers.add(null);
         }
@@ -79,6 +84,7 @@ public class ExamSolveController {
 
         return "exam/result";
     }
+
 
 
     /**
@@ -102,16 +108,23 @@ public class ExamSolveController {
         }
 
         int score = 0;
+        List<List<String>> correctAnswersList = new ArrayList<>();
+
         for (int i = 0; i < questions.size(); i++) {
             String userAnswer = (i < answers.size()) ? answers.get(i) : null;
             String correctAnswer = questions.get(i).answers();
 
-            if (userAnswer != null && userAnswer.equals(correctAnswer)) {
+            List<String> correctList = List.of(correctAnswer.split(","))
+                    .stream()
+                    .map(String::trim)
+                    .toList();
+            correctAnswersList.add(correctList);
+
+            if (userAnswer != null && correctList.contains(userAnswer.trim())) {
                 score++;
             }
         }
 
-        // 리뷰에서도 길이 보정
         while (answers.size() < questions.size()) {
             answers.add(null);
         }
@@ -119,9 +132,11 @@ public class ExamSolveController {
         model.addAttribute("exam", exam);
         model.addAttribute("questions", questions);
         model.addAttribute("userAnswers", answers);
+        model.addAttribute("correctAnswersList", correctAnswersList);
         model.addAttribute("score", score);
 
         return "exam/review";
     }
+
 
 }

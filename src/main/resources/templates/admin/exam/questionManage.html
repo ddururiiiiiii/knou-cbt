@@ -6,21 +6,21 @@
 <head>
     <title>시험 문제</title>
 </head>
-    <style>
-        .table td input {
-            width: 100%;
-            border: none;
-            background: transparent;
-        }
-        .table td input:focus {
-            outline: 1px solid #0d6efd;
-            background: #f8f9fa;
-        }
-    </style>
+<style>
+    .table td input {
+        width: 100%;
+        border: none;
+        background: transparent;
+    }
+    .table td input:focus {
+        outline: 1px solid #0d6efd;
+        background: #f8f9fa;
+    }
+</style>
 </head>
 <body>
 <div layout:fragment="content">
-<!--<div class="container" id="content">-->
+    <!--<div class="container" id="content">-->
     <div class="py-4 text-center">
         <h2>시험 문제 관리</h2>
     </div>
@@ -160,43 +160,43 @@
 </div>
 </body>
 <th:block layout:fragment="script">
-<script>
-    window.addEventListener("DOMContentLoaded", () => {
-        updateQuestionCount();
-        initTooltips();
-    });
-    function updateQuestionCount() {
-        const tbody = document.getElementById('questionTable');
-        const count = tbody.rows.length;
-        document.getElementById('countValue').textContent = count;
-    }
-
-    function addRow() {
-        const tbody = document.getElementById('questionTable');
-        const rowCount = tbody.rows.length;
-
-        if (rowCount >= 35) {
-            alert("더 이상 행을 추가할 수 없습니다. (최대 35문제)");
-            return;
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            updateQuestionCount();
+            initTooltips();
+        });
+        function updateQuestionCount() {
+            const tbody = document.getElementById('questionTable');
+            const count = tbody.rows.length;
+            document.getElementById('countValue').textContent = count;
         }
 
-        const row = tbody.insertRow();
+        function addRow() {
+            const tbody = document.getElementById('questionTable');
+            const rowCount = tbody.rows.length;
 
-        // 체크박스 열
-        let cell = row.insertCell();
-        cell.innerHTML = `<input type="checkbox" class="row-check"/>`;
+            if (rowCount >= 35) {
+                alert("더 이상 행을 추가할 수 없습니다. (최대 35문제)");
+                return;
+            }
 
-        // 컬럼 정의
-        const cols = [
-            'questionNo','questionText',
-            'option1','option2','option3','option4',
-            'answers','imagePreview','imageFile'
-        ];
+            const row = tbody.insertRow();
 
-        cols.forEach((col, i) => {
-            cell = row.insertCell();
-            if (col === 'questionNo') {
-                cell.innerHTML = `
+            // 체크박스 열
+            let cell = row.insertCell();
+            cell.innerHTML = `<input type="checkbox" class="row-check"/>`;
+
+            // 컬럼 정의
+            const cols = [
+                'questionNo','questionText',
+                'option1','option2','option3','option4',
+                'answers','imagePreview','imageFile'
+            ];
+
+            cols.forEach((col, i) => {
+                cell = row.insertCell();
+                if (col === 'questionNo') {
+                    cell.innerHTML = `
                 <input type="text"
                        class="form-control"
                        name="questions[${rowCount}].${col}"
@@ -204,140 +204,140 @@
                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
                 <div class="invalid-feedback">숫자만 입력</div>
             `;
-            } else if (col === 'answers') {
-                cell.innerHTML = `
+                } else if (col === 'answers') {
+                    cell.innerHTML = `
                 <input type="text"
                        class="form-control"
                        name="questions[${rowCount}].${col}"
                        oninput="this.value = this.value.replace(/[^0-9,]/g, '')"/>
                 <div class="invalid-feedback">숫자(쉼표 구분)만 입력</div>
             `;
-            } else if (col === 'imagePreview') {
-                // 새 행 추가 시에는 아직 이미지 없음 → "-"
-                cell.innerHTML = `<span class="text-muted">-</span>`;
-            } else if (col === 'imageFile') {
-                cell.innerHTML = `
+                } else if (col === 'imagePreview') {
+                    // 새 행 추가 시에는 아직 이미지 없음 → "-"
+                    cell.innerHTML = `<span class="text-muted">-</span>`;
+                } else if (col === 'imageFile') {
+                    cell.innerHTML = `
                 <input type="file"
                        class="form-control"
                        name="questions[${rowCount}].imageFile"
                        accept="image/*"
                        onchange="previewImage(this, ${rowCount})"/>`;
-            } else {
-                cell.innerHTML = `
+                } else {
+                    cell.innerHTML = `
                 <input type="text"
                        class="form-control"
                        name="questions[${rowCount}].${col}"/>`;
-            }
-        });
-
-        // 삭제 버튼 열
-        cell = row.insertCell();
-        cell.innerHTML = `<button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">삭제</button>`;
-        updateQuestionCount();
-    }
-
-
-    function deleteRow(btn) {
-        const row = btn.closest("tr");
-        row.remove();
-        updateQuestionCount();
-    }
-
-    function deleteSelectedRows() {
-        const checks = document.querySelectorAll('.row-check:checked');
-        if (checks.length === 0) {
-            alert("삭제할 문제를 선택해주세요.");
-            return;
-        }
-        checks.forEach(chk => chk.closest('tr').remove());
-        updateQuestionCount();
-    }
-
-    function sortRows() {
-        const tbody = document.getElementById('questionTable');
-        const rows = Array.from(tbody.rows);
-
-        // 번호 기준으로 오름차순 정렬
-        rows.sort((a, b) => {
-            const aVal = parseInt(a.querySelector("input[name*='.questionNo']").value) || 0;
-            const bVal = parseInt(b.querySelector("input[name*='.questionNo']").value) || 0;
-            return aVal - bVal;
-        });
-
-        // 기존 tbody 비우고 정렬된 순서대로 다시 append
-        tbody.innerHTML = "";
-        rows.forEach((row, index) => {
-            // 번호 input도 순서대로 다시 세팅
-            row.querySelector("input[name*='.questionNo']").value = index + 1;
-            tbody.appendChild(row);
-        });
-        updateQuestionCount();
-    }
-
-    function toggleAll(master) {
-        const checks = document.querySelectorAll('.row-check');
-        checks.forEach(chk => chk.checked = master.checked);
-    }
-
-    function confirmAndUpload() {
-        if (confirm("엑셀 파일을 업로드하면 화면의 기존 데이터는 지워지고 업로드한 데이터로 대체됩니다. 진행하시겠습니까?")) {
-            document.getElementById('excelFile').click();
-        }
-    }
-
-    function validateBeforeSave() {
-        let valid = true;
-        const rows = document.querySelectorAll("#questionTable tr");
-
-        rows.forEach((row, i) => {
-            const noInput = row.querySelector("input[name*='.questionNo']");
-            const answerInput = row.querySelector("input[name*='.answers']");
-
-            // 번호 숫자 체크
-            if (noInput) {
-                if (!/^\d+$/.test(noInput.value.trim())) {
-                    noInput.classList.add("is-invalid");
-                    valid = false;
-                } else {
-                    noInput.classList.remove("is-invalid");
                 }
-            }
+            });
 
-            // 정답 숫자 or 쉼표 구분 숫자 체크
-            if (answerInput) {
-                if (!/^\d+(,\d+)*$/.test(answerInput.value.trim())) {
-                    answerInput.classList.add("is-invalid");
-                    valid = false;
-                } else {
-                    answerInput.classList.remove("is-invalid");
+            // 삭제 버튼 열
+            cell = row.insertCell();
+            cell.innerHTML = `<button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">삭제</button>`;
+            updateQuestionCount();
+        }
+
+
+        function deleteRow(btn) {
+            const row = btn.closest("tr");
+            row.remove();
+            updateQuestionCount();
+        }
+
+        function deleteSelectedRows() {
+            const checks = document.querySelectorAll('.row-check:checked');
+            if (checks.length === 0) {
+                alert("삭제할 문제를 선택해주세요.");
+                return;
+            }
+            checks.forEach(chk => chk.closest('tr').remove());
+            updateQuestionCount();
+        }
+
+        function sortRows() {
+            const tbody = document.getElementById('questionTable');
+            const rows = Array.from(tbody.rows);
+
+            // 번호 기준으로 오름차순 정렬
+            rows.sort((a, b) => {
+                const aVal = parseInt(a.querySelector("input[name*='.questionNo']").value) || 0;
+                const bVal = parseInt(b.querySelector("input[name*='.questionNo']").value) || 0;
+                return aVal - bVal;
+            });
+
+            // 기존 tbody 비우고 정렬된 순서대로 다시 append
+            tbody.innerHTML = "";
+            rows.forEach((row, index) => {
+                // 번호 input도 순서대로 다시 세팅
+                row.querySelector("input[name*='.questionNo']").value = index + 1;
+                tbody.appendChild(row);
+            });
+            updateQuestionCount();
+        }
+
+        function toggleAll(master) {
+            const checks = document.querySelectorAll('.row-check');
+            checks.forEach(chk => chk.checked = master.checked);
+        }
+
+        function confirmAndUpload() {
+            if (confirm("엑셀 파일을 업로드하면 화면의 기존 데이터는 지워지고 업로드한 데이터로 대체됩니다. 진행하시겠습니까?")) {
+                document.getElementById('excelFile').click();
+            }
+        }
+
+        function validateBeforeSave() {
+            let valid = true;
+            const rows = document.querySelectorAll("#questionTable tr");
+
+            rows.forEach((row, i) => {
+                const noInput = row.querySelector("input[name*='.questionNo']");
+                const answerInput = row.querySelector("input[name*='.answers']");
+
+                // 번호 숫자 체크
+                if (noInput) {
+                    if (!/^\d+$/.test(noInput.value.trim())) {
+                        noInput.classList.add("is-invalid");
+                        valid = false;
+                    } else {
+                        noInput.classList.remove("is-invalid");
+                    }
                 }
-            }
-        });
 
-        return valid;
-    }
+                // 정답 숫자 or 쉼표 구분 숫자 체크
+                if (answerInput) {
+                    if (!/^\d+(,\d+)*$/.test(answerInput.value.trim())) {
+                        answerInput.classList.add("is-invalid");
+                        valid = false;
+                    } else {
+                        answerInput.classList.remove("is-invalid");
+                    }
+                }
+            });
 
-    function initTooltips() {
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-            new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-    }
+            return valid;
+        }
 
-    function openPreview(examId) {
-        const url = `/admin/exams/${examId}/preview`;
-        const options = "width=1000,height=800,scrollbars=yes,resizable=yes";
-        window.open(url, "examPreview", options);
-    }
+        function initTooltips() {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
 
-    // 저장 버튼에 validate 추가
-    document.getElementById("questionForm")
-        .addEventListener("submit", function (e) {
-            if (!validateBeforeSave()) {
-                e.preventDefault();
-                alert("입력값을 다시 확인해주세요.");
-            }
-        });
-</script>
+        function openPreview(examId) {
+            const url = `/admin/exams/${examId}/preview`;
+            const options = "width=1000,height=800,scrollbars=yes,resizable=yes";
+            window.open(url, "examPreview", options);
+        }
+
+        // 저장 버튼에 validate 추가
+        document.getElementById("questionForm")
+            .addEventListener("submit", function (e) {
+                if (!validateBeforeSave()) {
+                    e.preventDefault();
+                    alert("입력값을 다시 확인해주세요.");
+                }
+            });
+    </script>
 </th:block>
 </html>

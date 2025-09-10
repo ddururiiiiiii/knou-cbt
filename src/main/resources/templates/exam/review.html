@@ -11,8 +11,21 @@
     .correct { color: green; font-weight: bold; }
     .user { color: black; font-weight: bold; }
     .card { border: 1px solid #ddd; border-radius: 8px; }
-  </style>
-</head>
+  </style><!DOCTYPE html>
+    <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <link href="/css/bootstrap.min.css" rel="stylesheet">
+        <title>문제 다시보기</title>
+        <style>
+            .container { max-width: 1100px; }
+            .option span { cursor: default; } /* 클릭 못하게 */
+            .choice { font-size: 35px; margin: 0 4px; }
+            .correct { color: green; font-weight: bold; }
+            .user { color: black; font-weight: bold; }
+            .card { border: 1px solid #ddd; border-radius: 8px; }
+        </style>
+    </head>
 <body>
 <div class="container mt-4">
   <!-- 시험 정보 -->
@@ -45,12 +58,13 @@
            th:id="|question-${iterStat.index}|">
 
         <!-- ✅ 정답 여부 (문제 위에 표시) -->
-        <div class="mb-2">
-          <span th:if="${userAnswers[iterStat.index]} == ${q.answers()}"
-                class="text-success fw-bold">정답 ✅</span>
-          <span th:if="${userAnswers[iterStat.index]} != ${q.answers()}"
-                class="text-danger fw-bold">오답 ❌</span>
-        </div>
+          <!-- 정답 여부 -->
+          <div class="mb-2">
+              <span th:if="${correctAnswersList[iterStat.index].contains(userAnswers[iterStat.index])}"
+                    class="text-success fw-bold">정답 ✅</span>
+              <span th:if="${!correctAnswersList[iterStat.index].contains(userAnswers[iterStat.index])}"
+                    class="text-danger fw-bold">오답 ❌</span>
+          </div>
 
         <!-- 문제 본문 -->
         <h5 class="fw-bold mb-3"
@@ -58,33 +72,37 @@
 
         <!-- 보기들 -->
         <div class="ms-3" style="font-size: 20px;">
-          <!-- 보기 1 -->
-          <div class="option" th:if="${q.option1 != null}">
-            <span th:text="|${(userAnswers[iterStat.index] == '1') ? '❶' : '①'} ${q.option1}|"
-                  th:classappend="${(q.answers() == '1') ? 'correct' : ((userAnswers[iterStat.index] == '1') ? 'user' : '')}">
-            </span>
-          </div>
+            <!-- 보기 1 -->
+            <div class="option" th:if="${q.option1 != null}">
+                  <span th:text="|${(userAnswers[iterStat.index] == '1') ? '❶' : '①'} ${q.option1}|"
+                        th:classappend="${correctAnswersList[iterStat.index].contains('1') ? 'correct'
+                                        : (userAnswers[iterStat.index] == '1' ? 'user' : '')}">
+                  </span>
+            </div>
 
-          <!-- 보기 2 -->
-          <div class="option" th:if="${q.option2 != null}">
-            <span th:text="|${(userAnswers[iterStat.index] == '2') ? '❷' : '②'} ${q.option2}|"
-                  th:classappend="${(q.answers() == '2') ? 'correct' : ((userAnswers[iterStat.index] == '2') ? 'user' : '')}">
-            </span>
-          </div>
+            <!-- 보기 2 -->
+            <div class="option" th:if="${q.option2 != null}">
+                  <span th:text="|${(userAnswers[iterStat.index] == '2') ? '❷' : '②'} ${q.option2}|"
+                        th:classappend="${correctAnswersList[iterStat.index].contains('2') ? 'correct'
+                                        : (userAnswers[iterStat.index] == '2' ? 'user' : '')}">
+                  </span>
+            </div>
 
-          <!-- 보기 3 -->
-          <div class="option" th:if="${q.option3 != null}">
-            <span th:text="|${(userAnswers[iterStat.index] == '3') ? '❸' : '③'} ${q.option3}|"
-                  th:classappend="${(q.answers() == '3') ? 'correct' : ((userAnswers[iterStat.index] == '3') ? 'user' : '')}">
-            </span>
-          </div>
+            <!-- 보기 3 -->
+            <div class="option" th:if="${q.option3 != null}">
+                  <span th:text="|${(userAnswers[iterStat.index] == '3') ? '❸' : '③'} ${q.option3}|"
+                        th:classappend="${correctAnswersList[iterStat.index].contains('3') ? 'correct'
+                                        : (userAnswers[iterStat.index] == '3' ? 'user' : '')}">
+                  </span>
+            </div>
 
-          <!-- 보기 4 -->
-          <div class="option" th:if="${q.option4 != null}">
-            <span th:text="|${(userAnswers[iterStat.index] == '4') ? '❹' : '④'} ${q.option4}|"
-                  th:classappend="${(q.answers() == '4') ? 'correct' : ((userAnswers[iterStat.index] == '4') ? 'user' : '')}">
-            </span>
-          </div>
+            <!-- 보기 4 -->
+            <div class="option" th:if="${q.option4 != null}">
+                  <span th:text="|${(userAnswers[iterStat.index] == '4') ? '❹' : '④'} ${q.option4}|"
+                        th:classappend="${correctAnswersList[iterStat.index].contains('4') ? 'correct'
+                                        : (userAnswers[iterStat.index] == '4' ? 'user' : '')}">
+                  </span>
+            </div>
 
 
         </div>

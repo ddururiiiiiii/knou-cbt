@@ -12,11 +12,11 @@
             cursor: pointer;
         }
         .choice {
-            font-size: 35px;
+            font-size: 30px;
             display: inline-block;
-            width: 40px;
-            height: 40px;
-            line-height: 40px;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
             text-align: center;
             border-radius: 50%;
             cursor: pointer;
@@ -137,7 +137,7 @@
                         <hr>
                     </div>
                     <div class="symbols" th:id="|ans-${iterStat.index}|">
-                        <span class="question-no" style="font-size: 35px;">[[${iterStat.index + 1}]]. </span>
+                        <span class="question-no" style="font-size: 28px;">[[${iterStat.index + 1}]]. </span>
                         <span class="choice" th:onclick="|selectAnswer(${iterStat.index},1)|">①</span>
                         <span class="choice" th:onclick="|selectAnswer(${iterStat.index},2)|">②</span>
                         <span class="choice" th:onclick="|selectAnswer(${iterStat.index},3)|">③</span>

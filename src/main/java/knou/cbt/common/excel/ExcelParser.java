@@ -26,17 +26,17 @@ public class ExcelParser {
                 Row row = rows.next();
                 if (rowNum++ == 0) continue; // 헤더 skip
 
-                Long examId = null;
                 int colIdx = 0;
-
-                if (withExamId) {
-                    examId = (long) row.getCell(colIdx++).getNumericCellValue();
-                }
-
                 ExamQuestionRequest q = new ExamQuestionRequest();
+
+                // 시험 ID 컬럼이 있을 경우
                 if (withExamId) {
                     q.setExamId((long) row.getCell(colIdx++).getNumericCellValue());
+                } else {
+                    colIdx++; // 시험ID 컬럼 건너뛰기
                 }
+
+
                 q.setQuestionNo((int) row.getCell(colIdx++).getNumericCellValue());
                 q.setQuestionText(getCellValue(row.getCell(colIdx++)));
                 q.setOption1(getCellValue(row.getCell(colIdx++)));
@@ -54,12 +54,18 @@ public class ExcelParser {
         return questions;
     }
 
-
     private static String getCellValue(Cell cell) {
         if (cell == null) return "";
         return switch (cell.getCellType()) {
             case STRING -> cell.getStringCellValue();
-            case NUMERIC -> String.valueOf((int) cell.getNumericCellValue());
+            case NUMERIC -> {
+                double val = cell.getNumericCellValue();
+                if (val == Math.floor(val)) {
+                    yield String.valueOf((long) val); // 정수면 소수점 제거
+                } else {
+                    yield String.valueOf(val);
+                }
+            }
             case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
             default -> "";
         };
