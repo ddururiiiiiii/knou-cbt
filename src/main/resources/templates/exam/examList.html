@@ -55,7 +55,7 @@
                 <select class="form-select form-select-sm me-2" name="year"
                         onchange="document.getElementById('searchForm').submit()">
                     <option value="">년도 선택</option>
-                    <option th:each="y : ${#numbers.sequence(2001, 2010)}"
+                    <option th:each="y : ${#numbers.sequence(2001, 2019)}"
                             th:value="${y}"
                             th:text="${y}"
                             th:selected="${year != null and year == y}">
