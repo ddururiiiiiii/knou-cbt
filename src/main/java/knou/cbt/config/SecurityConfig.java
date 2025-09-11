@@ -44,6 +44,7 @@ public class SecurityConfig {
                         // 관리자 전용
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/notices/new", "/notices/*/edit", "/notices/*/delete").hasRole("ADMIN")
+                        .requestMatchers("/health").permitAll()
                         // 나머지는 인증 필요
                         .anyRequest().authenticated()
                 )

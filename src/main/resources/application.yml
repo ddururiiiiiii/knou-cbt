@@ -2,9 +2,6 @@ spring:
   application:
     name: knou-cbt
 
-thymeleaf:
-  cache: false
-
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml
   configuration:
@@ -18,3 +15,9 @@ servlet:
 file:
   notice-dir: ${user.dir}/uploads/notice
   exam-dir: ${user.dir}/uploads/questions
+
+# 마이그레이션 도구
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration

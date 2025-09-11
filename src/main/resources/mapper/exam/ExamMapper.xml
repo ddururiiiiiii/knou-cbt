@@ -60,7 +60,7 @@
             <include refid="ExamFilter"/>
         </where>
         ORDER BY e.id
-        LIMIT #{offset}, #{limit}
+        LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <select id="countAll" resultType="int">

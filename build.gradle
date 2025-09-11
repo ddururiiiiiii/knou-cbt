@@ -50,6 +50,18 @@ dependencies {
 
 	/* jsoup (HTML parser + Sanitizer) */
 	implementation 'org.jsoup:jsoup:1.17.2'
+
+    /* DB (postgresql) */
+    implementation 'org.postgresql:postgresql:42.7.3'
+
+    /* DB (flywaydb) 마이그레이션 도구 */
+    implementation 'org.flywaydb:flyway-core:10.15.0'
+    implementation 'org.flywaydb:flyway-database-postgresql:10.15.0'
+
+    /* Boot BOM에서 끌려오던 Flyway 9.x가 완전히 빠지고, 직접 지정한 10.15.0만 적용 */
+    implementation('org.springframework.boot:spring-boot-starter-jdbc') {
+        exclude group: 'org.flywaydb', module: 'flyway-core'
+    }
 }
 
 tasks.named('test') {

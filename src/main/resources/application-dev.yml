@@ -1,6 +1,15 @@
+# dev
+
 spring:
   datasource:
-    url: jdbc:log4jdbc:mysql://localhost:3306/KNOU_CBT?serverTimezone=UTC&characterEncoding=UTF-8
-    username: root
-    password: blossom913@
-    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME}
+
+  thymeleaf:
+    cache: false   # 개발할 땐 캐시 끄기 (바로바로 반영)
+
+    logging:
+      level:
+        root: ${LOGGING_LEVEL_ROOT:DEBUG}

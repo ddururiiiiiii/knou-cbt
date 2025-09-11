@@ -53,7 +53,7 @@
             <include refid="SubjectFilter"/>
         </where>
         ORDER BY s.id
-        LIMIT #{offset}, #{limit}
+        LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <select id="countAll" resultType="int">

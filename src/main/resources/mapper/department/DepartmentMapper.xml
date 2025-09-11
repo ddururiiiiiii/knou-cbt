@@ -45,7 +45,7 @@
             <include refid="DepartmentFilter"/>
         </where>
         ORDER BY d.id
-        LIMIT #{offset}, #{limit}
+        LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <select id="countAll" resultType="int">

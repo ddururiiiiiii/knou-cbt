@@ -42,7 +42,7 @@
             <include refid="NoticeFilter"/>
         </where>
         ORDER BY n.is_pinned DESC, n.created_at DESC
-        LIMIT #{offset}, #{limit}
+        LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <select id="countAll" resultType="int">
