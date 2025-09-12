@@ -8,6 +8,7 @@ import knou.cbt.domain.examquestion.dto.ExamQuestionRequest;
 import knou.cbt.domain.examquestion.dto.ExamQuestionRequestList;
 import knou.cbt.domain.examquestion.dto.ExamQuestionResponse;
 import knou.cbt.domain.examquestion.service.ExamQuestionService;
+import knou.cbt.domain.examquestion.service.ExamQuestionStorageService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -32,10 +33,8 @@ import java.util.UUID;
 public class AdminExamQuestionViewController {
 
     private final ExamQuestionService examQuestionService;
+    private final ExamQuestionStorageService examQuestionStorageService;
     private final ExamService examService;
-
-    @Value("${file.exam-dir}")
-    private String examUploadDir;
 
     /**
      * 특정 시험 문제 조회 및 수정 화면
@@ -65,28 +64,19 @@ public class AdminExamQuestionViewController {
     public String saveAll(@PathVariable("examId") Long examId,
                           @ModelAttribute ExamQuestionRequestList wrapper,
                           BindingResult bindingResult,
-                            RedirectAttributes redirectAttributes) {
+                          RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("errorMessage", "입력값이 올바르지 않습니다.");
             return "redirect:/admin/exams/{examId}/questions";
         }
 
-        // === 파일 저장 처리 ===
         for (ExamQuestionRequest req : wrapper.getQuestions()) {
             MultipartFile file = req.getImageFile();
             if (file != null && !file.isEmpty()) {
                 try {
-                    String uploadDir = examUploadDir + "/" + examId;
-                    File dir = new File(uploadDir);
-                    if (!dir.exists()) dir.mkdirs();
-
-                    String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                    File dest = new File(dir, filename);
-                    file.transferTo(dest);
-
-                    req.setImageUrl("/uploads/questions/" + examId + "/" + filename);
-
+                    String url = examQuestionStorageService.uploadQuestionImage(examId, file);
+                    req.setImageUrl(url);
                 } catch (IOException e) {
                     redirectAttributes.addFlashAttribute("errorMessage", "파일 업로드 중 오류가 발생했습니다.");
                     return "redirect:/admin/exams/{examId}/questions";
@@ -94,11 +84,11 @@ public class AdminExamQuestionViewController {
             }
         }
 
-
         examQuestionService.saveAll(examId, wrapper.getQuestions());
         redirectAttributes.addFlashAttribute("saveSuccess", true);
         return "redirect:/admin/exams/{examId}/questions";
     }
+
 
     /**
      * 엑셀 양식 다운로드

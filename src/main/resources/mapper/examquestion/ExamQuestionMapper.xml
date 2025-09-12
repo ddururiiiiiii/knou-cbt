@@ -28,7 +28,7 @@
                q.option3,
                q.option4,
                q.image_url,
-               GROUP_CONCAT(a.option_no ORDER BY a.option_no ASC) AS answers
+               STRING_AGG(a.option_no::text, ',' ORDER BY a.option_no ASC) AS answers
         FROM exam_question q
                  LEFT JOIN exam_question_answer a ON q.id = a.question_id
         WHERE q.exam_id = #{examId}

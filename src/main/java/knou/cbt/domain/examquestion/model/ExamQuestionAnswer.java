@@ -12,9 +12,9 @@ public class ExamQuestionAnswer {
 
     private Long id;
     private Long questionId;
-    private String optionNo; // “2” or “2,3”
+    private Integer optionNo; // String → Integer
 
-    public static ExamQuestionAnswer create(Long id, Long questionId, String answer) {
+    public static ExamQuestionAnswer create(Long id, Long questionId, Integer answer) {
         return new ExamQuestionAnswer(id, questionId, answer);
     }
 }

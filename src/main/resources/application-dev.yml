@@ -10,6 +10,13 @@ spring:
   thymeleaf:
     cache: false   # 개발할 땐 캐시 끄기 (바로바로 반영)
 
-    logging:
-      level:
-        root: ${LOGGING_LEVEL_ROOT:DEBUG}
+logging:
+  level:
+    root: ${LOGGING_LEVEL_ROOT:DEBUG}
+
+supabase:
+  url: ${SUPABASE_URL}
+  key: ${SUPABASE_KEY}
+  bucket:
+    notice: notice
+    exam: exam

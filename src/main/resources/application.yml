@@ -12,11 +12,7 @@ servlet:
     max-file-size: 20MB
     max-request-size: 20MB
 
-file:
-  notice-dir: ${user.dir}/uploads/notice
-  exam-dir: ${user.dir}/uploads/questions
-
-# 마이그레이션 도구
+# migration
   flyway:
     enabled: true
     baseline-on-migrate: true

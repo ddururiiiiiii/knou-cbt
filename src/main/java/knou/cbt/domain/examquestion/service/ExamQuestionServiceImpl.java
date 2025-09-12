@@ -44,7 +44,8 @@ public class ExamQuestionServiceImpl implements ExamQuestionService {
 
             if (req.getAnswers() != null) {
                 for (String answer : req.getAnswers().split(",")) {
-                    ExamQuestionAnswer ans = ExamQuestionAnswer.create(null, question.getId(), answer.trim());
+                    Integer optionNo = Integer.parseInt(answer.trim()); // 문자열 → 숫자 변환
+                    ExamQuestionAnswer ans = ExamQuestionAnswer.create(null, question.getId(), optionNo);
                     mapper.insertAnswer(ans);
                 }
             }

@@ -11,6 +11,13 @@ spring:
   thymeleaf:
     cache: true    # 운영에서는 캐시 켜기 (성능 ↑)
 
-    logging:
-      level:
-        root: ${LOGGING_LEVEL_ROOT:INFO}
+logging:
+  level:
+    root: ${LOGGING_LEVEL_ROOT:INFO}
+
+supabase:
+  url: ${SUPABASE_URL}
+  key: ${SUPABASE_KEY}
+  bucket:
+    notice: notice
+    exam: exam
