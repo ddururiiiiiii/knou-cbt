@@ -94,3 +94,8 @@
 - [[개발일지#009] 시험문제/정답(ExamQuestion, ExamQuestionAnswer) 도메인 리빌딩 (리팩토링X)](https://ddururiiiiiii.tistory.com/705)
 - [[개발일지#010] 공지(Notice) 도메인 CRUD + 화면](https://ddururiiiiiii.tistory.com/706)
 - [[개발일지#011] 운영/배포에 대비한 Spring Boot 프로젝트 준비 (1)](https://ddururiiiiiii.tistory.com/707)
+- [[개발일지#012] 운영/배포를 위한 인프라 설계](https://ddururiiiiiii.tistory.com/708)
+- [[개발일지#013] Supabase PostgreSQL 데이터베이스 연결하기 (가입부터 생성, 연결까지)](https://ddururiiiiiii.tistory.com/709)
+- [[개발일지#014] Render + Docker 배포 하기 (가입부터 배포까지)](https://ddururiiiiiii.tistory.com/710)
+- [[개발일지#015] 이미지 첨부 스토리지 연결하기](https://ddururiiiiiii.tistory.com/711)
+- [[개발일지#016] 데이터베이스 마이그레이션 하기](https://ddururiiiiiii.tistory.com/712)
