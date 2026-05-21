@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/knou_cbt_local
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+  thymeleaf:
+    cache: false
+
+logging:
+  level:
+    root: DEBUG
+    knou.cbt: DEBUG
+
+supabase:
+  url: http://localhost:54321
+  key: local-dev-key
+  bucket:
+    notice: notice
+    exam: exam
+
+sentry:
+  dsn: ""

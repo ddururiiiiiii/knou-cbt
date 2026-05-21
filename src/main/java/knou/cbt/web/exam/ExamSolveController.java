@@ -73,11 +73,12 @@ public class ExamSolveController {
         }
 
         // 문제 개수와 동일한 길이로 보정
+        if (answers == null) answers = new ArrayList<>();
         while (answers.size() < questions.size()) {
             answers.add(null);
         }
 
-        session.setAttribute("userAnswers", answers);
+        session.setAttribute("userAnswers_" + examId, answers);
         model.addAttribute("exam", exam);
         model.addAttribute("questions", questions);
         model.addAttribute("score", score);
@@ -102,7 +103,7 @@ public class ExamSolveController {
         ExamResponse exam = examService.get(examId);
         List<ExamQuestionResponse> questions = examQuestionService.getQuestions(examId);
 
-        List<String> answers = (List<String>) session.getAttribute("userAnswers");
+        List<String> answers = (List<String>) session.getAttribute("userAnswers_" + examId);
         if (answers == null) {
             answers = new ArrayList<>();
         }

@@ -24,21 +24,21 @@ public class SecurityConfig {
                         // 캐시 비활성화 (민감 페이지 캐싱 방지)
                         .cacheControl(cache -> cache.disable())
                         // XSS 대응: Content Security Policy 적용
-                        // → script는 오직 현재 서버('self')에서만 로드 가능
-//                        .contentSecurityPolicy(csp ->
-//                                csp.policyDirectives(
-//                                        "default-src 'self'; " +
-//                                        "script-src 'self' uicdn.toast.com cdn.jsdelivr.net; " +
-//                                        "style-src 'self' cdn.jsdelivr.net uicdn.toast.com 'unsafe-inline'; " +
-//                                        "font-src 'self' cdn.jsdelivr.net uicdn.toast.com; " +
-//                                        "img-src 'self' data:;"
-//                                )
-//                        )
+                        .contentSecurityPolicy(csp ->
+                                csp.policyDirectives(
+                                        "default-src 'self'; " +
+                                        "script-src 'self' uicdn.toast.com cdn.jsdelivr.net www.googletagmanager.com; " +
+                                        "style-src 'self' cdn.jsdelivr.net uicdn.toast.com 'unsafe-inline'; " +
+                                        "font-src 'self' cdn.jsdelivr.net uicdn.toast.com; " +
+                                        "img-src 'self' data: www.google-analytics.com; " +
+                                        "connect-src 'self' www.google-analytics.com;"
+                                )
+                        )
                 )
                 .authorizeHttpRequests(auth -> auth
                         // 누구나 접근 가능
                         .requestMatchers("/", "/exams/**", "/requests/**", "/notices/**", "/api/**",
-                                "/css/**", "/js/**", "/error/**", "/uploads/**").permitAll()
+                                "/css/**", "/js/**", "/error/**", "/uploads/**", "/privacy").permitAll()
                         // 로그인 화면은 누구나 접근 가능
                         .requestMatchers("/admin/login", "/login").permitAll()
                         // 관리자 전용

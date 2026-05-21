@@ -14,6 +14,7 @@ public class ExcelParser {
 
     public static List<ExamQuestionRequest> parse(MultipartFile file, boolean withExamId) {
         List<ExamQuestionRequest> questions = new ArrayList<>();
+        int rowNum = 0;
 
         try (InputStream is = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(is)) {
@@ -21,7 +22,7 @@ public class ExcelParser {
             Sheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rows = sheet.iterator();
 
-            int rowNum = 0;
+
             while (rows.hasNext()) {
                 Row row = rows.next();
                 if (rowNum++ == 0) continue; // 헤더 skip
@@ -48,7 +49,7 @@ public class ExcelParser {
                 questions.add(q);
             }
         } catch (Exception e) {
-            throw new RuntimeException("엑셀 파싱 실패", e);
+            throw new RuntimeException("엑셀 파싱 실패 (행: " + rowNum + ")", e);
         }
 
         return questions;

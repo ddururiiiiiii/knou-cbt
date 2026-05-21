@@ -8,6 +8,17 @@
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <title layout:title-pattern="$CONTENT_TITLE : KNOU - CBT">KNOU - CBT</title>
 </head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2J0NPPN1MD"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-2J0NPPN1MD');
+</script>
+
 <body class="d-flex flex-column min-vh-100">
 
 <!-- 공통 네비게이션 -->
@@ -62,6 +73,9 @@
 
         <p class="mt-2 mb-0" style="font-size: 0.9em;">
             🎓 이 서비스는 한국방송통신대학교 학생들을 위한 <strong>비공식 전자 기출문제집</strong>입니다. 📘
+        </p>
+        <p class="mt-2 mb-0" style="font-size: 0.8em;">
+            <a th:href="@{/privacy}" class="text-decoration-none text-secondary">개인정보처리방침</a>
         </p>
     </div>
 </footer>

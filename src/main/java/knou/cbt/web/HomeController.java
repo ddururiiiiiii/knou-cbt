@@ -20,4 +20,9 @@ public class HomeController {
         model.addAttribute("recentNotices", noticeService.getHomeNotices());
         return "index";
     }
+
+    @GetMapping("/privacy")
+    public String privacy() {
+        return "privacy";
+    }
 }
