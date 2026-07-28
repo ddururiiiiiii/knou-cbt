@@ -12,11 +12,13 @@ import knou.cbt.domain.subject.exception.SubjectDeleteNotAllowedException;
 import knou.cbt.domain.subject.exception.SubjectNotFoundException;
 import knou.cbt.domain.subject.mapper.SubjectMapper;
 import knou.cbt.domain.subject.model.Subject;
+import knou.cbt.domain.subject.model.SubjectCategory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -36,21 +38,31 @@ public class SubjectServiceImpl implements SubjectService{
     public PageResponse<SubjectResponse> listPage(
             String keyword,
             String useYn,
+            Long departmentId,
+            Integer grade,
+            SubjectCategory subjectCategory,
             PageRequest pageRequest
     ) {
-        List<SubjectResponse> content = mapper.findAllWithDepartment(
-                        pageRequest.offset(),
-                        pageRequest.sizeOrDefault(),
-                        keyword,
-                        useYn
-                ).stream()
-                .map(dto -> {
-                    boolean hasExams = examMapper.existsBySubjectId(dto.getId());
-                    return SubjectResponse.of(dto, hasExams);
-                })
+        List<SubjectDto> subjects = mapper.findAllWithDepartment(
+                pageRequest.offset(),
+                pageRequest.sizeOrDefault(),
+                keyword,
+                useYn,
+                departmentId,
+                grade,
+                subjectCategory
+        );
+
+        List<Long> subjectIds = subjects.stream().map(SubjectDto::getId).toList();
+        Set<Long> subjectIdsWithExams = subjectIds.isEmpty()
+                ? Set.of()
+                : examMapper.findSubjectIdsWithExams(subjectIds);
+
+        List<SubjectResponse> content = subjects.stream()
+                .map(dto -> SubjectResponse.of(dto, subjectIdsWithExams.contains(dto.getId())))
                 .toList();
 
-        int total = mapper.countAll(keyword, useYn);
+        int total = mapper.countAll(keyword, useYn, departmentId, grade, subjectCategory);
         int totalPages = (int) Math.ceil((double) total / pageRequest.sizeOrDefault());
 
         return new PageResponse<>(
@@ -66,7 +78,13 @@ public class SubjectServiceImpl implements SubjectService{
     @Override
     @Transactional(readOnly = true)
     public int count(String keyword, String useYn) {
-        return mapper.countAll(keyword, useYn);
+        return mapper.countAll(keyword, useYn, null, null, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SubjectDto> findTopSubjectsByExamCount(int limit) {
+        return mapper.findTopSubjectsByExamCount(limit);
     }
 
     @Override
@@ -77,6 +95,16 @@ public class SubjectServiceImpl implements SubjectService{
     @Override
     public List<SubjectDto> findByDepartmentId(Long deptId) {
         return mapper.findByDepartmentId(deptId);
+    }
+
+    @Override
+    public List<Integer> findGradesByDepartment(Long departmentId) {
+        return mapper.findGradesByDepartment(departmentId);
+    }
+
+    @Override
+    public List<SubjectCategory> findCategoriesByDepartmentAndGrade(Long departmentId, Integer grade) {
+        return mapper.findCategoriesByDepartmentAndGrade(departmentId, grade);
     }
 
     @Override

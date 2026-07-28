@@ -1,0 +1,482 @@
+/* ==========================================================================
+   KNOU-CBT 디자인 시스템 — 모던 SaaS 스타일
+   Bootstrap 5.3.3 위에 얹는 커스터마이징 레이어. 포인트 컬러 하나(인디고),
+   나머지는 중성 회색 톤 + 카드/그림자 위주.
+   ========================================================================== */
+
+:root {
+    --kcbt-accent: #4f46e5;       /* 포인트 컬러 (인디고) */
+    --kcbt-accent-dark: #4338ca;
+    --kcbt-accent-soft: #eef2ff;  /* 포인트 컬러의 아주 옅은 배경톤 */
+
+    --kcbt-accent2: #312e81;      /* 보조 포인트 컬러 (인디고 계열의 짙은 남색) — 부차적 CTA 구분용 */
+    --kcbt-accent2-dark: #232066;
+
+    --kcbt-ink: #1e2230;
+    --kcbt-muted: #6b7280;
+    --kcbt-bg: #f7f7fb;           /* 페이지 배경 (중성 회색, 파란기 없음) */
+    --kcbt-surface: #ffffff;
+    --kcbt-border: #e5e7eb;
+
+    --kcbt-radius: 0.875rem;
+    --kcbt-radius-sm: 0.5rem;
+    --kcbt-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 12px rgba(16, 24, 40, 0.06);
+    --kcbt-shadow-hover: 0 2px 4px rgba(16, 24, 40, 0.06), 0 12px 24px rgba(16, 24, 40, 0.10);
+
+    --bs-font-sans-serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui,
+        'Malgun Gothic', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    font-family: var(--bs-font-sans-serif);
+    color: var(--kcbt-ink);
+    background-color: var(--kcbt-bg);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--bs-font-sans-serif);
+    letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   네비게이션 — 어두운 남색 대신 잉크 톤 하나로 통일
+   ========================================================================== */
+.navbar.bg-dark {
+    background-color: var(--kcbt-ink) !important;
+}
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+}
+.navbar {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.navbar .text-info {
+    color: #a5b4fc !important; /* 포인트 컬러의 밝은 변형 (다크 네비 위에서 보이도록) */
+}
+.navbar-nav .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #c7c9de;
+    font-weight: 500;
+    transition: color 0.15s ease;
+}
+.navbar-nav .nav-link:hover {
+    color: #a5b4fc;
+}
+.navbar-nav .nav-link.nav-link-admin {
+    color: #a5b4fc;
+    font-weight: 700;
+}
+.navbar-nav .nav-link.nav-link-admin:hover {
+    color: #ffffff;
+}
+.nav-logout-btn {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #dfe0ee;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.nav-logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+}
+.admin-mode-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background-color: rgba(165, 180, 252, 0.14);
+    color: #a5b4fc;
+    border: 1px solid rgba(165, 180, 252, 0.3);
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   푸터 — 네비와 같은 잉크 톤으로 통일
+   ========================================================================== */
+.site-footer {
+    background-color: var(--kcbt-ink);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.footer-brand {
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: -0.02em;
+    color: #fff;
+}
+.footer-brand .footer-dot {
+    color: #a5b4fc;
+}
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.footer-links a {
+    color: #a8abc0;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: color 0.15s ease;
+}
+.footer-links a:hover {
+    color: #a5b4fc;
+}
+.footer-note {
+    font-size: 0.8rem;
+    color: #6b6f8a;
+}
+
+/* ==========================================================================
+   버튼 — 포인트 컬러 하나로 통일
+   ========================================================================== */
+.btn-primary {
+    background-color: var(--kcbt-accent);
+    border-color: var(--kcbt-accent);
+}
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--kcbt-accent-dark);
+    border-color: var(--kcbt-accent-dark);
+}
+.btn-outline-primary {
+    color: var(--kcbt-accent);
+    border-color: var(--kcbt-accent);
+}
+.btn-outline-primary:hover {
+    background-color: var(--kcbt-accent);
+    border-color: var(--kcbt-accent);
+}
+.btn {
+    border-radius: var(--kcbt-radius-sm);
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   카드 — 은은한 그림자, 호버 시 살짝 떠오름
+   ========================================================================== */
+.card {
+    border: 1px solid var(--kcbt-border);
+    border-radius: var(--kcbt-radius);
+    box-shadow: var(--kcbt-shadow);
+    background-color: var(--kcbt-surface);
+}
+
+/* ==========================================================================
+   테이블
+   ========================================================================== */
+.table {
+    background-color: var(--kcbt-surface);
+}
+.table thead.table-light th {
+    background-color: var(--kcbt-bg);
+    color: var(--kcbt-muted);
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-bottom-width: 1px;
+}
+
+/* ==========================================================================
+   폼 컨트롤
+   ========================================================================== */
+.form-control, .form-select {
+    border-radius: var(--kcbt-radius-sm);
+}
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--kcbt-accent);
+    box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.15);
+}
+
+/* 페이지네이션도 포인트 컬러로 */
+.page-item.active .page-link {
+    background-color: var(--kcbt-accent);
+    border-color: var(--kcbt-accent);
+}
+.page-link {
+    color: var(--kcbt-accent);
+}
+
+/* badge (공지 등) */
+.badge.bg-warning {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+}
+.notice-pin-badge {
+    background-color: var(--kcbt-accent-soft) !important;
+    color: var(--kcbt-accent-dark) !important;
+    border: 1px solid #e0e7ff;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.notice-row-pinned {
+    background-color: var(--kcbt-accent-soft);
+}
+
+/* ==========================================================================
+   홈 화면 (index.html) — 그라데이션 대신 옅은 포인트컬러 배경의 플랫한 카드
+   ========================================================================== */
+
+.hero {
+    background-color: var(--kcbt-accent-soft);
+    color: var(--kcbt-ink);
+    padding: 2.25rem 2rem;
+    border-radius: var(--kcbt-radius);
+    margin-bottom: 1.5rem;
+    border: 1px solid #e0e7ff;
+}
+.hero-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--kcbt-accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.7rem;
+    margin: 0 auto 0.75rem;
+    box-shadow: 0 10px 24px rgba(79, 70, 229, 0.28);
+}
+.hero h1 {
+    font-weight: 800;
+    font-size: 2.4rem;
+    letter-spacing: -0.02em;
+    color: var(--kcbt-accent-dark);
+}
+.hero h1 .hero-dot {
+    color: var(--kcbt-accent);
+}
+.hero p {
+    color: var(--kcbt-muted);
+}
+.hero .text-light {
+    color: var(--kcbt-muted) !important;
+}
+
+.shortcut-btn {
+    padding: 1rem;
+    font-weight: 600;
+    border-radius: var(--kcbt-radius);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.shortcut-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--kcbt-shadow-hover);
+}
+.shortcut-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-height: 88px;
+}
+.shortcut-cta-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+.shortcut-cta-sub {
+    font-size: 0.8rem;
+    font-weight: 400;
+    opacity: 0.85;
+}
+.shortcut-cta-notice {
+    background-color: var(--kcbt-accent2);
+    border-color: var(--kcbt-accent2);
+    color: #fff;
+}
+.shortcut-cta-notice:hover {
+    background-color: var(--kcbt-accent2-dark);
+    border-color: var(--kcbt-accent2-dark);
+    color: #fff;
+}
+
+.dept-quicklist {
+    background-color: var(--kcbt-surface);
+    border: 1px solid var(--kcbt-border);
+    border-radius: var(--kcbt-radius);
+    box-shadow: var(--kcbt-shadow);
+    padding: 1.5rem;
+    min-height: 96px;
+    display: flex;
+    flex-direction: column;
+}
+.dept-quicklist-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--kcbt-ink);
+    margin-bottom: 0.5rem;
+}
+.dept-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 0.5rem;
+    flex: 1 1 auto;
+    overflow-y: auto;
+}
+.dept-chip {
+    background-color: var(--kcbt-accent-soft);
+    color: var(--kcbt-accent-dark);
+    border-radius: 999px;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.15s ease;
+}
+.dept-chip:hover {
+    background-color: var(--kcbt-accent);
+    color: #fff;
+}
+
+.stat-badge {
+    background-color: var(--kcbt-surface);
+    border: 1px solid #e0e7ff;
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+    color: var(--kcbt-muted);
+}
+.stat-badge i {
+    color: var(--kcbt-accent);
+    margin-right: 0.3rem;
+}
+.stat-badge strong {
+    color: var(--kcbt-ink);
+    font-weight: 700;
+}
+
+.popular-subject-card {
+    background-color: var(--kcbt-surface);
+    border: 1px solid var(--kcbt-border);
+    border-radius: var(--kcbt-radius);
+    box-shadow: var(--kcbt-shadow);
+    padding: 1rem;
+    color: var(--kcbt-ink);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.popular-subject-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--kcbt-shadow-hover);
+}
+.popular-subject-count {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--kcbt-accent);
+}
+
+.notice-card {
+    background-color: var(--kcbt-surface);
+    border: 1px solid var(--kcbt-border);
+    border-radius: var(--kcbt-radius);
+    box-shadow: var(--kcbt-shadow);
+}
+.notice-card h4 {
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   시험 결과 (result.html) — 점수 원형 링
+   ========================================================================== */
+.score-ring {
+    width: 168px;
+    height: 168px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.score-ring-inner {
+    width: 138px;
+    height: 138px;
+    border-radius: 50%;
+    background: var(--kcbt-surface);
+    box-shadow: inset 0 0 0 1px var(--kcbt-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.score-ring-value {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: var(--kcbt-ink);
+    line-height: 1;
+}
+.score-ring-total {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--kcbt-muted);
+}
+.score-ring-label {
+    font-size: 0.8rem;
+    color: var(--kcbt-muted);
+    margin-top: 0.3rem;
+}
+
+/* ==========================================================================
+   공지 상세 (noticeDetail.html)
+   ========================================================================== */
+
+.notice-content {
+    background-color: var(--kcbt-surface);
+    border-color: var(--kcbt-border) !important;
+    border-radius: var(--kcbt-radius-sm);
+}
+.notice-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ==========================================================================
+   문제 관리 (questionManage.html)
+   ========================================================================== */
+
+.question-table td input {
+    width: 100%;
+    border: none;
+    background: transparent;
+}
+.question-table td input:focus {
+    outline: 1px solid var(--kcbt-accent);
+    background: var(--kcbt-bg);
+}
+.question-table .option-file-input {
+    display: none;
+}
+.question-table tr.row-option-image .option-text-input {
+    display: none;
+}
+.question-table tr.row-option-image .option-file-input {
+    display: block;
+}
+
+/* ==========================================================================
+   시험 풀기 (solve.html) — 남은시간 1분 이하 경고 깜빡임
+   ========================================================================== */
+@keyframes kcbt-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+.blink {
+    animation: kcbt-blink 1s step-start infinite;
+}

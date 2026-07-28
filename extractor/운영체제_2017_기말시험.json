@@ -1,0 +1,235 @@
+{
+  "department": "컴퓨터과학과",
+  "subject": "운영체제",
+  "subject_category": "전공필수",
+  "grade": 3,
+  "year": 2017,
+  "exam_type": "기말시험",
+  "questions": [
+    {
+      "question_no": 1,
+      "question_text": "병행성 문제와 거리가 먼 것은?",
+      "option1": "공유자원 점유 문제",
+      "option2": "동기화 문제",
+      "option3": "통신 문제",
+      "option4": "감사 문제",
+      "answer": 4
+    },
+    {
+      "question_no": 2,
+      "question_text": "초깃값이 1인 세마포어 mutex를 이용하여 상호배제를 구현하려 한다. 아래 코드에서 S1이 임계영역을 의미할 때, (ㄱ)과 (ㄴ)에 들어갈 연산과 그 의미로 바른 것은?",
+      "option1": "P(mutex); - 감소 / V(mutex); - 증가",
+      "option2": "P(mutex); - 증가 / V(mutex); - 감소",
+      "option3": "V(mutex); - 감소 / P(mutex); - 증가",
+      "option4": "V(mutex); - 증가 / P(mutex); - 감소",
+      "answer": 1
+    },
+    {
+      "question_no": 3,
+      "question_text": "생산자/소비자 문제를 세마포어를 이용하여 해결하려 한다. 가능한 적은 개수의 세마포어를 이용하려 할 때 필요한 세마포어의 개수를 다음 중에서 고른다면?",
+      "option1": "1",
+      "option2": "3",
+      "option3": "5",
+      "option4": "7",
+      "answer": 2
+    },
+    {
+      "question_no": 4,
+      "question_text": "다음 중 교착상태의 필요조건이 아닌 것은?",
+      "option1": "상호배제",
+      "option2": "점유 대기",
+      "option3": "비선점",
+      "option4": "선형 대기",
+      "answer": 4
+    },
+    {
+      "question_no": 5,
+      "question_text": "다음 자원할당 그래프에 대한 설명으로 바른 것은? 단, p는 프로세스, r는 자원을 나타낸다.",
+      "option1": "두 개의 요구간선과 두 개의 할당간선으로 구성",
+      "option2": "r2는 p2에 할당됨",
+      "option3": "p3은 r3을 요구함",
+      "option4": "교착상태임",
+      "answer": 2
+    },
+    {
+      "question_no": 6,
+      "question_text": "교착상태를 회피하기 위해 필요한 사전 정보와 거리가 먼 것은?",
+      "option1": "현재 할당된 자원",
+      "option2": "가용상태의 자원",
+      "option3": "프로세스들의 최소 요구량",
+      "option4": "프로세스들의 최대 요구량",
+      "answer": 3
+    },
+    {
+      "question_no": 7,
+      "question_text": "다음은 변형된 자원할당 그래프로 점선화살표는 선언간선을 나타낸다. 운영체제가 수용할 경우 불안전상태가 되는 요청을 다음 중 고르시오.",
+      "option1": "p2가 r1을 요구",
+      "option2": "p2가 r3을 요구",
+      "option3": "p2가 r2를 요구",
+      "option4": "p3이 r2를 요구",
+      "answer": 3
+    },
+    {
+      "question_no": 8,
+      "question_text": "기억장치 계층구조인 레지스터-캐시 기억장치-메모리-보조기억장치 순서의 특징과 거리가 먼 것은?",
+      "option1": "접근속도",
+      "option2": "비트당 기억장치 비용",
+      "option3": "용량",
+      "option4": "연산종류",
+      "answer": 4
+    },
+    {
+      "question_no": 9,
+      "question_text": "여러 프로세스를 메모리에 적재하기 위하여 메모리 분할을 이용한다. 다음 중 분할 방식과 특징이 바르게 짝지어진 것은?",
+      "option1": "고정 분할 - 외부 단편화 발생 가능",
+      "option2": "동적 분할 - 메모리를 고정된 크기의 영역으로 분할",
+      "option3": "동적 분할 - 단편화 문제를 집약으로 해결",
+      "option4": "고정 분할 - 단편화 문제를 통합으로 해결",
+      "answer": 3
+    },
+    {
+      "question_no": 10,
+      "question_text": "최초 적합을 이용할 때 할당되는 위치는?",
+      "option1": "공백 1",
+      "option2": "공백 2",
+      "option3": "공백 3",
+      "option4": "공백 4",
+      "answer": 1
+    },
+    {
+      "question_no": 11,
+      "question_text": "최적 적합을 이용할 때 할당되는 위치는?",
+      "option1": "공백 1",
+      "option2": "공백 2",
+      "option3": "공백 3",
+      "option4": "공백 4",
+      "answer": 1
+    },
+    {
+      "question_no": 12,
+      "question_text": "가상 메모리에 대한 설명으로 틀린 것은?",
+      "option1": "현재 필요한 일부분만 메모리에 적재",
+      "option2": "메모리 크기보다 더 큰 기억공간이 필요한 프로세스를 실행할 수 있음",
+      "option3": "프로세스가 참조하는 주소와 메모리에서 사용하는 주소를 분리",
+      "option4": "사상이 필요함",
+      "answer": 2
+    },
+    {
+      "question_no": 13,
+      "question_text": "가상 메모리 관리 기법에 대한 설명으로 바른 것은?",
+      "option1": "페이징 기법은 블록의 크기가 모두 다름",
+      "option2": "세그먼테이션 기법은 블록의 크기가 논리적 측면과 무관함",
+      "option3": "페이징 기법은 외부 단편화가 발생할 수 있음",
+      "option4": "세그먼테이션 기법에서 하나의 세그먼트는 연속적인 공간에 저장되어야 함",
+      "answer": 4
+    },
+    {
+      "question_no": 14,
+      "question_text": "가상 메모리에서 페이지 교체 대상을 선택하기 위한 최적화 원칙에 대해 바르게 설명한 것은?",
+      "option1": "가장 최근에 사용한 페이지를 선택",
+      "option2": "가장 자주 사용한 페이지를 선택",
+      "option3": "앞으로 가장 오랫동안 사용되지 않을 페이지를 선택",
+      "option4": "실현 가능하나 이론적으로 증명한 불가능",
+      "answer": 3
+    },
+    {
+      "question_no": 15,
+      "question_text": "FIFO 페이지 교체기법에서 시간 5에 교체 대상으로 선택하는 페이지 프레임 안의 페이지는?",
+      "option1": "A",
+      "option2": "B",
+      "option3": "C",
+      "option4": "D",
+      "answer": 1
+    },
+    {
+      "question_no": 16,
+      "question_text": "LRU 페이지 교체기법에서 시간 5에 교체 대상으로 선택하는 페이지 프레임 안의 페이지는?",
+      "option1": "A",
+      "option2": "B",
+      "option3": "C",
+      "option4": "D",
+      "answer": 2
+    },
+    {
+      "question_no": 17,
+      "question_text": "장치의 입출력 처리 유형과 거리가 먼 것은?",
+      "option1": "프로그램 방법",
+      "option2": "인터럽트 방법",
+      "option3": "DMA 방법",
+      "option4": "RPC 방법",
+      "answer": 4
+    },
+    {
+      "question_no": 18,
+      "question_text": "스풀링에 대한 설명으로 바르지 않은 것은?",
+      "option1": "프로세스와 저속 입출력장치 사이에 위치",
+      "option2": "일종의 버퍼링",
+      "option3": "입출력 작업이 빨리 끝나게 할 수 있음",
+      "option4": "가상장치를 전용장치로 변화시켜 줌",
+      "answer": 4
+    },
+    {
+      "question_no": 19,
+      "question_text": "다음 중 초기 접근시간이 굉장히 오래 걸리는 저장장치는?",
+      "option1": "SSD",
+      "option2": "테이프 장치",
+      "option3": "광 디스크",
+      "option4": "자기 디스크",
+      "answer": 2
+    },
+    {
+      "question_no": 20,
+      "question_text": "디스크 접근시간이란?",
+      "option1": "탐구시간 + 전송시간",
+      "option2": "회전지연시간 + 전송시간",
+      "option3": "탐구시간 + 회전지연시간 + 전송시간",
+      "option4": "탐구시간 + 회전지연시간",
+      "answer": 3
+    },
+    {
+      "question_no": 21,
+      "question_text": "다음 중 최적화와 대상이 다른 하나는?",
+      "option1": "SSTF",
+      "option2": "SCAN",
+      "option3": "LOOK",
+      "option4": "SLTF",
+      "answer": 4
+    },
+    {
+      "question_no": 22,
+      "question_text": "분산 시스템의 목적으로 바른 것은?",
+      "option1": "자원 독점",
+      "option2": "연산속도 향상",
+      "option3": "신뢰성 저하",
+      "option4": "통신의 복잡성",
+      "answer": 2
+    },
+    {
+      "question_no": 23,
+      "question_text": "분산 시스템의 네트워크 구성 중 구축비용은 많이 들지만 통신 비용과 가용성 측면에서 가장 좋은 것은?",
+      "option1": "완전 연결 네트워크",
+      "option2": "트리 구조 네트워크",
+      "option3": "스타형 네트워크",
+      "option4": "링형 네트워크",
+      "answer": 1
+    },
+    {
+      "question_no": 24,
+      "question_text": "컴퓨터 시스템에 중요한 사건이 발생하면 즉시 시스템의 안전한 곳에 자동적으로 기록하는 것을 의미하는 보안 정책은?",
+      "option1": "권한부여",
+      "option2": "접근제어",
+      "option3": "감사",
+      "option4": "최소권한",
+      "answer": 3
+    },
+    {
+      "question_no": 25,
+      "question_text": "다음 하드웨어 중 기준 레지스터와 한계 레지스터를 이용하여 주소의 범위를 지정하는 방법으로 보호하는 대상은?",
+      "option1": "메모리",
+      "option2": "입력장치",
+      "option3": "CPU",
+      "option4": "출력장치",
+      "answer": 1
+    }
+  ]
+}

@@ -3,55 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css">
+    <link href="/css/app.css" rel="stylesheet">
     <title>시험 미리보기</title>
     <style>
-        .container {
-            max-width: 1100px;
-        }
-        .card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-        .question-container {
-            max-height: 70vh;
-            overflow-y: auto;
-            padding-right: 10px;
+        body { background-color: var(--kcbt-bg); }
+        .preview-container { max-width: 900px; }
+        .preview-banner {
+            background-color: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            border-radius: var(--kcbt-radius-sm);
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
         }
         .option {
-            margin-left: 20px;
-            font-size: 18px;
+            border: 1px solid var(--kcbt-border);
+            border-radius: var(--kcbt-radius-sm);
+            padding: 0.6rem 1rem;
+            margin-bottom: 0.5rem;
         }
+        .option.is-answer {
+            background-color: #ecfdf5;
+            border-color: #16a34a;
+            font-weight: 700;
+            color: #15803d;
+        }
+        .preview-image-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+        .preview-image-grid.stack { grid-template-columns: 1fr; }
+        .preview-image-choice { position: relative; text-align: center; padding: 0.5rem; border-radius: 0.5rem; border: 2px solid var(--kcbt-border); }
+        .preview-image-choice img { max-width: 100%; max-height: 150px; object-fit: contain; border-radius: 0.5rem; }
+        .preview-image-choice .badge-no { position: absolute; top: 0.3rem; left: 0.3rem; background: var(--kcbt-surface); border: 1px solid var(--kcbt-border); border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+        .preview-image-choice.is-answer { border-color: #16a34a; background-color: #ecfdf5; }
+        .preview-image-choice.is-answer .badge-no { background: #16a34a; color: #fff; border-color: #16a34a; }
     </style>
 </head>
 <body>
-<div class="container mt-4">
+<div class="container preview-container py-4">
     <!-- 안내 문구 -->
-    <div class="alert alert-info text-center fw-bold">
-        이 화면은 미리보기 화면입니다
+    <div class="preview-banner text-center mb-4">
+        <i class="bi bi-eye-fill"></i> 관리자 미리보기 — 정답이 초록색으로 표시됩니다 (실제 시험 화면에는 보이지 않아요)
     </div>
 
     <!-- 시험 정보 -->
     <div class="mb-3">
-        <h3 th:text="|${exam.subjectName} (${exam.examType.description})|"></h3>
-        <p class="mb-1 text-muted" th:text="|${exam.year}년도 ${exam.grade}학기|"></p>
+        <p class="text-muted mb-1" th:text="|${exam.departmentName} · ${exam.year}년도 ${exam.grade}학년|"></p>
+        <h4 class="fw-bold" th:text="|${exam.subjectName} (${exam.examType.description})|"></h4>
     </div>
 
-    <div class="row">
-        <!-- 좌측: 문제 영역 -->
-        <div class="col-md-12 question-container" id="questionList">
-            <div th:each="q, iterStat : ${questions}" class="card mb-4 p-3">
-                <h5 class="fw-bold mb-3" th:text="|${iterStat.index + 1}. ${q.questionText}|"></h5>
+    <div th:each="q, iterStat : ${questions}" class="card mb-3 p-3">
+        <h6 class="fw-bold mb-3" th:text="|${iterStat.index + 1}. ${q.questionText}|"></h6>
 
-                <!-- 문제 이미지 -->
-                <div th:if="${q.imageUrl != null}" class="mt-2 mb-3">
-                    <img th:src="${q.imageUrl}" alt="문제 이미지" style="max-width: 100%; height: auto;">
-                </div>
+        <div th:if="${q.imageUrl != null}" class="mb-3">
+            <img th:src="${q.imageUrl}" alt="문제 이미지" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+        </div>
 
-                <!-- 보기 -->
-                <div class="option" th:if="${q.option1 != null}" th:text="|① ${q.option1}|"></div>
-                <div class="option" th:if="${q.option2 != null}" th:text="|② ${q.option2}|"></div>
-                <div class="option" th:if="${q.option3 != null}" th:text="|③ ${q.option3}|"></div>
-                <div class="option" th:if="${q.option4 != null}" th:text="|④ ${q.option4}|"></div>
+        <div th:if="${q.optionType == null or q.optionType.name() != 'IMAGE'}">
+            <div class="option" th:if="${q.option1 != null}"
+                 th:classappend="${q.answers != null and #strings.contains(','+q.answers+',', ',1,')} ? 'is-answer'"
+                 th:text="|① ${q.option1}|"></div>
+            <div class="option" th:if="${q.option2 != null}"
+                 th:classappend="${q.answers != null and #strings.contains(','+q.answers+',', ',2,')} ? 'is-answer'"
+                 th:text="|② ${q.option2}|"></div>
+            <div class="option" th:if="${q.option3 != null}"
+                 th:classappend="${q.answers != null and #strings.contains(','+q.answers+',', ',3,')} ? 'is-answer'"
+                 th:text="|③ ${q.option3}|"></div>
+            <div class="option" th:if="${q.option4 != null}"
+                 th:classappend="${q.answers != null and #strings.contains(','+q.answers+',', ',4,')} ? 'is-answer'"
+                 th:text="|④ ${q.option4}|"></div>
+        </div>
+
+        <div th:if="${q.optionType != null and q.optionType.name() == 'IMAGE'}"
+             th:class="${q.imageLayout != null and q.imageLayout.name() == 'STACK_1X4'} ? 'preview-image-grid stack' : 'preview-image-grid'">
+            <div class="preview-image-choice" th:each="n : ${#numbers.sequence(1, 4)}"
+                 th:if="${(n == 1 and q.option1 != null) or (n == 2 and q.option2 != null) or (n == 3 and q.option3 != null) or (n == 4 and q.option4 != null)}"
+                 th:classappend="${q.answers != null and #strings.contains(','+q.answers+',', ','+n+',')} ? 'is-answer'">
+                <span class="badge-no" th:text="${n == 1 ? '①' : (n == 2 ? '②' : (n == 3 ? '③' : '④'))}"></span>
+                <img th:src="${n == 1 ? q.option1 : (n == 2 ? q.option2 : (n == 3 ? q.option3 : q.option4))}" alt="보기 이미지">
             </div>
         </div>
     </div>

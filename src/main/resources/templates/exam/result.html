@@ -3,47 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css">
+  <link href="/css/app.css" rel="stylesheet">
   <title>시험 결과</title>
-  <style>
-    .result-table th, .result-table td {
-      text-align: center;
-      vertical-align: middle;
-    }
-  </style>
 </head>
 <body>
-<div class="container mt-5">
-  <h2 class="mb-4">시험 결과</h2>
+<div class="container py-5" style="max-width: 720px;">
 
-  <!-- 시험 요약 -->
-  <table class="table table-bordered result-table">
-    <tr>
-      <th>학과</th>
-      <td th:text="${exam.departmentName}"></td>
-      <th>과목</th>
-      <td th:text="${exam.subjectName}"></td>
-      <th>구분</th>
-      <td th:text="${exam.examType.description}"></td>
-      <th>학년·학기</th>
-      <td th:text="|${exam.year}년도 ${exam.grade}학기|"></td>
-    </tr>
-    <tr>
-      <th>총 문제</th>
-      <td th:text="${questions.size()}"></td>
-      <th>맞은 개수</th>
-      <td class="text-success fw-bold" th:text="${score}"></td>
-      <th>틀린 개수</th>
-      <td class="text-danger fw-bold" th:text="${questions.size() - score}"></td>
-      <td colspan="3" class="text-center">
-        <a th:href="@{/exams/{examId}/solve(examId=${exam.id})}"
-           class="btn btn-success btn-sm me-2">문제 다시풀기</a>
-        <a th:href="@{/exams/{examId}/review(examId=${exam.id})}"
-           class="btn btn-warning btn-sm me-2">답안 확인하기</a>
-        <a th:href="@{/exams}"
-           class="btn btn-secondary btn-sm">돌아가기</a>
-      </td>
-    </tr>
-  </table>
+  <div class="text-center mb-4">
+    <p class="text-muted mb-1" th:text="|${exam.departmentName} · ${exam.subjectName} · ${exam.examType.description} · ${exam.year}년도 ${exam.grade}학년|"></p>
+    <h2 class="fw-bold">시험 결과</h2>
+  </div>
+
+  <!-- 점수 카드 -->
+  <div class="card p-4 p-md-5 text-center mb-4"
+       th:with="rate=${questions.size() == 0 ? 0 : (score * 100 / questions.size())}">
+
+    <div class="score-ring mx-auto" th:style="|background: conic-gradient(var(--kcbt-accent) ${rate}%, var(--kcbt-border) 0);|">
+      <div class="score-ring-inner">
+        <div class="score-ring-value">
+          <span th:text="${score}"></span><span class="score-ring-total" th:text="|/${questions.size()}|"></span>
+        </div>
+        <div class="score-ring-label">맞은 문제</div>
+      </div>
+    </div>
+
+    <!-- 점수별 코멘트 -->
+    <div class="mt-3 fs-5">
+        <span th:if="${rate == 100}">🏆 만점이에요! 완벽합니다</span>
+        <span th:if="${rate >= 90 and rate < 100}">🎯 거의 다 왔어요! 조금만 더 하면 만점이에요</span>
+        <span th:if="${rate >= 70 and rate < 90}">🎉 훌륭해요! 합격 점수예요</span>
+        <span th:if="${rate >= 50 and rate < 70}">💪 조금만 더 하면 돼요, 화이팅!</span>
+        <span th:if="${rate < 50}">📚 다시 한 번 풀어보면 더 나아질 거예요</span>
+    </div>
+
+    <div class="row mt-4 g-3">
+      <div class="col-4">
+        <div class="p-3 rounded-3" style="background-color: #ecfdf5;">
+          <div class="fs-4 fw-bold text-success" th:text="${score}"></div>
+          <div class="text-muted small">맞은 개수</div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="p-3 rounded-3" style="background-color: #fef2f2;">
+          <div class="fs-4 fw-bold text-danger" th:text="${questions.size() - score}"></div>
+          <div class="text-muted small">틀린 개수</div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="p-3 rounded-3" style="background-color: var(--kcbt-accent-soft);">
+          <div class="fs-4 fw-bold" style="color: var(--kcbt-accent-dark);"
+               th:text="|${elapsedSeconds / 60}:${#numbers.formatInteger(elapsedSeconds % 60, 2)}|"></div>
+          <div class="text-muted small">총 소요시간</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+    <a th:href="@{/exams/{examId}/review(examId=${exam.id})}" class="btn btn-primary">
+      <i class="bi bi-search"></i> 답안 확인하기
+    </a>
+    <a th:href="@{/exams/{examId}/solve(examId=${exam.id})}" id="retryBtn" class="btn btn-outline-primary">
+      <i class="bi bi-arrow-repeat"></i> 다시 풀기
+    </a>
+    <a th:href="@{/exams}" class="btn btn-secondary">
+      <i class="bi bi-list"></i> 목록으로
+    </a>
+  </div>
 </div>
+
+<div th:replace="~{fragments/dialogs :: dialogs}"></div>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script src="/js/ui-dialog.js"></script>
+<script src="/js/exam-result.js"></script>
 </body>
 </html>

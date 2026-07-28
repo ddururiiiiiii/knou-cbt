@@ -7,28 +7,23 @@
 <head>
   <meta charset="UTF-8">
   <title>공지사항 상세</title>
-  <link href="/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    .notice-content img {
-      max-width: 100%;
-      height: auto;
-      display: block;
-    }
-  </style>
-
-  </style>
 </head>
 <body>
 <div layout:fragment="content">
-  <div class="py-5 text-center">
+  <div class="py-3 text-center">
     <h2>공지사항</h2>
   </div>
 
   <!-- 공지 제목 + 작성일 -->
-  <div class="mb-3">
-    <h3 th:text="${notice.title}">공지사항 제목</h3>
-    <div class="text-muted" th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}"></div>
-    <span th:if="${notice.pinned}" class="badge bg-warning text-dark ms-1">공지</span>
+  <div class="mb-3 d-flex justify-content-between align-items-end flex-wrap gap-2">
+    <h3 class="mb-0">
+      <span th:if="${notice.pinned}" class="badge notice-pin-badge me-1"
+            data-bs-toggle="tooltip" title="상단 고정된 공지입니다"><i class="bi bi-pin-angle-fill"></i></span>
+      <span th:if="${notice.useYn.name() == 'N'}" class="badge bg-secondary me-1"
+            sec:authorize="hasRole('ADMIN')">비공개</span>
+      <span th:text="${notice.title}"></span>
+    </h3>
+    <div class="text-muted small" th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}"></div>
   </div>
 
   <!-- 내용 -->
@@ -40,13 +35,13 @@
   <div class="d-flex justify-content-end gap-2 mt-3">
     <!-- 관리자만 보이는 버튼 -->
     <a th:href="@{/notices/{id}/edit(id=${notice.id})}"
-       class="btn btn-primary btn-sm"
+       class="btn btn-outline-primary btn-sm"
        sec:authorize="hasRole('ADMIN')">수정</a>
 
     <form th:action="@{/notices/{id}(id=${notice.id})}"
           method="post"
           sec:authorize="hasRole('ADMIN')"
-          onsubmit="return confirm('정말 삭제하시겠습니까?');">
+          data-confirm="정말 삭제하시겠습니까?">
       <input type="hidden" name="_method" value="delete"/>
       <button type="submit" class="btn btn-danger btn-sm">삭제</button>
     </form>
@@ -57,4 +52,7 @@
 
 </div>
 </body>
+<th:block layout:fragment="script">
+    <script src="/js/confirm-delete.js"></script>
+</th:block>
 </html>

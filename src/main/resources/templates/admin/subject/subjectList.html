@@ -6,28 +6,55 @@
 <head>
     <meta charset="UTF-8">
     <title>과목 관리</title>
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div layout:fragment="content">
-    <div class="py-5 text-center">
+    <div class="py-3 text-center">
         <h2>과목 목록</h2>
     </div>
 
-    <div class="mb-3 d-flex justify-content-between">
+    <div th:replace="~{fragments/help-banner :: banner('학과 → 학년 → 과목구분 순서로 선택하면 원하는 과목을 빠르게 찾을 수 있어요.')}"></div>
+
+    <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
         <!-- 검색 폼 -->
-        <form th:action="@{/admin/subjects}" method="get" class="d-flex">
+        <form th:action="@{/admin/subjects}" method="get" id="searchForm" class="d-flex flex-wrap align-items-center gap-2">
+
+            <!-- 학과 -->
+            <select class="form-select form-select-sm" name="departmentId" id="departmentSelect" style="width: 190px;">
+                <option value="">학과 선택</option>
+                <option th:each="dept : ${departments}"
+                        th:value="${dept.id}"
+                        th:text="${dept.departmentName}"
+                        th:selected="${departmentId != null and departmentId == dept.id}">
+                </option>
+            </select>
+
+            <!-- 학년 -->
+            <select class="form-select form-select-sm" name="grade" id="gradeSelect" style="width: 140px;"
+                    th:disabled="${departmentId == null}">
+                <option value="">학년 선택</option>
+            </select>
+
+            <!-- 과목구분 -->
+            <select class="form-select form-select-sm" name="subjectCategory" id="categorySelect" style="width: 160px;"
+                    th:disabled="${grade == null}">
+                <option value="">과목구분 선택</option>
+            </select>
+
             <input type="text"
-                   class="form-control-sm me-2"
+                   class="form-control form-control-sm"
                    name="keyword"
                    placeholder="과목명 검색"
+                   autocomplete="off"
+                   style="width: 200px;"
                    th:value="${keyword}">
             <input type="hidden" name="useYn" th:value="${useYn}">
             <button type="submit" class="btn btn-primary btn-sm">검색</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="resetBtn">초기화</button>
         </form>
 
         <!-- 등록 버튼 -->
-        <a class="btn btn-success btn-sm" th:href="@{/admin/subjects/new}">등록</a>
+        <a class="btn btn-primary btn-sm" th:href="@{/admin/subjects/new}">등록</a>
     </div>
 
     <span style="font-weight: bold;" th:text="|총 ${pagination.totalElements} 건|"></span>
@@ -37,10 +64,10 @@
         <thead class="table-light">
         <tr style="text-align: center;">
             <th>번호</th>
-            <th>과목명</th>
-            <th>과목 구분</th>
-            <th>학년</th>
             <th>학과명</th>
+            <th>학년</th>
+            <th>과목 구분</th>
+            <th>과목명</th>
             <th>사용 여부</th>
             <th>관리</th>
         </tr>
@@ -48,19 +75,19 @@
         <tbody>
         <tr th:each="subject, stat : ${pagination.content}">
             <td th:text="${stat.index + 1}" style="text-align: center;"></td>
-            <td th:text="${subject.subjectName}"></td>
-            <td th:text="${subject.subjectCategory.description}"></td>
-            <td th:text="|${subject.grade}학년|" style="text-align: center;"></td>
             <td th:text="${subject.departmentName}"></td>
+            <td th:text="|${subject.grade}학년|" style="text-align: center;"></td>
+            <td th:text="${subject.subjectCategory.description}"></td>
+            <td th:text="${subject.subjectName}"></td>
             <td th:text="${subject.useYn.description}" style="text-align: center;"></td>
             <td>
                 <a th:href="@{'/admin/subjects/' + ${subject.id} + '/edit'}"
-                   class="btn btn-sm btn-primary">수정</a>
+                   class="btn btn-sm btn-outline-primary">수정</a>
                 <!-- 삭제 가능 -->
                 <form th:if="${!subject.hasExams}"
                       th:action="@{'/admin/subjects/' + ${subject.id}}"
                       method="post" style="display:inline;"
-                      onsubmit="return confirm('삭제하시겠습니까?');">
+                      data-confirm="삭제하시겠습니까?">
                     <input type="hidden" name="_method" value="delete"/>
                     <button type="submit" class="btn btn-sm btn-danger">삭제</button>
                 </form>
@@ -69,13 +96,14 @@
                 <button th:if="${subject.hasExams}"
                         type="button"
                         class="btn btn-sm btn-secondary"
-                        onclick="alert('해당 과목에 시험이 있어 삭제할 수 없습니다.');">
+                        data-bs-toggle="tooltip"
+                        title="이미 연결된 시험이 있어 삭제가 불가능합니다.">
                     삭제 불가
                 </button>
             </td>
         </tr>
         <tr th:if="${pagination.content.size() == 0}">
-            <td colspan="6" class="text-center">등록된 과목이 없습니다.</td>
+            <td colspan="7" class="text-center">등록된 과목이 없습니다.</td>
         </tr>
         </tbody>
     </table>
@@ -85,28 +113,32 @@
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${pagination.currentPage > 1} ? '' : 'disabled'">
                 <a class="page-link"
-                   th:href="@{/departments(page=1, keyword=${keyword}, useYn=${param.useYn})}">First</a>
+                   th:href="@{/admin/subjects(page=1, keyword=${keyword}, useYn=${param.useYn}, departmentId=${departmentId}, grade=${grade}, subjectCategory=${subjectCategory})}">First</a>
             </li>
             <li class="page-item" th:classappend="${pagination.currentPage > 1} ? '' : 'disabled'">
                 <a class="page-link"
-                   th:href="@{/departments(page=${pagination.currentPage - 1}, keyword=${keyword}, useYn=${param.useYn})}">Previous</a>
+                   th:href="@{/admin/subjects(page=${pagination.currentPage - 1}, keyword=${keyword}, useYn=${param.useYn}, departmentId=${departmentId}, grade=${grade}, subjectCategory=${subjectCategory})}">Previous</a>
             </li>
             <li class="page-item" th:each="i : ${#numbers.sequence(1, pagination.totalPages)}"
                 th:classappend="${i == pagination.currentPage} ? 'active'">
                 <a class="page-link"
-                   th:href="@{/departments(page=${i}, keyword=${keyword}, useYn=${param.useYn})}"
+                   th:href="@{/admin/subjects(page=${i}, keyword=${keyword}, useYn=${param.useYn}, departmentId=${departmentId}, grade=${grade}, subjectCategory=${subjectCategory})}"
                    th:text="${i}"></a>
             </li>
             <li class="page-item" th:classappend="${pagination.currentPage < pagination.totalPages} ? '' : 'disabled'">
                 <a class="page-link"
-                   th:href="@{/departments(page=${pagination.currentPage + 1}, keyword=${keyword}, useYn=${param.useYn})}">Next</a>
+                   th:href="@{/admin/subjects(page=${pagination.currentPage + 1}, keyword=${keyword}, useYn=${param.useYn}, departmentId=${departmentId}, grade=${grade}, subjectCategory=${subjectCategory})}">Next</a>
             </li>
             <li class="page-item" th:classappend="${pagination.currentPage < pagination.totalPages} ? '' : 'disabled'">
                 <a class="page-link"
-                   th:href="@{/departments(page=${pagination.totalPages}, keyword=${keyword}, useYn=${param.useYn})}">Last</a>
+                   th:href="@{/admin/subjects(page=${pagination.totalPages}, keyword=${keyword}, useYn=${param.useYn}, departmentId=${departmentId}, grade=${grade}, subjectCategory=${subjectCategory})}">Last</a>
             </li>
         </ul>
     </nav>
 </div>
 </body>
+<th:block layout:fragment="script">
+    <script src="/js/confirm-delete.js"></script>
+    <script src="/js/subject-list.js"></script>
+</th:block>
 </html>

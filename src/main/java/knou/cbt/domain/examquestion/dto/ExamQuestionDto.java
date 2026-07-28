@@ -1,5 +1,7 @@
 package knou.cbt.domain.examquestion.dto;
 
+import knou.cbt.domain.examquestion.model.ImageLayout;
+import knou.cbt.domain.examquestion.model.OptionType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,4 +18,6 @@ public class ExamQuestionDto {
     private String option4;
     private String answers;
     private String imageUrl;
+    private OptionType optionType;
+    private ImageLayout imageLayout;
 }

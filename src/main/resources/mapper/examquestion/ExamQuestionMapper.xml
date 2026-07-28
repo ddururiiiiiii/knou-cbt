@@ -16,6 +16,8 @@
         <result property="option4" column="option4"/>
         <result property="answers" column="answers"/>
         <result property="imageUrl" column="image_url"/>
+        <result property="optionType" column="option_type"/>
+        <result property="imageLayout" column="image_layout"/>
     </resultMap>
 
     <select id="findByExamId" resultMap="ExamQuestionDtoMap">
@@ -28,6 +30,8 @@
                q.option3,
                q.option4,
                q.image_url,
+               q.option_type,
+               q.image_layout,
                STRING_AGG(a.option_no::text, ',' ORDER BY a.option_no ASC) AS answers
         FROM exam_question q
                  LEFT JOIN exam_question_answer a ON q.id = a.question_id
@@ -43,9 +47,11 @@
     <insert id="insertQuestion" parameterType="knou.cbt.domain.examquestion.model.ExamQuestion"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO exam_question (exam_id, question_no, question_text,
-                                   option1, option2, option3, option4, image_url)
+                                   option1, option2, option3, option4, image_url,
+                                   option_type, image_layout)
         VALUES (#{examId}, #{questionNo}, #{questionText},
-                #{option1}, #{option2}, #{option3}, #{option4}, #{imageUrl})
+                #{option1}, #{option2}, #{option3}, #{option4}, #{imageUrl},
+                #{optionType}, #{imageLayout})
     </insert>
 
     <insert id="insertAnswer" parameterType="knou.cbt.domain.examquestion.model.ExamQuestionAnswer"
@@ -58,6 +64,15 @@
         SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
         FROM exam_question
         WHERE exam_id = #{examId}
+    </select>
+
+    <select id="findExamIdsWithQuestions" resultType="long">
+        SELECT DISTINCT exam_id
+        FROM exam_question
+        WHERE exam_id IN
+        <foreach item="examId" collection="examIds" open="(" separator="," close=")">
+            #{examId}
+        </foreach>
     </select>
 
 </mapper>

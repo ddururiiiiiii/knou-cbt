@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -36,16 +37,20 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<DepartmentResponse> listPage(String keyword, String useYn, PageRequest pageRequest) {
-        List<DepartmentResponse> content = mapper.findAllPaged(
-                        pageRequest.offset(),
-                        pageRequest.sizeOrDefault(),
-                        keyword,
-                        useYn
-                ).stream()
-                .map(dept -> {
-                    boolean hasSubjects = subjectMapper.existsByDepartmentId(dept.getId());
-                    return DepartmentResponse.of(dept, hasSubjects);
-                })
+        List<Department> depts = mapper.findAllPaged(
+                pageRequest.offset(),
+                pageRequest.sizeOrDefault(),
+                keyword,
+                useYn
+        );
+
+        List<Long> deptIds = depts.stream().map(Department::getId).toList();
+        Set<Long> deptIdsWithSubjects = deptIds.isEmpty()
+                ? Set.of()
+                : subjectMapper.findDepartmentIdsWithSubjects(deptIds);
+
+        List<DepartmentResponse> content = depts.stream()
+                .map(dept -> DepartmentResponse.of(dept, deptIdsWithSubjects.contains(dept.getId())))
                 .toList();
 
         int total = mapper.countAll(keyword, useYn);

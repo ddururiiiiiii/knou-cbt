@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper
 public interface ExamQuestionMapper {
@@ -19,4 +20,6 @@ public interface ExamQuestionMapper {
     void insertAnswer(ExamQuestionAnswer answer);
 
     boolean existsByExamId(Long examId);
+
+    Set<Long> findExamIdsWithQuestions(@Param("examIds") List<Long> examIds);
 }

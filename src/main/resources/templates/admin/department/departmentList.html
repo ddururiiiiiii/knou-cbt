@@ -6,28 +6,31 @@
 <head>
     <meta charset="UTF-8">
     <title>학과 관리</title>
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div layout:fragment="content">
-    <div class="py-5 text-center">
+    <div class="py-3 text-center">
         <h2>학과 목록</h2>
     </div>
 
+    <div th:replace="~{fragments/help-banner :: banner('학과를 등록·수정·삭제할 수 있어요.')}"></div>
+
     <div class="mb-3 d-flex justify-content-between">
         <!-- 검색 폼 -->
-        <form th:action="@{/admin/departments}" method="get" class="d-flex">
+        <form th:action="@{/admin/departments}" method="get" class="d-flex align-items-center">
             <input type="text"
-                   class="form-control-sm me-2"
+                   class="form-control form-control-sm me-2"
                    name="keyword"
                    placeholder="학과명 검색"
+                   autocomplete="off"
+                   style="width: 220px;"
                    th:value="${keyword}">
             <input type="hidden" name="useYn" th:value="${param.useYn}">
             <button type="submit" class="btn btn-primary btn-sm">검색</button>
         </form>
 
         <!-- 등록 버튼 -->
-        <a class="btn btn-success btn-sm" th:href="@{/admin/departments/new}">등록</a>
+        <a class="btn btn-primary btn-sm" th:href="@{/admin/departments/new}">등록</a>
     </div>
 
     <span style="font-weight: bold;" th:text="|총 ${pagination.totalElements} 건|"></span>
@@ -50,13 +53,13 @@
                 <td th:text="${dept.useYn.description}" style="text-align: center;">사용</td>
                 <td>
                     <!-- 수정 -->
-                    <a th:href="@{/admin/departments/{id}/edit(id=${dept.id})}" class="btn btn-primary btn-sm">수정</a>
+                    <a th:href="@{/admin/departments/{id}/edit(id=${dept.id})}" class="btn btn-outline-primary btn-sm">수정</a>
                     <!-- 삭제 가능 -->
                     <form th:if="${!dept.hasSubjects}"
                           th:action="@{/admin/departments/{id}(id=${dept.id})}"
                           method="post"
                           style="display:inline;"
-                          onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                          data-confirm="정말 삭제하시겠습니까?">
                         <input type="hidden" name="_method" value="delete"/>
                         <button type="submit" class="btn btn-danger btn-sm">삭제</button>
                     </form>
@@ -65,7 +68,8 @@
                     <button th:if="${dept.hasSubjects}"
                             type="button"
                             class="btn btn-secondary btn-sm"
-                            onclick="alert('해당 학과에 과목이 있어 삭제할 수 없습니다.');">
+                            data-bs-toggle="tooltip"
+                            title="이미 연결된 과목이 있어 삭제가 불가능합니다.">
                         삭제 불가
                     </button>
                 </td>
@@ -73,7 +77,7 @@
 
             <!-- 검색 결과 없을 때 -->
             <tr th:if="${#lists.isEmpty(pagination.content)}">
-                <td colspan="4" class="text-center text-muted">검색 결과가 없습니다.</td>
+                <td colspan="5" class="text-center text-muted">검색 결과가 없습니다.</td>
             </tr>
             </tbody>
         </table>
@@ -109,4 +113,7 @@
 
 </div>
 </body>
+<th:block layout:fragment="script">
+    <script src="/js/confirm-delete.js"></script>
+</th:block>
 </html>

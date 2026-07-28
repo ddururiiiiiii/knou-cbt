@@ -11,6 +11,15 @@
         <if test="useYn != null and useYn != ''">
             AND s.use_yn = #{useYn}
         </if>
+        <if test="departmentId != null">
+            AND s.department_id = #{departmentId}
+        </if>
+        <if test="grade != null">
+            AND s.grade = #{grade}
+        </if>
+        <if test="subjectCategory != null">
+            AND s.subject_category = #{subjectCategory}
+        </if>
     </sql>
 
     <sql id="BaseSelectColumns">
@@ -37,6 +46,7 @@
         <result property="useYn" column="use_yn"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="examCount" column="exam_count"/>
     </resultMap>
 
     <select id="findAll" resultMap="SubjectResultMap">
@@ -44,7 +54,7 @@
         <where>
             s.use_yn = 'Y'
         </where>
-        ORDER BY s.subject_name
+        ORDER BY s.subject_name COLLATE "C"
     </select>
 
     <select id="findAllWithDepartment" resultMap="SubjectResultMap">
@@ -52,7 +62,7 @@
         <where>
             <include refid="SubjectFilter"/>
         </where>
-        ORDER BY s.id
+        ORDER BY d.department_name COLLATE "C", s.grade, s.subject_name COLLATE "C", s.use_yn DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
@@ -62,6 +72,20 @@
         <where>
             <include refid="SubjectFilter"/>
         </where>
+    </select>
+
+    <select id="findGradesByDepartment" resultType="int">
+        SELECT DISTINCT grade
+        FROM subject
+        WHERE department_id = #{departmentId}
+        ORDER BY grade
+    </select>
+
+    <select id="findCategoriesByDepartmentAndGrade" resultType="knou.cbt.domain.subject.model.SubjectCategory">
+        SELECT DISTINCT subject_category
+        FROM subject
+        WHERE department_id = #{departmentId}
+          AND grade = #{grade}
     </select>
 
     <select id="findByIdWithDepartment" parameterType="long" resultMap="SubjectResultMap">
@@ -80,13 +104,15 @@
     </select>
 
     <select id="findByDepartmentId" resultType="knou.cbt.domain.subject.dto.SubjectDto">
-        SELECT s.id, s.subject_name, s.subject_category, s.department_id, s.use_yn
+        SELECT s.id, s.subject_name, s.subject_category, s.grade,
+               s.department_id, d.department_name, s.use_yn
         FROM subject s
+        JOIN department d ON s.department_id = d.id
         <where>
             s.department_id = #{deptId}
             AND s.use_yn = 'Y'
         </where>
-        ORDER BY s.subject_name
+        ORDER BY s.subject_name COLLATE "C"
     </select>
 
     <insert id="insert" parameterType="knou.cbt.domain.subject.model.Subject">
@@ -121,6 +147,36 @@
         <where>
             department_id = #{deptId}
         </where>
+    </select>
+
+    <select id="findDepartmentIdsWithSubjects" resultType="long">
+        SELECT DISTINCT department_id
+        FROM subject
+        WHERE department_id IN
+        <foreach item="deptId" collection="deptIds" open="(" separator="," close=")">
+            #{deptId}
+        </foreach>
+    </select>
+
+    <select id="findTopSubjectsByExamCount" resultMap="SubjectResultMap">
+        SELECT
+            s.id,
+            s.subject_name,
+            s.subject_category,
+            s.department_id,
+            d.department_name,
+            s.grade,
+            s.use_yn,
+            s.created_at,
+            s.updated_at,
+            COUNT(e.id) AS exam_count
+        FROM subject s
+                 JOIN department d ON s.department_id = d.id
+                 JOIN exam e ON e.subject_id = s.id AND e.use_yn = 'Y'
+        WHERE s.use_yn = 'Y'
+        GROUP BY s.id, d.department_name
+        ORDER BY exam_count DESC, s.subject_name COLLATE "C"
+        LIMIT #{limit}
     </select>
 
 </mapper>

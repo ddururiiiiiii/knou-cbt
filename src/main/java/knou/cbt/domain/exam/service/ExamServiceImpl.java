@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -46,10 +47,15 @@ public class ExamServiceImpl implements ExamService {
                 year
         );
 
+        List<Long> examIds = exams.stream().map(ExamDto::getId).toList();
+        Set<Long> examIdsWithQuestions = examIds.isEmpty()
+                ? Set.of()
+                : examQuestionMapper.findExamIdsWithQuestions(examIds);
+
         List<ExamResponse> content = exams.stream()
                 .map(exam -> ExamResponse.of(
                         exam,
-                        examQuestionMapper.existsByExamId(exam.getId())
+                        examIdsWithQuestions.contains(exam.getId())
                 ))
                 .toList();
 
@@ -134,5 +140,17 @@ public class ExamServiceImpl implements ExamService {
         if (examQuestionMapper.existsByExamId(examId)) {
             throw new ExamHasQuestionsException(examId);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ExamType> findExamTypesBySubject(Long subjectId) {
+        return mapper.findExamTypesBySubject(subjectId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Integer> findYearsBySubjectAndType(Long subjectId, ExamType examType) {
+        return mapper.findYearsBySubjectAndType(subjectId, examType);
     }
 }

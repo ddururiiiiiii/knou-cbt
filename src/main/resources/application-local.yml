@@ -11,7 +11,7 @@ spring:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
     knou.cbt: DEBUG
 
 supabase:

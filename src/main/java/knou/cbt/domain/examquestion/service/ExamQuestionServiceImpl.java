@@ -36,9 +36,10 @@ public class ExamQuestionServiceImpl implements ExamQuestionService {
             ExamQuestion question = ExamQuestion.create(
                     null, examId, req.getQuestionNo(),
                     req.getQuestionText(),
-                    req.getOption1(), req.getOption2(),
-                    req.getOption3(), req.getOption4(),
-                    req.getImageUrl()
+                    blankToNull(req.getOption1()), blankToNull(req.getOption2()),
+                    blankToNull(req.getOption3()), blankToNull(req.getOption4()),
+                    req.getImageUrl(),
+                    req.getOptionType(), req.getImageLayout()
             );
             mapper.insertQuestion(question);
 
@@ -50,5 +51,9 @@ public class ExamQuestionServiceImpl implements ExamQuestionService {
                 }
             }
         }
+    }
+
+    private String blankToNull(String value) {
+        return (value == null || value.isBlank()) ? null : value;
     }
 }

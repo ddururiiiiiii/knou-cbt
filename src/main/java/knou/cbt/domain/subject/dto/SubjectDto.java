@@ -18,6 +18,7 @@ public class SubjectDto {
     private Long departmentId;
     private String departmentName;
     private UseYn useYn;
+    private Integer examCount;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;

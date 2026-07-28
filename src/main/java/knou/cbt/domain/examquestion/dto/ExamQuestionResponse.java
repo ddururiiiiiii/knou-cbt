@@ -1,5 +1,8 @@
 package knou.cbt.domain.examquestion.dto;
 
+import knou.cbt.domain.examquestion.model.ImageLayout;
+import knou.cbt.domain.examquestion.model.OptionType;
+
 public record ExamQuestionResponse(
         Long id,
         Long examId,
@@ -10,7 +13,9 @@ public record ExamQuestionResponse(
         String option3,
         String option4,
         String answers,
-        String imageUrl
+        String imageUrl,
+        OptionType optionType,
+        ImageLayout imageLayout
 
 ) {
     public static ExamQuestionResponse of(ExamQuestionDto dto) {
@@ -24,7 +29,9 @@ public record ExamQuestionResponse(
                 dto.getOption3(),
                 dto.getOption4(),
                 dto.getAnswers(),
-                dto.getImageUrl()
+                dto.getImageUrl(),
+                dto.getOptionType(),
+                dto.getImageLayout()
         );
     }
 }

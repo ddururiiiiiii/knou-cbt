@@ -8,27 +8,30 @@
 <head>
   <meta charset="UTF-8">
   <title>공지사항</title>
-  <link href="/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div layout:fragment="content">
-  <div class="py-5 text-center">
+  <div class="py-3 text-center">
     <h2>공지사항</h2>
   </div>
 
+  <div th:replace="~{fragments/help-banner :: banner('서비스 관련 안내와 업데이트 소식을 확인할 수 있어요. 제목을 클릭하면 상세 내용을 볼 수 있습니다.')}"></div>
+
   <div class="mb-3 d-flex justify-content-between">
     <!-- 검색 폼 -->
-    <form th:action="@{/notices}" method="get" class="d-flex">
+    <form th:action="@{/notices}" method="get" class="d-flex align-items-center">
       <input type="text"
-             class="form-control-sm me-2"
+             class="form-control form-control-sm me-2"
              name="keyword"
              placeholder="제목/내용 검색"
+             autocomplete="off"
+             style="width: 220px;"
              th:value="${keyword}">
       <button type="submit" class="btn btn-primary btn-sm">검색</button>
     </form>
 
     <!-- 등록 버튼 (관리자만 보임) -->
-    <a class="btn btn-success btn-sm"
+    <a class="btn btn-primary btn-sm"
        th:href="@{/notices/new}"
        sec:authorize="hasRole('ADMIN')">등록</a>
   </div>
@@ -50,12 +53,16 @@
       </tr>
       </thead>
       <tbody>
-      <tr th:each="notice, stat : ${pagination.content}">
+      <tr th:each="notice, stat : ${pagination.content}"
+          th:classappend="${notice.pinned} ? 'notice-row-pinned'">
         <td th:text="${stat.index + 1}" style="text-align: center;"></td>
         <td>
+          <span th:if="${notice.pinned}" class="badge notice-pin-badge me-1"
+                data-bs-toggle="tooltip" title="상단 고정된 공지입니다"><i class="bi bi-pin-angle-fill"></i></span>
+          <span th:if="${notice.useYn.name() == 'N'}" class="badge bg-secondary me-1"
+                sec:authorize="hasRole('ADMIN')">비공개</span>
           <a th:href="@{/notices/{id}(id=${notice.id})}"
              th:text="${notice.title}"></a>
-          <span th:if="${notice.pinned}" class="badge bg-warning text-dark ms-1">공지</span>
         </td>
         <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd')}" style="text-align: center;"></td>
       </tr>

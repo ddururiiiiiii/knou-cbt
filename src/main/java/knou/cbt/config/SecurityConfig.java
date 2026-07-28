@@ -4,12 +4,14 @@ import knou.cbt.global.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -22,7 +24,10 @@ public class SecurityConfig {
                 )
                 .headers(headers -> headers
                         // 캐시 비활성화 (민감 페이지 캐싱 방지)
-                        .cacheControl(cache -> cache.disable())
+                        // 주의: HeadersConfigurer의 cacheControl()은 기본적으로 Cache-Control: no-cache 헤더를
+                        // 자동으로 붙여주는 기능이며, .disable()을 호출하면 그 헤더 자동 삽입 자체를 꺼버려서
+                        // 오히려 브라우저 캐싱이 허용돼버린다 (여기서 브라우저가 옛날 페이지를 계속 보여주던 원인).
+                        // 그래서 별도 설정 없이 기본 동작(자동으로 no-cache 헤더 추가)을 그대로 사용한다.
                         // XSS 대응: Content Security Policy 적용
                         .contentSecurityPolicy(csp ->
                                 csp.policyDirectives(
@@ -43,7 +48,8 @@ public class SecurityConfig {
                         .requestMatchers("/admin/login", "/login").permitAll()
                         // 관리자 전용
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/notices/new", "/notices/*/edit", "/notices/*/delete").hasRole("ADMIN")
+                        // 공지사항의 등록/수정/삭제는 URL 패턴이 조회와 겹쳐서(둘 다 /notices/**)
+                        // 여기서 걸러낼 수 없음 -> @EnableMethodSecurity + 컨트롤러의 @PreAuthorize로 강제함
                         .requestMatchers("/health").permitAll()
                         // 나머지는 인증 필요
                         .anyRequest().authenticated()
@@ -59,6 +65,11 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
                         .permitAll()
+                )
+                .rememberMe(rememberMe -> rememberMe
+                        .key("knou-cbt-remember-key")
+                        .tokenValiditySeconds(14 * 24 * 60 * 60) // 14일
+                        .userDetailsService(customUserDetailsService)
                 )
                 .userDetailsService(customUserDetailsService);
 

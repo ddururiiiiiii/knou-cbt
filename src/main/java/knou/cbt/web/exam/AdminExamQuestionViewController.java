@@ -82,11 +82,33 @@ public class AdminExamQuestionViewController {
                     return "redirect:/admin/exams/{examId}/questions";
                 }
             }
+
+            if (req.getOptionType() == knou.cbt.domain.examquestion.model.OptionType.IMAGE) {
+                try {
+                    req.setOption1(uploadIfPresent(examId, req.getOption1File(), req.getOption1()));
+                    req.setOption2(uploadIfPresent(examId, req.getOption2File(), req.getOption2()));
+                    req.setOption3(uploadIfPresent(examId, req.getOption3File(), req.getOption3()));
+                    req.setOption4(uploadIfPresent(examId, req.getOption4File(), req.getOption4()));
+                } catch (IOException e) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "보기 이미지 업로드 중 오류가 발생했습니다.");
+                    return "redirect:/admin/exams/{examId}/questions";
+                }
+            }
         }
 
         examQuestionService.saveAll(examId, wrapper.getQuestions());
         redirectAttributes.addFlashAttribute("saveSuccess", true);
         return "redirect:/admin/exams/{examId}/questions";
+    }
+
+    /**
+     * 보기 이미지 파일이 새로 첨부된 경우에만 업로드하고 URL을 반환, 아니면 기존 값(existingUrl) 유지
+     */
+    private String uploadIfPresent(Long examId, MultipartFile file, String existingUrl) throws IOException {
+        if (file != null && !file.isEmpty()) {
+            return examQuestionStorageService.uploadQuestionImage(examId, file);
+        }
+        return existingUrl;
     }
 
 

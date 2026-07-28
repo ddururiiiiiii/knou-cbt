@@ -20,6 +20,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+EXAM_TYPE_MAP = {
+    "기말시험": "FINAL",
+    "계절학기시험": "SEASONAL",
+    "출석대체시험": "ATTENDANCE",
+}
+
 
 def get_or_create_department(cur, name: str) -> int:
     cur.execute("SELECT id FROM department WHERE department_name = %s", (name,))
@@ -72,6 +78,9 @@ def upload(json_path: str, db_url: str):
             print(f"오류: JSON에 '{key}' 필드가 없습니다.")
             sys.exit(1)
 
+    exam_type_raw = data["exam_type"]
+    exam_type = EXAM_TYPE_MAP.get(exam_type_raw, exam_type_raw)
+
     conn = psycopg2.connect(db_url)
     try:
         with conn:
@@ -88,7 +97,7 @@ def upload(json_path: str, db_url: str):
                 )
                 print(f"과목: {data['subject']} (id={subj_id})")
 
-                exam_id = get_or_create_exam(cur, subj_id, data["exam_type"], data["year"])
+                exam_id = get_or_create_exam(cur, subj_id, exam_type, data["year"])
                 print(f"시험: {data['year']}년 {data['exam_type']} (id={exam_id})")
 
                 inserted = 0

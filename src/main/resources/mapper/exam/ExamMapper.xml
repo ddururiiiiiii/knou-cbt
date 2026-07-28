@@ -59,7 +59,7 @@
         <where>
             <include refid="ExamFilter"/>
         </where>
-        ORDER BY e.id
+        ORDER BY d.department_name COLLATE "C", s.subject_name COLLATE "C", e.year DESC, e.id
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
@@ -120,6 +120,29 @@
         <where>
             subject_id = #{subjectId}
         </where>
+    </select>
+
+    <select id="findSubjectIdsWithExams" resultType="long">
+        SELECT DISTINCT subject_id
+        FROM exam
+        WHERE subject_id IN
+        <foreach item="subjectId" collection="subjectIds" open="(" separator="," close=")">
+            #{subjectId}
+        </foreach>
+    </select>
+
+    <select id="findExamTypesBySubject" resultType="knou.cbt.domain.exam.model.ExamType">
+        SELECT DISTINCT exam_type
+        FROM exam
+        WHERE subject_id = #{subjectId}
+    </select>
+
+    <select id="findYearsBySubjectAndType" resultType="int">
+        SELECT DISTINCT year
+        FROM exam
+        WHERE subject_id = #{subjectId}
+          AND exam_type = #{examType}
+        ORDER BY year DESC
     </select>
 
 </mapper>

@@ -3,44 +3,171 @@
 ----
 
 ## 📌 소개
-- KNOU CBT는 한국방송통신대학교 시험 대비를 위한 **온라인 시험 관리 시스템**입니다.  
-- 관리자는 시험 문제와 과목을 등록/수정/삭제할 수 있고, 사용자는 실제 시험처럼 문제를 풀고 결과를 확인할 수 있습니다.
+- KNOU CBT는 한국방송통신대학교 학생들을 위한 **비공식 전자 기출문제집 서비스**입니다.
+- 관리자는 학과/과목/시험/문제/공지사항을 등록·수정·삭제할 수 있고, 사용자는 실제 시험처럼 문제를 풀고 결과와 답안을 확인할 수 있습니다.
+- 현재 [Render](https://render.com) + [Supabase](https://supabase.com) 기반으로 배포되어 있는 Beta 서비스입니다.
 
 ----
 
 ## 🎯 목적
-- 종이 기반 시험 대비 학습의 불편함 개선
-- 웹 기반 시험 제공으로 접근성과 학습 효율 향상
-- 관리자와 사용자 모두에게 직관적인 UI 제공
+- 종이 기반 기출문제 학습의 불편함 개선
+- 웹 기반 CBT(Computer Based Test) 제공으로 접근성과 학습 효율 향상
+- 관리자와 사용자 모두에게 직관적인 UI/UX 제공
 
 ----
 
 ## 🛠 사용 기술
-- **Backend**: Spring Boot, Spring Security, MyBatis
-- **Frontend**: Thymeleaf, Bootstrap
-- **Build/Etc**: Gradle, Git
+
+| 구분 | 기술 |
+|---|---|
+| Backend | Spring Boot 3.2.6, Spring Security 6, MyBatis |
+| Frontend | Thymeleaf (+ Layout Dialect), Bootstrap 5.3.3, Vanilla JS |
+| Database | PostgreSQL, Flyway (스키마 마이그레이션) |
+| Storage | Supabase Storage (문제/공지 첨부 이미지) |
+| 파일 처리 | Apache POI (엑셀 문제 일괄 업로드), Jsoup (공지 본문 XSS Sanitize) |
+| 모니터링 | Sentry |
+| 배포 | Docker, Render |
+| Build/Etc | Gradle, Git |
+
+----
+
+## 🏗 아키텍처
+
+```mermaid
+flowchart LR
+    User["👩‍💻 사용자 / 관리자<br/>브라우저"]
+
+    subgraph App["Spring Boot 애플리케이션 (Render)"]
+        direction TB
+        Web["Thymeleaf + Bootstrap<br/>(서버사이드 렌더링)"]
+        Security["Spring Security<br/>(폼 로그인 · CSRF · 권한제어)"]
+        Service["Service Layer<br/>(도메인 로직)"]
+        Mapper["MyBatis Mapper"]
+        Web --> Security --> Service --> Mapper
+    end
+
+    DB[("PostgreSQL<br/>(Supabase)")]
+    Storage["🗂 Supabase Storage<br/>(문제/공지 이미지)"]
+    Sentry["📡 Sentry<br/>(에러 모니터링)"]
+
+    User -->|HTTPS| Web
+    Mapper -->|JDBC| DB
+    Service -->|이미지 업로드/조회| Storage
+    App -.->|예외 리포팅| Sentry
+
+    Flyway["Flyway<br/>마이그레이션"] -.->|앱 기동 시 자동 적용| DB
+```
 
 ----
 
 ## ✨ 주요 기능
 
 ### 👩‍💻 사용자(User) 기능
-- 로그인 및 권한에 따른 접근 제어
-- 시험 목록 조회 및 응시
-- 시험 문제 풀이 (타이머, 진행률 표시)
-- 시험 결과 확인 및 리뷰
-- 공지사항 열람
+- 학과 → 과목 → 구분(출석대체/기말/계절학기) → 년도 순 계층 검색으로 기출문제 빠르게 탐색
+- 홈 화면에서 학과별 기출문제 바로가기, 최근 공지 미리보기 확인
+- 시험 문제 풀이 (남은시간 타이머 · 진행률 · 답안지 실시간 반영)
+- 문제 보기는 텍스트 또는 **이미지**(2단/1단 레이아웃) 어느 쪽이든 지원, 문제 자체에 이미지 첨부도 가능
+- 정답은 단일/복수 선택 모두 지원 (예: `2` 또는 `2,3` 중 하나만 맞아도 정답 처리)
+- 시험 결과(점수 원형 그래프, 소요시간)와 문제별 정답/오답 리뷰 확인
+- 공지사항 열람 (고정 공지 상단 노출)
 
 ### 🛠 관리자(Admin) 기능
-- 학과/과목 CRUD
-    - 학과 삭제 시 연결된 과목이 있으면 삭제 불가 처리
-- 시험/문제 CRUD (문제, 보기, 정답 관리 + 첨부파일)
-- 공지사항 CRUD (Toast UI Editor 기반)
+- 학과/과목/시험 CRUD — 연결된 하위 데이터(과목→학과, 시험→과목, 문제→시험)가 있으면 삭제 방지
+- 문제 등록/수정 — 직접 입력 또는 엑셀 일괄 업로드, 보기 이미지 업로드, 문제별 미리보기(정답 표시)
+- 공지사항 CRUD (Toast UI Editor 기반, XSS 방지를 위한 서버측 Sanitize 적용)
+- 학과/과목/시험 목록 계층형 드롭다운 검색 + 페이지네이션
 
 ### 🌐 공통
-- Spring Security 기반 로그인/권한 관리
-- Thymeleaf Layout 적용 (일관된 화면 구조)
-- 예외 처리 및 유효성 검증 적용
+- Spring Security 기반 로그인/권한 관리 (자동 로그인 14일 유지)
+- CSP(Content Security Policy) 적용, 이미지 업로드 MIME/확장자 검증
+- Thymeleaf Layout 적용으로 전 화면 일관된 헤더/푸터 구조
+- 전역 예외 처리 (404/403/409/500 등 상황별 응답 분리)
+- Sentry 연동으로 운영 중 예외 실시간 모니터링
+
+----
+
+## 🗂 도메인 구조 (ERD)
+
+```mermaid
+erDiagram
+    DEPARTMENT ||--o{ SUBJECT : "has"
+    SUBJECT ||--o{ EXAM : "has"
+    EXAM ||--o{ EXAM_QUESTION : "has"
+    EXAM_QUESTION ||--o{ EXAM_QUESTION_ANSWER : "has"
+    USERS ||--o{ NOTICE : "writes"
+
+    DEPARTMENT {
+        bigint id PK
+        varchar department_name
+        char use_yn
+    }
+    SUBJECT {
+        bigint id PK
+        bigint department_id FK
+        varchar subject_name
+        varchar subject_category
+        int grade
+        char use_yn
+    }
+    EXAM {
+        bigint id PK
+        bigint subject_id FK
+        varchar exam_type
+        int year
+        char use_yn
+    }
+    EXAM_QUESTION {
+        bigint id PK
+        bigint exam_id FK
+        int question_no
+        varchar question_text
+        varchar option1
+        varchar option2
+        varchar option3
+        varchar option4
+        varchar image_url
+        varchar option_type
+        varchar image_layout
+    }
+    EXAM_QUESTION_ANSWER {
+        bigint id PK
+        bigint question_id FK
+        int option_no
+    }
+    NOTICE {
+        bigint id PK
+        varchar title
+        text content
+        boolean is_pinned
+        char use_yn
+    }
+    USERS {
+        bigint id PK
+        varchar email
+        varchar password
+        varchar role
+    }
+```
+
+----
+
+## 🔄 시험 응시 플로우
+
+```mermaid
+sequenceDiagram
+    participant U as 사용자
+    participant S as /exams/{id}/solve
+    participant R as /exams/{id}/solve (POST)
+    participant Rv as /exams/{id}/review
+
+    U->>S: 시험 목록에서 "문제 풀기" 클릭
+    S-->>U: 문제/보기/타이머/답안지 렌더링
+    U->>U: 답안 선택 (문제 영역 ↔ 답안지 실시간 동기화)
+    U->>R: 제출하기 (미응답 확인 후 최종 제출)
+    R-->>U: 점수 · 소요시간 · 격려 문구 표시 (세션에 답안 저장)
+    U->>Rv: 답안 확인하기
+    Rv-->>U: 문제별 정답/오답, 총 소요시간 리뷰
+```
 
 ----
 

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>처리할 수 없는 요청</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light d-flex align-items-center" style="height:100vh;">
+<div class="container text-center">
+    <h1 class="display-3 text-warning">409</h1>
+    <h3 class="mb-3">요청을 처리할 수 없습니다.</h3>
+    <p class="text-muted" th:text="${message}">다른 데이터에서 참조하고 있어 처리할 수 없습니다.</p>
+    <a href="/" class="btn btn-dark mt-3">홈으로 돌아가기</a>
+</div>
+</body>
+</html>

@@ -3,125 +3,347 @@
 <head>
     <meta charset="UTF-8">
     <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="/css/app.css" rel="stylesheet">
     <title>문제 풀기</title>
     <style>
-        .container {
-            max-width: 1100px;
+        body {
+            background: linear-gradient(160deg, var(--kcbt-accent-soft) 0%, var(--kcbt-bg) 420px);
+            background-attachment: fixed;
         }
-        .option span {
-            cursor: pointer;
+        .solve-container { max-width: 1200px; }
+        .solve-header {
+            background: var(--kcbt-surface);
+            border: 1px solid var(--kcbt-border);
+            border-top: 4px solid var(--kcbt-accent);
+            border-radius: var(--kcbt-radius);
+            box-shadow: var(--kcbt-shadow);
+            padding: 1rem 1.25rem;
+            position: sticky;
+            top: 0.75rem;
+            z-index: 10;
         }
-        .choice {
-            font-size: 30px;
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            line-height: 30px;
-            text-align: center;
+        .solve-subject-icon {
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
-            cursor: pointer;
+            background: var(--kcbt-accent-soft);
+            color: var(--kcbt-accent);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
         }
-        .choice.selected {
-            background: #333;
+        .question-container {
+            height: 68vh;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+        .answer-sheet {
+            height: 68vh;
+            overflow-y: auto;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            border: 1.5px solid var(--kcbt-border);
+            border-radius: var(--kcbt-radius-sm);
+            padding: 0.65rem 1rem;
+            margin-bottom: 0.6rem;
+            cursor: pointer;
+            transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+        }
+        .option:hover {
+            background-color: var(--kcbt-accent-soft);
+            border-color: var(--kcbt-accent);
+            transform: translateX(2px);
+        }
+        .option.selected {
+            background-color: var(--kcbt-accent-soft);
+            border-color: var(--kcbt-accent);
+        }
+        .option.selected .option-text {
+            color: var(--kcbt-accent-dark);
+            font-weight: 700;
+        }
+        .option-radio {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            border: 2px solid var(--kcbt-border);
+            font-size: 1.3rem;
+            line-height: 1;
+            color: var(--kcbt-muted);
+            transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        }
+        .option.selected .option-radio {
+            background: var(--kcbt-accent);
+            border-color: var(--kcbt-accent);
             color: #fff;
         }
-        .card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
+        .option-text {
+            cursor: pointer;
         }
-        /* 문제 영역 스크롤 */
-        .question-container {
-            max-height: 70vh;
-            overflow-y: auto;
-            padding-right: 10px;
+        .option-image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.6rem;
         }
-        /* 답안지 스크롤 */
-        .answer-sheet {
-            max-height: 70vh;
-            overflow-y: auto;
+        .option-image-grid.option-image-stack {
+            grid-template-columns: 1fr;
+        }
+        .option-image {
+            position: relative;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .option-image .option-badge {
+            position: absolute;
+            top: 0.4rem;
+            left: 0.4rem;
+            background: var(--kcbt-surface);
+            border: 1px solid var(--kcbt-border);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .option-image img {
+            max-width: 100%;
+            max-height: 160px;
+            object-fit: contain;
+            border-radius: 0.5rem;
+        }
+        .option-image.selected .option-badge {
+            background: var(--kcbt-accent);
+            color: #fff;
+            border-color: var(--kcbt-accent);
+        }
+        #questionList .card {
+            border-left: 3px solid var(--kcbt-border);
+            transition: border-color 0.2s ease;
+        }
+        #questionList .card.answered {
+            border-left-color: var(--kcbt-accent);
+        }
+        .answer-omr-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.3rem;
+            table-layout: fixed;
+        }
+        .answer-omr-table thead th {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--kcbt-ink);
+            text-align: center;
+            padding-bottom: 0.4rem;
+            position: sticky;
+            top: 0;
+            background: var(--kcbt-surface);
+        }
+        .answer-omr-table tbody tr {
+            background: var(--kcbt-bg);
+        }
+        .answer-omr-table td {
+            text-align: center;
+            padding: 0.4rem 0;
+        }
+        .answer-omr-table td.q-no {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--kcbt-muted);
+            border-radius: 0.4rem 0 0 0.4rem;
+        }
+        .answer-omr-table tr:has(.choice.selected) td.q-no {
+            color: var(--kcbt-accent-dark);
+            font-weight: 800;
+        }
+        .choice {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.6rem;
+            line-height: 1;
+            border: 2px solid var(--kcbt-border);
+            color: var(--kcbt-muted);
+            cursor: pointer;
+            transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease;
+        }
+        .choice:hover {
+            border-color: var(--kcbt-accent);
+            color: var(--kcbt-accent-dark);
+        }
+        .choice.selected {
+            background: var(--kcbt-accent);
+            border-color: var(--kcbt-accent);
+            color: #fff;
+            font-weight: 700;
+        }
+        .timer-plain {
+            text-align: right;
+        }
+        .timer-label {
+            font-size: 0.72rem;
+            color: var(--kcbt-muted);
+            line-height: 1;
+        }
+        .timer-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1.15;
+            font-variant-numeric: tabular-nums;
+            color: var(--kcbt-ink);
+        }
+        .solve-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .question-number-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--kcbt-accent-soft);
+            color: var(--kcbt-accent-dark);
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
         }
     </style>
 </head>
 <body>
-<div class="container mt-4">
-    <!-- 시험 정보 -->
-    <div class="mb-3">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h3 th:text="|${exam.subjectName} (${exam.examType.description})|"></h3>
-                <p class="mb-1 text-muted" th:text="|${exam.year}년도 ${exam.grade}학기|"></p>
-            </div>
-            <div class="d-flex align-items-center gap-1 mb-0">
-                <button type="button" class="btn btn-danger btn-sm" onclick="confirmSubmit()">시험 종료</button>
-                <a th:href="@{/exams}" class="btn btn-secondary btn-sm">돌아가기</a>
-            </div>
-        </div>
-
-        <div class="d-flex justify-content-between mt-2" style="font-size: 20px;">
-            <div>
-                전체문제 <span id="totalQ">[[${questions.size()}]]</span> /
-                푼문제 <span id="progress" style="color: blue;">0</span>
-            </div>
-            <div>
-                전체시간 : <span id="totalTime"></span> /
-                남은시간 : <span id="timeLeft" class="text-danger">00:00</span>
-            </div>
-        </div>
-
-        <!-- 프로그레스 바 -->
-        <div class="d-flex align-items-center mt-3" style="margin-bottom: 20px;">
-            <span class="me-2" style="font-weight: bold;">진행율 :</span>
-            <div class="progress flex-grow-1" style="height: 25px;">
-                <div id="progressBar"
-                     class="progress-bar bg-info"
-                     role="progressbar"
-                     style="width: 0%;"
-                     aria-valuenow="0"
-                     aria-valuemin="0"
-                     aria-valuemax="100">
-                    0%
+<div class="container solve-container mt-3">
+    <!-- 시험 정보 헤더 -->
+    <div class="solve-header mb-3">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="d-flex align-items-center">
+                <div class="solve-subject-icon"><i class="bi bi-pencil-square"></i></div>
+                <div>
+                    <div class="text-muted small" th:text="|${exam.departmentName} · ${exam.year}년도 ${exam.grade}학년|"></div>
+                    <h5 class="fw-bold mb-0" th:text="|${exam.subjectName} (${exam.examType.description})|"></h5>
                 </div>
             </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="timer-plain">
+                    <div class="timer-label">남은시간</div>
+                    <div id="timeLeft" class="timer-value">00:00</div>
+                </div>
+                <button type="button" id="submitExamBtn" class="btn btn-danger solve-action-btn">
+                    <i class="bi bi-check2-circle"></i> 제출하기
+                </button>
+                <a th:href="@{/exams}" id="backBtn" class="btn btn-outline-secondary solve-action-btn">
+                    <i class="bi bi-box-arrow-left"></i> 돌아가기
+                </a>
+            </div>
         </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3" style="font-size: 0.95rem;">
+            <div class="text-muted">
+                전체문제 <span id="totalQ" class="fw-bold text-body">[[${questions.size()}]]</span> ·
+                푼문제 <span id="progress" class="fw-bold" style="color: var(--kcbt-accent);">0</span> ·
+                남은문제 <span id="remaining" class="fw-bold text-danger">[[${questions.size()}]]</span> ·
+                전체시간 <span id="totalTime"></span>
+            </div>
+            <div class="fw-bold fs-5" style="color: var(--kcbt-accent);"><span id="progressPercent">0</span>%</div>
+        </div>
+        <div class="progress mt-2" style="height: 8px;">
+            <div id="progressBar"
+                 class="progress-bar"
+                 role="progressbar"
+                 style="width: 0%; background-color: var(--kcbt-accent);"
+                 aria-valuenow="0"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/help-banner :: banner('시험 시간은 문제당 1분씩 계산돼요 (예: 25문제면 총 25분). 시간이 다 되면 자동으로 제출됩니다.')}"></div>
 
     <div class="row">
         <!-- 좌측: 문제 영역 -->
         <div class="col-md-9 question-container" id="questionList">
             <form id="solveForm" th:action="@{/exams/{examId}/solve(examId=${exam.id})}"
                   th:object="${answerForm}" method="post">
-                <div th:each="q, iterStat : ${questions}" class="card mb-4 p-3" th:id="|question-${iterStat.index}|">
-                    <h5 class="fw-bold mb-3" th:text="|${iterStat.index + 1}. ${q.questionText}|"></h5>
-                    <div th:if="${q.imageUrl != null}" class="mt-2">
-                        <img th:src="${q.imageUrl}" alt="문제 이미지" style="max-width: 100%; height: auto;">
+                <input type="hidden" id="elapsedSeconds" name="elapsedSeconds" value="0">
+                <div th:each="q, iterStat : ${questions}" class="card mb-3 p-3" th:id="|question-${iterStat.index}|">
+                    <h6 class="fw-bold mb-3 d-flex align-items-start">
+                        <span class="question-number-badge" th:text="${iterStat.index + 1}"></span>
+                        <span th:text="${q.questionText}"></span>
+                    </h6>
+                    <div th:if="${q.imageUrl != null}" class="mb-3">
+                        <img th:src="${q.imageUrl}" alt="문제 이미지" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
                     </div>
-                    <div class="ms-3" style="font-size: 20px;">
-                        <div class="option" th:if="${q.option1 != null}">
+                    <!-- 보기가 텍스트인 경우 -->
+                    <div th:if="${q.optionType == null or q.optionType.name() != 'IMAGE'}">
+                        <div class="option" th:if="${q.option1 != null}" th:attr="data-index=${iterStat.index}" data-choice="1">
                             <input type="radio" class="d-none"
                                    th:field="*{answers[__${iterStat.index}__]}"
                                    value="1"
-                                   th:attr="onchange=|markAnswered(${iterStat.index}, this)|">
-                            <span th:onclick="|selectAnswer(${iterStat.index},1)|" th:text="|① ${q.option1}|"></span>
+                                   th:attr="data-index=${iterStat.index}">
+                            <span class="option-radio">①</span>
+                            <span class="option-text" th:text="${q.option1}"></span>
                         </div>
-                        <div class="option" th:if="${q.option2 != null}">
+                        <div class="option" th:if="${q.option2 != null}" th:attr="data-index=${iterStat.index}" data-choice="2">
                             <input type="radio" class="d-none"
                                    th:field="*{answers[__${iterStat.index}__]}"
                                    value="2"
-                                   th:attr="onchange=|markAnswered(${iterStat.index}, this)|">
-                            <span th:onclick="|selectAnswer(${iterStat.index},2)|" th:text="|② ${q.option2}|"></span>
+                                   th:attr="data-index=${iterStat.index}">
+                            <span class="option-radio">②</span>
+                            <span class="option-text" th:text="${q.option2}"></span>
                         </div>
-                        <div class="option" th:if="${q.option3 != null}">
+                        <div class="option" th:if="${q.option3 != null}" th:attr="data-index=${iterStat.index}" data-choice="3">
                             <input type="radio" class="d-none"
                                    th:field="*{answers[__${iterStat.index}__]}"
                                    value="3"
-                                   th:attr="onchange=|markAnswered(${iterStat.index}, this)|">
-                            <span th:onclick="|selectAnswer(${iterStat.index},3)|" th:text="|③ ${q.option3}|"></span>
+                                   th:attr="data-index=${iterStat.index}">
+                            <span class="option-radio">③</span>
+                            <span class="option-text" th:text="${q.option3}"></span>
                         </div>
-                        <div class="option" th:if="${q.option4 != null}">
+                        <div class="option" th:if="${q.option4 != null}" th:attr="data-index=${iterStat.index}" data-choice="4">
                             <input type="radio" class="d-none"
                                    th:field="*{answers[__${iterStat.index}__]}"
                                    value="4"
-                                   th:attr="onchange=|markAnswered(${iterStat.index}, this)|">
-                            <span th:onclick="|selectAnswer(${iterStat.index},4)|" th:text="|④ ${q.option4}|"></span>
+                                   th:attr="data-index=${iterStat.index}">
+                            <span class="option-radio">④</span>
+                            <span class="option-text" th:text="${q.option4}"></span>
+                        </div>
+                    </div>
+
+                    <!-- 보기가 이미지인 경우 -->
+                    <div th:if="${q.optionType != null and q.optionType.name() == 'IMAGE'}"
+                         th:class="${q.imageLayout != null and q.imageLayout.name() == 'STACK_1X4'} ? 'option-image-grid option-image-stack' : 'option-image-grid'">
+                        <div class="option option-image" th:each="n : ${#numbers.sequence(1, 4)}"
+                             th:if="${(n == 1 and q.option1 != null) or (n == 2 and q.option2 != null) or (n == 3 and q.option3 != null) or (n == 4 and q.option4 != null)}"
+                             th:attr="data-index=${iterStat.index}" th:data-choice="${n}">
+                            <input type="radio" class="d-none"
+                                   th:field="*{answers[__${iterStat.index}__]}"
+                                   th:value="${n}"
+                                   th:attr="data-index=${iterStat.index}">
+                            <span class="option-badge" th:text="${n == 1 ? '①' : (n == 2 ? '②' : (n == 3 ? '③' : '④'))}"></span>
+                            <img th:src="${n == 1 ? q.option1 : (n == 2 ? q.option2 : (n == 3 ? q.option3 : q.option4))}" alt="보기 이미지">
                         </div>
                     </div>
                 </div>
@@ -131,135 +353,38 @@
         <!-- 우측: 답안지 -->
         <div class="col-md-3">
             <div class="card answer-sheet p-3">
-                <h4>답안지</h4>
-                <div th:each="q, iterStat : ${questions}">
-                    <div th:if="${iterStat.index % 5 == 0}" class="mt-2 mb-2" th:unless="${iterStat.index == 0}">
-                        <hr>
-                    </div>
-                    <div class="symbols" th:id="|ans-${iterStat.index}|">
-                        <span class="question-no" style="font-size: 28px;">[[${iterStat.index + 1}]]. </span>
-                        <span class="choice" th:onclick="|selectAnswer(${iterStat.index},1)|">①</span>
-                        <span class="choice" th:onclick="|selectAnswer(${iterStat.index},2)|">②</span>
-                        <span class="choice" th:onclick="|selectAnswer(${iterStat.index},3)|">③</span>
-                        <span class="choice" th:onclick="|selectAnswer(${iterStat.index},4)|">④</span>
-                    </div>
-                </div>
+                <h6 class="fw-bold mb-3">답안지</h6>
+                <table class="answer-omr-table">
+                    <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>①</th>
+                            <th>②</th>
+                            <th>③</th>
+                            <th>④</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="q, iterStat : ${questions}">
+                        <tr th:id="|ans-${iterStat.index}|">
+                            <td class="q-no">[[${iterStat.index + 1}]]</td>
+                            <td><span class="choice" th:attr="data-index=${iterStat.index}" data-choice="1">①</span></td>
+                            <td><span class="choice" th:attr="data-index=${iterStat.index}" data-choice="2">②</span></td>
+                            <td><span class="choice" th:attr="data-index=${iterStat.index}" data-choice="3">③</span></td>
+                            <td><span class="choice" th:attr="data-index=${iterStat.index}" data-choice="4">④</span></td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    const totalQuestions = [[${questions.size()}]];
-    const totalSeconds = totalQuestions * 60;
-    let timeLeft = totalSeconds;
+<div th:replace="~{fragments/dialogs :: dialogs}"></div>
 
-    const totalTimeEl = document.getElementById("totalTime");
-    const timeLeftEl = document.getElementById("timeLeft");
-    const progressEl = document.getElementById("progress");
-    const form = document.getElementById("solveForm");
-
-    totalTimeEl.textContent = formatTime(totalSeconds);
-    updateProgress();
-
-    const timer = setInterval(() => {
-        timeLeft--;
-        timeLeftEl.textContent = formatTime(timeLeft);
-
-        if (timeLeft <= 300) {
-            timeLeftEl.classList.add("fw-bold", "blink");
-        }
-
-        if (timeLeft < 0) {
-            clearInterval(timer);
-            alert("시간이 종료되었습니다. 자동으로 제출됩니다.");
-            form.submit();
-        }
-    }, 1000);
-
-    function formatTime(sec) {
-        const minutes = String(Math.floor(sec / 60)).padStart(2, "0");
-        const seconds = String(sec % 60).padStart(2, "0");
-        return `${minutes}:${seconds}`;
-    }
-
-    function markAnswered(index, input) {
-        const selected = parseInt(input.value);
-
-        // ===== 답안지 갱신 =====
-        const ansDiv = document.getElementById(`ans-${index}`);
-        const choiceSpans = ansDiv.querySelectorAll(".choice");
-        choiceSpans.forEach((span, i) => {
-            span.classList.toggle("selected", i + 1 === selected);
-        });
-
-        // ===== 문제 보기 갱신 =====
-        const symbols = ["①", "②", "③", "④"];
-        const symbolsMarked = ["❶", "❷", "❸", "❹"];
-
-        const optionSpans = input.closest(".ms-3").querySelectorAll(".option span");
-        optionSpans.forEach((span, i) => {
-            const text = span.textContent.substring(2);
-            span.textContent = (i + 1 === selected)
-                ? symbolsMarked[i] + " " + text
-                : symbols[i] + " " + text;
-        });
-
-        updateProgress();
-    }
-
-    function selectAnswer(index, choice) {
-        const radios = document.getElementsByName(`answers[${index}]`);
-        if (!radios || radios.length === 0) return;
-        const target = [...radios].find(r => r.value == choice);
-        if (target) {
-            target.checked = true;
-            target.dispatchEvent(new Event("change"));
-        }
-    }
-
-    function updateProgress() {
-        let answeredCount = 0;
-        for (let i = 0; i < totalQuestions; i++) {
-            const radios = document.getElementsByName(`answers[${i}]`);
-            if ([...radios].some(r => r.checked)) {
-                answeredCount++;
-            }
-        }
-        progressEl.textContent = answeredCount;
-        // ===== 프로그레스 바 갱신 =====
-        const percent = Math.round((answeredCount / totalQuestions) * 100);
-        const progressBar = document.getElementById("progressBar");
-        progressBar.style.width = percent + "%";
-        progressBar.setAttribute("aria-valuenow", percent);
-        progressBar.textContent = percent + "%";
-    }
-
-    function confirmSubmit() {
-        const unanswered = [];
-        for (let i = 0; i < totalQuestions; i++) {
-            const radios = document.getElementsByName(`answers[${i}]`);
-            if (![...radios].some(r => r.checked)) {
-                unanswered.push(i + 1);
-            }
-        }
-
-        if (unanswered.length > 0) {
-            if (confirm(`안 푼 문제가 있습니다: ${unanswered.join(", ")}\n그래도 제출하시겠습니까?`)) {
-                clearInterval(timer);
-                form.submit();
-            } else {
-                document.getElementById(`question-${unanswered[0]-1}`)
-                    .scrollIntoView({behavior: "smooth"});
-            }
-            return;
-        }
-
-        if (confirm("정말 시험을 종료하고 제출하시겠습니까?")) {
-            clearInterval(timer);
-            form.submit();
-        }
-    }
-</script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script src="/js/ui-dialog.js"></script>
+<script src="/js/exam-solve.js"></script>
 </body>
 </html>

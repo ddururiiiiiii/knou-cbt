@@ -6,11 +6,10 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${formTitle}">과목 등록/수정</title>
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div layout:fragment="content">
-    <div class="py-5 text-center">
+    <div class="py-3 text-center">
         <h2 th:text="${formTitle}">과목 등록/수정</h2>
     </div>
 
@@ -90,8 +89,8 @@
         <div class="mb-3" th:if="${mode == 'edit'}">
             <label for="useYn" class="form-label">사용 여부</label>
             <select class="form-select" id="useYn" th:field="*{useYn}">
-                <option value="Y">Y</option>
-                <option value="N">N</option>
+                <option value="Y">사용</option>
+                <option value="N">미사용</option>
             </select>
         </div>
 

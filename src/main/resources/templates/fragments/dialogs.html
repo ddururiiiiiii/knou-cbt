@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="dialogs">
+    <div class="modal fade" id="appConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="appConfirmModalTitle">확인</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+                </div>
+                <div class="modal-body" id="appConfirmModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="appConfirmModalCancel" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-danger" id="appConfirmModalOk">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="appAlertModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="appAlertModalTitle">알림</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+                </div>
+                <div class="modal-body" id="appAlertModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="appAlertModalOk" data-bs-dismiss="modal">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -37,12 +37,21 @@ public class SubjectViewController {
     public String list(@Valid PageRequest pageRequest,
                        @RequestParam(required = false) String keyword,
                        @RequestParam(required = false) String useYn,
+                       @RequestParam(required = false) Long departmentId,
+                       @RequestParam(required = false) Integer grade,
+                       @RequestParam(required = false) SubjectCategory subjectCategory,
                        Model model) {
-        PageResponse<SubjectResponse> pageResponse = subjectService.listPage(keyword, useYn, pageRequest);
+        PageResponse<SubjectResponse> pageResponse =
+                subjectService.listPage(keyword, useYn, departmentId, grade, subjectCategory, pageRequest);
 
         model.addAttribute("pagination", pageResponse);
         model.addAttribute("keyword", keyword);
         model.addAttribute("useYn", useYn);
+        model.addAttribute("departmentId", departmentId);
+        model.addAttribute("grade", grade);
+        model.addAttribute("subjectCategory", subjectCategory);
+        model.addAttribute("departments", departmentService.findAll());
+        model.addAttribute("categories", SubjectCategory.values());
 
         return "admin/subject/subjectList";
     }

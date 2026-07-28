@@ -34,6 +34,7 @@ public class ExamDtoMapper {
     }
     public static ExamRequest toRequest(ExamResponse response) {
         ExamRequest req = new ExamRequest();
+        req.setId(response.id());
         req.setSubjectId(response.subjectId());
         req.setExamType(response.examType());
         req.setYear(response.year());

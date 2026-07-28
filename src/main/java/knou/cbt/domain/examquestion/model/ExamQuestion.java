@@ -18,12 +18,15 @@ public class ExamQuestion {
     private String option3;
     private String option4;
     private String imageUrl;
+    private OptionType optionType;
+    private ImageLayout imageLayout;
 
     public static ExamQuestion create(Long id, Long examId, int questionNo,
                                       String questionText,
                                       String option1, String option2,
-                                      String option3, String option4, String imageUrl) {
+                                      String option3, String option4, String imageUrl,
+                                      OptionType optionType, ImageLayout imageLayout) {
         return new ExamQuestion(id, examId, questionNo, questionText,
-                option1, option2, option3, option4, imageUrl);
+                option1, option2, option3, option4, imageUrl, optionType, imageLayout);
     }
 }

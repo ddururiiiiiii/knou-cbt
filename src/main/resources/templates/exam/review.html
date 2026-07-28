@@ -1,114 +1,165 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <link href="/css/bootstrap.min.css" rel="stylesheet">
-  <title>문제 다시보기</title>
-  <style>
-    .container { max-width: 1100px; }
-    .option span { cursor: default; } /* 클릭 못하게 */
-    .choice { font-size: 35px; margin: 0 4px; }
-    .correct { color: green; font-weight: bold; }
-    .user { color: black; font-weight: bold; }
-    .card { border: 1px solid #ddd; border-radius: 8px; }
-  </style><!DOCTYPE html>
-    <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <link href="/css/bootstrap.min.css" rel="stylesheet">
-        <title>문제 다시보기</title>
-        <style>
-            .container { max-width: 1100px; }
-            .option span { cursor: default; } /* 클릭 못하게 */
-            .choice { font-size: 35px; margin: 0 4px; }
-            .correct { color: green; font-weight: bold; }
-            .user { color: black; font-weight: bold; }
-            .card { border: 1px solid #ddd; border-radius: 8px; }
-        </style>
-    </head>
+    <meta charset="UTF-8">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css">
+    <link href="/css/app.css" rel="stylesheet">
+    <title>답안 확인</title>
+    <style>
+        body {
+            background: linear-gradient(160deg, var(--kcbt-accent-soft) 0%, var(--kcbt-bg) 420px);
+            background-attachment: fixed;
+        }
+        .review-container { max-width: 900px; }
+        .review-hero {
+            background: var(--kcbt-surface);
+            border: 1px solid var(--kcbt-border);
+            border-top: 4px solid var(--kcbt-accent);
+            border-radius: var(--kcbt-radius);
+            box-shadow: var(--kcbt-shadow);
+            padding: 1.25rem 1.5rem;
+        }
+        .review-hero-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--kcbt-accent-soft);
+            color: var(--kcbt-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        .review-choice { font-size: 1.05rem; padding: 0.35rem 0; display: flex; align-items: center; gap: 0.75rem; }
+        .review-choice-no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            border: 2px solid var(--kcbt-border);
+            font-size: 1.1rem;
+            color: var(--kcbt-muted);
+        }
+        .review-choice.is-correct { color: #16a34a; font-weight: 700; }
+        .review-choice.is-correct .review-choice-no { background: #16a34a; border-color: #16a34a; color: #fff; }
+        .review-choice.is-user-wrong { color: #dc2626; font-weight: 700; text-decoration: line-through; }
+        .review-choice.is-user-wrong .review-choice-no { background: #dc2626; border-color: #dc2626; color: #fff; text-decoration: none; }
+        .question-card {
+            border: 1px solid var(--kcbt-border);
+            border-left: 5px solid var(--kcbt-border);
+        }
+        .question-card.wrong { border-left-color: #dc2626; background-color: #fef7f7; }
+        .question-card.right { border-left-color: #16a34a; background-color: #f6fdf9; }
+        .review-image-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+        .review-image-grid.stack { grid-template-columns: 1fr; }
+        .review-image-choice { position: relative; text-align: center; padding: 0.5rem; border-radius: 0.5rem; border: 2px solid transparent; background: var(--kcbt-surface); }
+        .review-image-choice img { max-width: 100%; max-height: 150px; object-fit: contain; border-radius: 0.5rem; }
+        .review-image-choice .badge-no { position: absolute; top: 0.3rem; left: 0.3rem; background: var(--kcbt-surface); border: 1px solid var(--kcbt-border); border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+        .review-image-choice.is-correct { border-color: #16a34a; }
+        .review-image-choice.is-correct .badge-no { background: #16a34a; color: #fff; border-color: #16a34a; }
+        .review-image-choice.is-user-wrong { border-color: #dc2626; }
+        .review-image-choice.is-user-wrong .badge-no { background: #dc2626; color: #fff; border-color: #dc2626; }
+    </style>
+</head>
 <body>
-<div class="container mt-4">
-  <!-- 시험 정보 -->
-  <div class="mb-3">
-    <div class="d-flex justify-content-between align-items-center">
-      <div>
-        <h3 th:text="|${exam.subjectName} (${exam.examType.description})|"></h3>
-        <p class="mb-1 text-muted" th:text="|${exam.year}년도 ${exam.grade}학기|"></p>
-      </div>
-      <div>
-        <a th:href="@{/exams}" class="btn btn-secondary btn-sm">돌아가기</a>
-      </div>
+<div class="container review-container py-4">
+
+    <!-- 시험 정보 -->
+    <div class="review-hero d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div class="d-flex align-items-center">
+            <div class="review-hero-icon"><i class="bi bi-search"></i></div>
+            <div>
+                <p class="text-muted mb-1" th:text="|${exam.departmentName} · ${exam.year}년도 ${exam.grade}학년|"></p>
+                <h3 class="fw-bold mb-0" th:text="|${exam.subjectName} (${exam.examType.description})|"></h3>
+            </div>
+        </div>
+        <a th:href="@{/exams}" class="btn btn-secondary btn-sm"><i class="bi bi-list"></i> 목록으로</a>
     </div>
 
     <!-- 점수 요약 -->
-    <div class="d-flex justify-content-between mt-2" style="font-size: 20px;">
-      <div>
-        총문제: <span th:text="${questions.size()}"></span> /
-        맞은문제: <span class="text-success fw-bold" th:text="${score}"></span> /
-        틀린문제: <span class="text-danger fw-bold" th:text="${questions.size() - score}"></span>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <!-- 문제 영역 -->
-    <div class="col-md-12 question-container" id="questionList">
-      <div th:each="q, iterStat : ${questions}"
-           class="card mb-4 p-3"
-           th:id="|question-${iterStat.index}|">
-
-        <!-- ✅ 정답 여부 (문제 위에 표시) -->
-          <!-- 정답 여부 -->
-          <div class="mb-2">
-              <span th:if="${correctAnswersList[iterStat.index].contains(userAnswers[iterStat.index])}"
-                    class="text-success fw-bold">정답 ✅</span>
-              <span th:if="${!correctAnswersList[iterStat.index].contains(userAnswers[iterStat.index])}"
-                    class="text-danger fw-bold">오답 ❌</span>
-          </div>
-
-        <!-- 문제 본문 -->
-        <h5 class="fw-bold mb-3"
-            th:text="|${iterStat.index + 1}. ${q.questionText}|"></h5>
-
-        <!-- 보기들 -->
-        <div class="ms-3" style="font-size: 20px;">
-            <!-- 보기 1 -->
-            <div class="option" th:if="${q.option1 != null}">
-                  <span th:text="|${(userAnswers[iterStat.index] == '1') ? '❶' : '①'} ${q.option1}|"
-                        th:classappend="${correctAnswersList[iterStat.index].contains('1') ? 'correct'
-                                        : (userAnswers[iterStat.index] == '1' ? 'user' : '')}">
-                  </span>
+    <div class="card p-3 mb-4 mt-3">
+        <div class="row g-2 text-center">
+            <div class="col-3">
+                <div class="p-3 rounded-3" style="background-color: var(--kcbt-bg);">
+                    <div class="fs-4 fw-bold" th:text="${questions.size()}"></div>
+                    <div class="text-muted small">총 문제</div>
+                </div>
             </div>
-
-            <!-- 보기 2 -->
-            <div class="option" th:if="${q.option2 != null}">
-                  <span th:text="|${(userAnswers[iterStat.index] == '2') ? '❷' : '②'} ${q.option2}|"
-                        th:classappend="${correctAnswersList[iterStat.index].contains('2') ? 'correct'
-                                        : (userAnswers[iterStat.index] == '2' ? 'user' : '')}">
-                  </span>
+            <div class="col-3">
+                <div class="p-3 rounded-3" style="background-color: #ecfdf5;">
+                    <div class="fs-4 fw-bold text-success" th:text="${score}"></div>
+                    <div class="text-muted small">맞은 문제</div>
+                </div>
             </div>
-
-            <!-- 보기 3 -->
-            <div class="option" th:if="${q.option3 != null}">
-                  <span th:text="|${(userAnswers[iterStat.index] == '3') ? '❸' : '③'} ${q.option3}|"
-                        th:classappend="${correctAnswersList[iterStat.index].contains('3') ? 'correct'
-                                        : (userAnswers[iterStat.index] == '3' ? 'user' : '')}">
-                  </span>
+            <div class="col-3">
+                <div class="p-3 rounded-3" style="background-color: #fef2f2;">
+                    <div class="fs-4 fw-bold text-danger" th:text="${questions.size() - score}"></div>
+                    <div class="text-muted small">틀린 문제</div>
+                </div>
             </div>
-
-            <!-- 보기 4 -->
-            <div class="option" th:if="${q.option4 != null}">
-                  <span th:text="|${(userAnswers[iterStat.index] == '4') ? '❹' : '④'} ${q.option4}|"
-                        th:classappend="${correctAnswersList[iterStat.index].contains('4') ? 'correct'
-                                        : (userAnswers[iterStat.index] == '4' ? 'user' : '')}">
-                  </span>
+            <div class="col-3">
+                <div class="p-3 rounded-3" style="background-color: var(--kcbt-accent-soft);">
+                    <div class="fs-4 fw-bold" style="color: var(--kcbt-accent-dark);"
+                         th:text="|${elapsedSeconds / 60}:${#numbers.formatInteger(elapsedSeconds % 60, 2)}|"></div>
+                    <div class="text-muted small">총 소요시간</div>
+                </div>
             </div>
-
-
         </div>
-      </div>
     </div>
-  </div>
+
+    <!-- 문제별 답안 -->
+    <div th:each="q, iterStat : ${questions}"
+         class="card mb-3 p-3 question-card"
+         th:classappend="${correctAnswersList[iterStat.index].contains(userAnswers[iterStat.index])} ? 'right' : 'wrong'">
+
+        <div class="mb-2">
+            <span th:if="${correctAnswersList[iterStat.index].contains(userAnswers[iterStat.index])}"
+                  class="badge bg-success"><i class="bi bi-check-lg"></i> 정답</span>
+            <span th:if="${!correctAnswersList[iterStat.index].contains(userAnswers[iterStat.index])}"
+                  class="badge bg-danger"><i class="bi bi-x-lg"></i> 오답</span>
+        </div>
+
+        <h6 class="fw-bold mb-3" th:text="|${iterStat.index + 1}. ${q.questionText}|"></h6>
+
+        <div class="ms-2" th:if="${q.optionType == null or q.optionType.name() != 'IMAGE'}">
+            <div class="review-choice" th:if="${q.option1 != null}"
+                 th:classappend="${correctAnswersList[iterStat.index].contains('1')} ? 'is-correct' : (${userAnswers[iterStat.index] == '1'} ? 'is-user-wrong' : '')">
+                <span class="review-choice-no">①</span><span th:text="${q.option1}"></span>
+            </div>
+            <div class="review-choice" th:if="${q.option2 != null}"
+                 th:classappend="${correctAnswersList[iterStat.index].contains('2')} ? 'is-correct' : (${userAnswers[iterStat.index] == '2'} ? 'is-user-wrong' : '')">
+                <span class="review-choice-no">②</span><span th:text="${q.option2}"></span>
+            </div>
+            <div class="review-choice" th:if="${q.option3 != null}"
+                 th:classappend="${correctAnswersList[iterStat.index].contains('3')} ? 'is-correct' : (${userAnswers[iterStat.index] == '3'} ? 'is-user-wrong' : '')">
+                <span class="review-choice-no">③</span><span th:text="${q.option3}"></span>
+            </div>
+            <div class="review-choice" th:if="${q.option4 != null}"
+                 th:classappend="${correctAnswersList[iterStat.index].contains('4')} ? 'is-correct' : (${userAnswers[iterStat.index] == '4'} ? 'is-user-wrong' : '')">
+                <span class="review-choice-no">④</span><span th:text="${q.option4}"></span>
+            </div>
+        </div>
+
+        <div th:if="${q.optionType != null and q.optionType.name() == 'IMAGE'}"
+             th:class="${q.imageLayout != null and q.imageLayout.name() == 'STACK_1X4'} ? 'review-image-grid stack' : 'review-image-grid'">
+            <div class="review-image-choice" th:each="n : ${#numbers.sequence(1, 4)}"
+                 th:if="${(n == 1 and q.option1 != null) or (n == 2 and q.option2 != null) or (n == 3 and q.option3 != null) or (n == 4 and q.option4 != null)}"
+                 th:classappend="${correctAnswersList[iterStat.index].contains(''+n)} ? 'is-correct' : (${userAnswers[iterStat.index] == ''+n} ? 'is-user-wrong' : '')">
+                <span class="badge-no" th:text="${n == 1 ? '①' : (n == 2 ? '②' : (n == 3 ? '③' : '④'))}"></span>
+                <img th:src="${n == 1 ? q.option1 : (n == 2 ? q.option2 : (n == 3 ? q.option3 : q.option4))}" alt="보기 이미지">
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center my-4">
+        <a th:href="@{/exams}" class="btn btn-secondary"><i class="bi bi-list"></i> 목록으로</a>
+    </div>
 </div>
 </body>
 </html>

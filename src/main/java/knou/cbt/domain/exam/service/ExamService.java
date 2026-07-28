@@ -7,6 +7,8 @@ import knou.cbt.domain.exam.dto.ExamResponse;
 import knou.cbt.domain.exam.model.ExamType;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 public interface ExamService {
 
     PageResponse<ExamResponse> listPage(
@@ -31,4 +33,8 @@ public interface ExamService {
     void update(Long id, ExamRequest req);
 
     void delete(Long id);
+
+    List<ExamType> findExamTypesBySubject(Long subjectId);
+
+    List<Integer> findYearsBySubjectAndType(Long subjectId, ExamType examType);
 }

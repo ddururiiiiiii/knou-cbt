@@ -2,21 +2,9 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}" xmlns:sec="http://www.w3.org/1999/xhtml">
+      layout:decorate="~{layout/layout}">
 <head>
     <title>시험 문제</title>
-</head>
-<style>
-    .table td input {
-        width: 100%;
-        border: none;
-        background: transparent;
-    }
-    .table td input:focus {
-        outline: 1px solid #0d6efd;
-        background: #f8f9fa;
-    }
-</style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -25,21 +13,23 @@
         <h2>시험 문제 관리</h2>
     </div>
 
+    <div th:replace="~{fragments/help-banner :: banner('문제를 직접 입력하거나 엑셀로 일괄 업로드할 수 있어요. 정답은 쉼표로 구분해 여러 개 입력할 수 있습니다 (예: 1,3).')}"></div>
+
     <div th:if="${saveSuccess}" class="alert alert-success" role="alert">
         저장이 완료되었습니다!
     </div>
 
     <!-- 시험 기본 정보 -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">시험 정보</h5>
-            <p class="card-text">
-                <strong th:text="${exam.departmentName}">학과</strong> /
-                <span th:text="${exam.subjectName}">과목</span> /
-                <span th:text="${exam.examType.description}">구분</span> /
-                <span th:text="|${exam.grade} 학년|">학년</span> /
-                <span th:text="|${exam.year} 년도|">년도</span>
-            </p>
+    <div class="card mb-4" style="border-left: 4px solid var(--kcbt-accent);">
+        <div class="card-body py-3">
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <span class="badge rounded-pill" style="background-color: var(--kcbt-accent-soft); color: var(--kcbt-accent-dark);"
+                      th:text="${exam.departmentName}">학과</span>
+                <h5 class="fw-bold mb-0" th:text="${exam.subjectName}">과목</h5>
+                <span class="text-muted">·</span>
+                <span class="badge bg-secondary" th:text="${exam.examType.description}">구분</span>
+                <span class="text-muted small" th:text="|${exam.grade}학년 · ${exam.year}년도|">학년/년도</span>
+            </div>
         </div>
     </div>
 
@@ -50,9 +40,8 @@
 
         <form th:action="@{/admin/exams/{examId}/questions/excel-upload(examId=${exam.id})}"
               method="post" enctype="multipart/form-data" class="d-inline">
-            <input type="file" id="excelFile" name="file" accept=".xlsx,.xls"
-                   style="display: none;" onchange="this.form.submit();">
-            <button type="button" class="btn btn-outline-primary" onclick="confirmAndUpload()">
+            <input type="file" id="excelFile" name="file" accept=".xlsx,.xls" style="display: none;">
+            <button type="button" id="uploadExcelBtn" class="btn btn-outline-primary">
                 엑셀 업로드
             </button>
         </form>
@@ -64,14 +53,15 @@
 
         <div class="d-flex justify-content-between mb-3">
             <div>
-                <button type="button" class="btn btn-success" onclick="addRow()">행 추가</button>
-                <button type="button" class="btn btn-danger" onclick="deleteSelectedRows()">선택 행 삭제</button>
-                <button type="button" class="btn btn-info" onclick="sortRows()">번호 자동정렬</button>
+                <button type="button" id="addRowBtn" class="btn btn-success">행 추가</button>
+                <button type="button" id="deleteSelectedBtn" class="btn btn-danger">선택 행 삭제</button>
+                <button type="button" id="sortRowsBtn" class="btn btn-info">번호 자동정렬</button>
             </div>
             <div>
                 <a th:href="@{/exams}" class="btn btn-secondary">목록으로</a>
                 <a href="javascript:void(0);"
-                   th:onclick="|openPreview(${exam.id})|"
+                   id="previewBtn"
+                   th:data-exam-id="${exam.id}"
                    class="btn btn-warning">미리보기</a>
                 <button type="submit" class="btn btn-primary">저장</button>
             </div>
@@ -79,25 +69,30 @@
 
         <span id="questionCount" class="me-3 fw-bold">총 <span id="countValue" th:text="${#lists.size(questions)}">0</span> 문제</span>
 
-        <table class="table table-bordered text-center align-middle">
+        <div class="table-responsive">
+        <table class="table table-bordered text-center align-middle question-table">
             <colgroup>
-                <col style="width: 5%;">   <!-- 선택 -->
-                <col style="width: 5%;">   <!-- 번호 -->
-                <col style="width: 20%;">  <!-- 문제 -->
+                <col style="width: 4%;">   <!-- 선택 -->
+                <col style="width: 4%;">   <!-- 번호 -->
+                <col style="width: 15%;">  <!-- 문제 -->
+                <col style="width: 8%;">  <!-- 보기유형 -->
+                <col style="width: 8%;">  <!-- 레이아웃 -->
                 <col style="width: 9%;">  <!-- 보기1 -->
                 <col style="width: 9%;">  <!-- 보기2 -->
                 <col style="width: 9%;">  <!-- 보기3 -->
                 <col style="width: 9%;">  <!-- 보기4 -->
-                <col style="width: 9%;">  <!-- 정답 -->
-                <col style="width: 5%;"> <!-- 이미지 파일명 -->
-                <col style="width: 15%;"> <!-- 업로드 -->
-                <col style="width: 5%;">   <!-- 삭제 -->
+                <col style="width: 7%;">  <!-- 정답 -->
+                <col style="width: 4%;"> <!-- 이미지 파일명 -->
+                <col style="width: 10%;"> <!-- 업로드 -->
+                <col style="width: 4%;">   <!-- 삭제 -->
             </colgroup>
             <thead class="table-light">
             <tr>
-                <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)"/></th>
+                <th><input type="checkbox" id="selectAll"/></th>
                 <th>번호</th>
                 <th>문제</th>
+                <th>보기유형</th>
+                <th>레이아웃</th>
                 <th>보기1</th>
                 <th>보기2</th>
                 <th>보기3</th>
@@ -109,22 +104,53 @@
             </tr>
             </thead>
             <tbody id="questionTable">
-            <tr th:each="q, iterStat : ${questions}">
+            <tr th:each="q, iterStat : ${questions}"
+                th:classappend="${q.optionType != null and q.optionType.name() == 'IMAGE'} ? 'row-option-image'">
                 <td><input type="checkbox" class="row-check"/></td>
                 <td>
                     <input type="text" class="form-control" th:name="|questions[${iterStat.index}].questionNo|"
-                           th:value="${q.questionNo}" oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
+                           th:value="${q.questionNo}"/>
                     <div class="invalid-feedback">숫자만 입력</div>
                 </td>
                 <td><input type="text" class="form-control" th:name="|questions[${iterStat.index}].questionText|" th:value="${q.questionText}"/></td>
-                <td><input type="text" class="form-control" th:name="|questions[${iterStat.index}].option1|" th:value="${q.option1}"/></td>
-                <td><input type="text" class="form-control" th:name="|questions[${iterStat.index}].option2|" th:value="${q.option2}"/></td>
-                <td><input type="text" class="form-control" th:name="|questions[${iterStat.index}].option3|" th:value="${q.option3}"/></td>
-                <td><input type="text" class="form-control" th:name="|questions[${iterStat.index}].option4|" th:value="${q.option4}"/></td>
+                <td>
+                    <select class="form-select form-select-sm option-type-select"
+                            th:name="|questions[${iterStat.index}].optionType|">
+                        <option value="TEXT" th:selected="${q.optionType == null or q.optionType.name() == 'TEXT'}">텍스트</option>
+                        <option value="IMAGE" th:selected="${q.optionType != null and q.optionType.name() == 'IMAGE'}">이미지</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="form-select form-select-sm image-layout-select"
+                            th:name="|questions[${iterStat.index}].imageLayout|"
+                            th:disabled="${q.optionType == null or q.optionType.name() != 'IMAGE'}">
+                        <option value="GRID_2X2" th:selected="${q.imageLayout == null or q.imageLayout.name() == 'GRID_2X2'}">2단(2x2)</option>
+                        <option value="STACK_1X4" th:selected="${q.imageLayout != null and q.imageLayout.name() == 'STACK_1X4'}">1단(세로4줄)</option>
+                    </select>
+                </td>
+                <td th:each="n : ${#numbers.sequence(1, 4)}"
+                    th:with="optVal=${n == 1 ? q.option1 : (n == 2 ? q.option2 : (n == 3 ? q.option3 : q.option4))}">
+                    <input type="text" class="form-control form-control-sm option-text-input mb-1"
+                           th:name="|questions[${iterStat.index}].option__${n}__|"
+                           th:value="${optVal}"/>
+                    <input type="file" class="form-control form-control-sm option-file-input" accept="image/*"
+                           th:name="|questions[${iterStat.index}].option__${n}__File|"/>
+                    <span th:if="${optVal != null and optVal.startsWith('http')}"
+                          class="text-primary option-image-preview"
+                          style="cursor:pointer;"
+                          data-bs-toggle="tooltip"
+                          data-bs-html="true"
+                          th:title="|<img src='${optVal}' style='max-width:200px'/>|">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-image" viewBox="0 0 16 16">
+                          <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                          <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
+                        </svg>
+                    </span>
+                </td>
                 <td>
                     <input type="text" class="form-control"
                            th:name="|questions[${iterStat.index}].answers|"
-                           th:value="${q.answers}" oninput="this.value = this.value.replace(/[^0-9,]/g, '')"/>
+                           th:value="${q.answers}"/>
                     <div class="invalid-feedback">숫자(쉼표 구분)만 입력</div>
                 </td>
                 <td th:if="${q.imageUrl != null}">
@@ -150,194 +176,17 @@
                            accept="image/*"/>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">삭제</button>
+                    <button type="button" class="btn btn-danger btn-sm btn-delete-row">삭제</button>
                 </td>
             </tr>
             </tbody>
         </table>
+        </div>
 
     </form>
 </div>
 </body>
 <th:block layout:fragment="script">
-    <script>
-        window.addEventListener("DOMContentLoaded", () => {
-            updateQuestionCount();
-            initTooltips();
-        });
-        function updateQuestionCount() {
-            const tbody = document.getElementById('questionTable');
-            const count = tbody.rows.length;
-            document.getElementById('countValue').textContent = count;
-        }
-
-        function addRow() {
-            const tbody = document.getElementById('questionTable');
-            const rowCount = tbody.rows.length;
-
-            if (rowCount >= 35) {
-                alert("더 이상 행을 추가할 수 없습니다. (최대 35문제)");
-                return;
-            }
-
-            const row = tbody.insertRow();
-
-            // 체크박스 열
-            let cell = row.insertCell();
-            cell.innerHTML = `<input type="checkbox" class="row-check"/>`;
-
-            // 컬럼 정의
-            const cols = [
-                'questionNo','questionText',
-                'option1','option2','option3','option4',
-                'answers','imagePreview','imageFile'
-            ];
-
-            cols.forEach((col, i) => {
-                cell = row.insertCell();
-                if (col === 'questionNo') {
-                    cell.innerHTML = `
-                <input type="text"
-                       class="form-control"
-                       name="questions[${rowCount}].${col}"
-                       value="${rowCount+1}"
-                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
-                <div class="invalid-feedback">숫자만 입력</div>
-            `;
-                } else if (col === 'answers') {
-                    cell.innerHTML = `
-                <input type="text"
-                       class="form-control"
-                       name="questions[${rowCount}].${col}"
-                       oninput="this.value = this.value.replace(/[^0-9,]/g, '')"/>
-                <div class="invalid-feedback">숫자(쉼표 구분)만 입력</div>
-            `;
-                } else if (col === 'imagePreview') {
-                    // 새 행 추가 시에는 아직 이미지 없음 → "-"
-                    cell.innerHTML = `<span class="text-muted">-</span>`;
-                } else if (col === 'imageFile') {
-                    cell.innerHTML = `
-                <input type="file"
-                       class="form-control"
-                       name="questions[${rowCount}].imageFile"
-                       accept="image/*"
-                       onchange="previewImage(this, ${rowCount})"/>`;
-                } else {
-                    cell.innerHTML = `
-                <input type="text"
-                       class="form-control"
-                       name="questions[${rowCount}].${col}"/>`;
-                }
-            });
-
-            // 삭제 버튼 열
-            cell = row.insertCell();
-            cell.innerHTML = `<button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">삭제</button>`;
-            updateQuestionCount();
-        }
-
-
-        function deleteRow(btn) {
-            const row = btn.closest("tr");
-            row.remove();
-            updateQuestionCount();
-        }
-
-        function deleteSelectedRows() {
-            const checks = document.querySelectorAll('.row-check:checked');
-            if (checks.length === 0) {
-                alert("삭제할 문제를 선택해주세요.");
-                return;
-            }
-            checks.forEach(chk => chk.closest('tr').remove());
-            updateQuestionCount();
-        }
-
-        function sortRows() {
-            const tbody = document.getElementById('questionTable');
-            const rows = Array.from(tbody.rows);
-
-            // 번호 기준으로 오름차순 정렬
-            rows.sort((a, b) => {
-                const aVal = parseInt(a.querySelector("input[name*='.questionNo']").value) || 0;
-                const bVal = parseInt(b.querySelector("input[name*='.questionNo']").value) || 0;
-                return aVal - bVal;
-            });
-
-            // 기존 tbody 비우고 정렬된 순서대로 다시 append
-            tbody.innerHTML = "";
-            rows.forEach((row, index) => {
-                // 번호 input도 순서대로 다시 세팅
-                row.querySelector("input[name*='.questionNo']").value = index + 1;
-                tbody.appendChild(row);
-            });
-            updateQuestionCount();
-        }
-
-        function toggleAll(master) {
-            const checks = document.querySelectorAll('.row-check');
-            checks.forEach(chk => chk.checked = master.checked);
-        }
-
-        function confirmAndUpload() {
-            if (confirm("엑셀 파일을 업로드하면 화면의 기존 데이터는 지워지고 업로드한 데이터로 대체됩니다. 진행하시겠습니까?")) {
-                document.getElementById('excelFile').click();
-            }
-        }
-
-        function validateBeforeSave() {
-            let valid = true;
-            const rows = document.querySelectorAll("#questionTable tr");
-
-            rows.forEach((row, i) => {
-                const noInput = row.querySelector("input[name*='.questionNo']");
-                const answerInput = row.querySelector("input[name*='.answers']");
-
-                // 번호 숫자 체크
-                if (noInput) {
-                    if (!/^\d+$/.test(noInput.value.trim())) {
-                        noInput.classList.add("is-invalid");
-                        valid = false;
-                    } else {
-                        noInput.classList.remove("is-invalid");
-                    }
-                }
-
-                // 정답 숫자 or 쉼표 구분 숫자 체크
-                if (answerInput) {
-                    if (!/^\d+(,\d+)*$/.test(answerInput.value.trim())) {
-                        answerInput.classList.add("is-invalid");
-                        valid = false;
-                    } else {
-                        answerInput.classList.remove("is-invalid");
-                    }
-                }
-            });
-
-            return valid;
-        }
-
-        function initTooltips() {
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-                new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-        }
-
-        function openPreview(examId) {
-            const url = `/admin/exams/${examId}/preview`;
-            const options = "width=1000,height=800,scrollbars=yes,resizable=yes";
-            window.open(url, "examPreview", options);
-        }
-
-        // 저장 버튼에 validate 추가
-        document.getElementById("questionForm")
-            .addEventListener("submit", function (e) {
-                if (!validateBeforeSave()) {
-                    e.preventDefault();
-                    alert("입력값을 다시 확인해주세요.");
-                }
-            });
-    </script>
+    <script src="/js/question-manage.js"></script>
 </th:block>
 </html>

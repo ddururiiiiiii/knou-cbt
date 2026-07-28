@@ -1,8 +1,13 @@
 package knou.cbt.web.notice;
 
+import knou.cbt.common.exception.InvalidFileTypeException;
+import knou.cbt.common.util.ImageUploadValidator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,6 +18,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/notices")
@@ -30,20 +36,19 @@ public class NoticeImageController {
     private String noticeBucket;
 
     @PostMapping("/image")
-    public Map<String, Object> uploadImage(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Map<String, Object>> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
-            // 확장자 추출
+            ImageUploadValidator.validate(file);
+
             String originalFilename = file.getOriginalFilename();
             String extension = "";
             if (originalFilename != null && originalFilename.contains(".")) {
                 extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             }
 
-            // 안전한 파일명
             String safeFileName = UUID.randomUUID().toString() + extension;
             String path = noticeBucket + "/" + safeFileName;
 
-            // Supabase Storage 업로드
             webClient.post()
                     .uri(supabaseUrl + "/storage/v1/object/" + path)
                     .header("Authorization", "Bearer " + supabaseKey)
@@ -54,12 +59,16 @@ public class NoticeImageController {
                     .bodyToMono(String.class)
                     .block();
 
-            // 퍼블릭 URL 리턴
             String url = supabaseUrl + "/storage/v1/object/public/" + path;
-            return Map.of("success", true, "url", url);
+            return ResponseEntity.ok(Map.of("success", true, "url", url));
 
+        } catch (InvalidFileTypeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "error", e.getMessage()));
         } catch (Exception e) {
-            return Map.of("success", false, "error", e.getMessage());
+            log.error("공지사항 이미지 업로드 실패", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "error", "이미지 업로드에 실패했습니다."));
         }
     }
 

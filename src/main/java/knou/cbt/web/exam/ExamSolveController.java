@@ -50,6 +50,7 @@ public class ExamSolveController {
     @PostMapping("/solve")
     public String submit(@PathVariable("examId") Long examId,
                          @ModelAttribute AnswerForm form,
+                         @RequestParam(required = false) Integer elapsedSeconds,
                          HttpSession session,
                          Model model) {
         ExamResponse exam = examService.get(examId);
@@ -79,9 +80,11 @@ public class ExamSolveController {
         }
 
         session.setAttribute("userAnswers_" + examId, answers);
+        session.setAttribute("elapsedSeconds_" + examId, elapsedSeconds != null ? elapsedSeconds : 0);
         model.addAttribute("exam", exam);
         model.addAttribute("questions", questions);
         model.addAttribute("score", score);
+        model.addAttribute("elapsedSeconds", elapsedSeconds != null ? elapsedSeconds : 0);
 
         return "exam/result";
     }
@@ -130,11 +133,14 @@ public class ExamSolveController {
             answers.add(null);
         }
 
+        Integer elapsedSeconds = (Integer) session.getAttribute("elapsedSeconds_" + examId);
+
         model.addAttribute("exam", exam);
         model.addAttribute("questions", questions);
         model.addAttribute("userAnswers", answers);
         model.addAttribute("correctAnswersList", correctAnswersList);
         model.addAttribute("score", score);
+        model.addAttribute("elapsedSeconds", elapsedSeconds != null ? elapsedSeconds : 0);
 
         return "exam/review";
     }

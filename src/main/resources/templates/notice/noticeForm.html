@@ -12,16 +12,37 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <div class="py-5 text-center">
+    <div class="py-3 text-center">
         <h2 th:text="${formTitle}">공지사항 등록</h2>
     </div>
 
+    <div th:replace="~{fragments/help-banner :: banner('제목과 내용을 입력하고, 목록 상단에 고정하려면 상단고정을 체크하세요. 이미지는 에디터에 바로 드래그해서 넣을 수 있어요.')}"></div>
+
     <form id="noticeForm" th:action="@{${actionUrl}}" th:method="${method}" th:object="${notice}">
-        <!-- 제목 -->
-        <div class="mb-3">
-            <label for="title" class="form-label">제목</label>
-            <input type="text" id="title" th:field="*{title}" class="form-control"
-                   placeholder="제목을 입력하세요" required>
+        <!-- 제목 + 상단고정 + 공개여부(수정시) -->
+        <div class="mb-3 d-flex align-items-end gap-3">
+            <div class="flex-grow-1">
+                <label for="title" class="form-label">제목</label>
+                <input type="text" id="title" th:field="*{title}" class="form-control"
+                       placeholder="제목을 입력하세요" required>
+            </div>
+
+            <div class="form-check mb-2">
+                <input type="checkbox" id="pinned" th:field="*{pinned}" class="form-check-input">
+                <label class="form-check-label" for="pinned">상단 고정</label>
+            </div>
+
+            <!-- 등록 시에는 hidden -->
+            <input type="hidden" th:if="${method == 'post'}" th:field="*{useYn}" value="Y">
+
+            <!-- 수정 시에만 select 노출 -->
+            <div th:if="${method == 'patch'}" style="width: 140px;">
+                <label for="useYn" class="form-label">공개 여부</label>
+                <select id="useYn" th:field="*{useYn}" class="form-select">
+                    <option value="Y" th:selected="${notice.useYn == 'Y'}">공개</option>
+                    <option value="N" th:selected="${notice.useYn == 'N'}">비공개</option>
+                </select>
+            </div>
         </div>
 
         <!-- 내용 (Toast UI Editor) -->
@@ -32,75 +53,18 @@
             <textarea id="content" th:field="*{content}" hidden></textarea>
         </div>
 
-        <!-- 상단 고정 여부 -->
-        <div class="mb-3 form-check">
-            <input type="checkbox" id="pinned" th:field="*{pinned}" class="form-check-input">
-            <label class="form-check-label" for="pinned">상단 고정</label>
-        </div>
-
-        <!-- 등록 시에는 hidden -->
-        <input type="hidden" th:if="${method == 'post'}" th:field="*{useYn}" value="Y">
-
-        <!-- 수정 시에만 select 노출 -->
-        <div class="mb-3" th:if="${method == 'patch'}">
-            <label for="useYn" class="form-label">공개 여부</label>
-            <select id="useYn" th:field="*{useYn}" class="form-select">
-                <option value="Y" th:selected="${notice.useYn == 'Y'}">공개</option>
-                <option value="N" th:selected="${notice.useYn == 'N'}">비공개</option>
-            </select>
-        </div>
-
         <!-- 버튼 -->
         <div class="text-end">
-            <button type="submit" class="btn btn-primary">등록</button>
+            <button type="submit" class="btn btn-primary" th:text="${formTitle}">등록</button>
             <a th:href="@{/notices}" class="btn btn-secondary">취소</a>
         </div>
     </form>
 </div>
 
+<th:block layout:fragment="script">
 <!-- Toast UI Editor JS -->
 <script src="https://uicdn.toast.com/editor/3.2.2/toastui-editor-all.min.js"></script>
-<th:block layout:fragment="script">
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const content = document.querySelector('#content')?.value || '';
-
-        const editor = new toastui.Editor({
-            el: document.querySelector('#editor'),
-            height: '400px',
-            initialEditType: 'wysiwyg',
-            previewStyle: 'vertical',
-            initialValue: content,
-            hooks: {
-                addImageBlobHook: async (blob, callback) => {
-                    const formData = new FormData();
-                    formData.append("file", blob);
-
-                    const response = await fetch("/api/notices/image", {
-                        method: "POST",
-                        body: formData
-                    });
-                    const result = await response.json();
-                    if (result.success) {
-                        callback(result.url, blob.name); // 본문에 <img src="..."> 삽입
-                    } else {
-                        alert("이미지 업로드 실패");
-                    }
-                }
-            }
-        });
-
-        // 폼 제출 시 hidden textarea에 저장
-        const form = document.getElementById("noticeForm");
-        form.addEventListener("submit", (e) => {
-            e.preventDefault(); // 브라우저 기본 제출 막기
-            document.getElementById("content").value = editor.getHTML();
-            console.log("폼 데이터 최종:", document.getElementById("content").value);
-            form.submit(); // 값 세팅한 뒤 수동으로 전송
-        });
-    });
-</script>
-<script src="https://uicdn.toast.com/editor/3.2.2/toastui-editor-all.min.js"></script>
+<script src="/js/notice-form.js"></script>
 </th:block>
 </body>
 </html>

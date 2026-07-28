@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>접근 권한 없음</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light d-flex align-items-center" style="height:100vh;">
+<div class="container text-center">
+    <h1 class="display-3 text-danger">403</h1>
+    <h3 class="mb-3">접근 권한이 없습니다.</h3>
+    <p class="text-muted" th:text="${message}">이 페이지에 접근할 권한이 없습니다.</p>
+    <a href="/" class="btn btn-dark mt-3">홈으로 돌아가기</a>
+</div>
+</body>
+</html>

@@ -84,7 +84,7 @@
     <select id="findPinned" resultMap="NoticeResultMap">
         <include refid="BaseSelectColumns"/>
         <where>
-            n.is_pinned = true
+            n.is_pinned = true AND n.use_yn = 'Y'
         </where>
         ORDER BY n.created_at DESC
         LIMIT 3
@@ -93,7 +93,7 @@
     <select id="findPinnedAll" resultMap="NoticeResultMap">
         <include refid="BaseSelectColumns"/>
         <where>
-            n.is_pinned = true
+            n.is_pinned = true AND n.use_yn = 'Y'
         </where>
         ORDER BY n.created_at DESC
     </select>
@@ -101,7 +101,7 @@
     <select id="findRecentNormal" resultMap="NoticeResultMap">
         <include refid="BaseSelectColumns"/>
         <where>
-            n.is_pinned = false
+            n.is_pinned = false AND n.use_yn = 'Y'
         </where>
         ORDER BY n.created_at DESC
         LIMIT #{limit}

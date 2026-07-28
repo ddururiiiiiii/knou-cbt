@@ -1,5 +1,6 @@
 package knou.cbt.domain.examquestion.service;
 
+import knou.cbt.common.util.ImageUploadValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -23,6 +24,8 @@ public class ExamQuestionStorageService {
     private String supabaseKey;
 
     public String uploadQuestionImage(Long examId, MultipartFile file) throws IOException {
+        ImageUploadValidator.validate(file);
+
         String bucket = "exam"; // exam 전용 버킷
 
         // 확장자
