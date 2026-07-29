@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>관리자 로그인</title>
+    <title>관리자 로그인 : KNOU - CBT</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css">
     <link href="/css/app.css" rel="stylesheet">
@@ -104,7 +104,10 @@
                         </div>
 
                         <!-- 에러 메시지 -->
-                        <div th:if="${param.error}" class="alert alert-danger py-2 small mb-3 text-center">
+                        <div th:if="${param.error != null and param.error[0] == 'locked'}" class="alert alert-danger py-2 small mb-3 text-center">
+                            <i class="bi bi-lock me-1"></i> 로그인 시도가 너무 많아 일시적으로 차단되었습니다. 15분 후 다시 시도해주세요.
+                        </div>
+                        <div th:if="${param.error != null and param.error[0] != 'locked'}" class="alert alert-danger py-2 small mb-3 text-center">
                             <i class="bi bi-exclamation-circle me-1"></i> 아이디 또는 비밀번호가 잘못되었습니다.
                         </div>
 
