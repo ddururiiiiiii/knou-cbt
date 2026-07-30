@@ -187,6 +187,14 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 0.875rem;
     border-bottom-width: 1px;
 }
+/* 문제 등록 화면은 상단/하단 헤더 디자인을 통일 (하단 헤더 = 기본 table-light 스타일 기준) */
+.question-table thead.table-light th {
+    background-color: var(--bs-table-bg);
+    color: var(--bs-table-color-state, var(--bs-table-color-type, var(--bs-table-color)));
+    font-weight: bold;
+    font-size: 1rem;
+    border-bottom-width: var(--bs-border-width);
+}
 
 /* ==========================================================================
    폼 컨트롤

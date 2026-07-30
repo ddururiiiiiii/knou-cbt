@@ -78,7 +78,7 @@ public class AdminExamQuestionViewController {
                     String url = examQuestionStorageService.uploadQuestionImage(examId, file);
                     req.setImageUrl(url);
                 } catch (IOException e) {
-                    redirectAttributes.addFlashAttribute("errorMessage", "파일 업로드 중 오류가 발생했습니다.");
+                    redirectAttributes.addFlashAttribute("errorMessage", "파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
                     return "redirect:/admin/exams/{examId}/questions";
                 }
             }
@@ -90,7 +90,7 @@ public class AdminExamQuestionViewController {
                     req.setOption3(uploadIfPresent(examId, req.getOption3File(), req.getOption3()));
                     req.setOption4(uploadIfPresent(examId, req.getOption4File(), req.getOption4()));
                 } catch (IOException e) {
-                    redirectAttributes.addFlashAttribute("errorMessage", "보기 이미지 업로드 중 오류가 발생했습니다.");
+                    redirectAttributes.addFlashAttribute("errorMessage", "보기 이미지 업로드 중 오류가 발생했습니다: " + e.getMessage());
                     return "redirect:/admin/exams/{examId}/questions";
                 }
             }

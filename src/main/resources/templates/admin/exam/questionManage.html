@@ -19,6 +19,10 @@
         저장이 완료되었습니다!
     </div>
 
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}">
+        오류가 발생했습니다.
+    </div>
+
     <!-- 시험 기본 정보 -->
     <div class="card mb-4" style="border-left: 4px solid var(--kcbt-accent);">
         <div class="card-body py-3">
