@@ -26,6 +26,17 @@ EXAM_TYPE_MAP = {
     "출석대체시험": "ATTENDANCE",
 }
 
+# SubjectCategory 자바 enum(MAJOR/LIBERAL/ELECTIVE)과 일치해야 함
+SUBJECT_CATEGORY_MAP = {
+    "전공필수": "MAJOR",
+    "전공선택": "MAJOR",
+    "전공": "MAJOR",
+    "교양필수": "LIBERAL",
+    "교양선택": "LIBERAL",
+    "교양": "LIBERAL",
+    "일반선택": "ELECTIVE",
+}
+
 
 def get_or_create_department(cur, name: str) -> int:
     cur.execute("SELECT id FROM department WHERE department_name = %s", (name,))
@@ -38,6 +49,15 @@ def get_or_create_department(cur, name: str) -> int:
     return cur.fetchone()[0]
 
 
+def normalize_subject_category(category: str) -> str:
+    if category in SUBJECT_CATEGORY_MAP.values():
+        return category
+    if category in SUBJECT_CATEGORY_MAP:
+        return SUBJECT_CATEGORY_MAP[category]
+    print(f"오류: 알 수 없는 subject_category '{category}' (허용값: {sorted(set(SUBJECT_CATEGORY_MAP.values()))})")
+    sys.exit(1)
+
+
 def get_or_create_subject(cur, name: str, category: str, dept_id: int, grade: int) -> int:
     cur.execute("SELECT id FROM subject WHERE subject_name = %s", (name,))
     row = cur.fetchone()
@@ -45,7 +65,7 @@ def get_or_create_subject(cur, name: str, category: str, dept_id: int, grade: in
         return row[0]
     cur.execute(
         "INSERT INTO subject (subject_name, subject_category, department_id, grade) VALUES (%s, %s, %s, %s) RETURNING id",
-        (name, category, dept_id, grade),
+        (name, normalize_subject_category(category), dept_id, grade),
     )
     return cur.fetchone()[0]
 
