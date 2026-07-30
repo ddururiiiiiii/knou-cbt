@@ -125,7 +125,7 @@
                   class="badge bg-danger"><i class="bi bi-x-lg"></i> 오답</span>
         </div>
 
-        <h6 class="fw-bold mb-3" th:text="|${iterStat.index + 1}. ${q.questionText}|"></h6>
+        <h6 class="fw-bold mb-3" th:text="|${q.questionNo}. ${q.questionText}|"></h6>
 
         <div class="ms-2" th:if="${q.optionType == null or q.optionType.name() != 'IMAGE'}">
             <div class="review-choice" th:if="${q.option1 != null}"

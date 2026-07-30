@@ -54,7 +54,7 @@
     </div>
 
     <div th:each="q, iterStat : ${questions}" class="card mb-3 p-3">
-        <h6 class="fw-bold mb-3" th:text="|${iterStat.index + 1}. ${q.questionText}|"></h6>
+        <h6 class="fw-bold mb-3" th:text="|${q.questionNo}. ${q.questionText}|"></h6>
 
         <div th:if="${q.imageUrl != null}" class="mb-3">
             <img th:src="${q.imageUrl}" alt="문제 이미지" style="max-width: 100%; height: auto; border-radius: 0.5rem;">

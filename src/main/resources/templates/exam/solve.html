@@ -290,7 +290,7 @@
                 <input type="hidden" id="elapsedSeconds" name="elapsedSeconds" value="0">
                 <div th:each="q, iterStat : ${questions}" class="card mb-3 p-3" th:id="|question-${iterStat.index}|">
                     <h6 class="fw-bold mb-3 d-flex align-items-start">
-                        <span class="question-number-badge" th:text="${iterStat.index + 1}"></span>
+                        <span class="question-number-badge" th:text="${q.questionNo}"></span>
                         <span th:text="${q.questionText}"></span>
                     </h6>
                     <div th:if="${q.imageUrl != null}" class="mb-3">
@@ -367,7 +367,7 @@
                     <tbody>
                     <th:block th:each="q, iterStat : ${questions}">
                         <tr th:id="|ans-${iterStat.index}|">
-                            <td class="q-no">[[${iterStat.index + 1}]]</td>
+                            <td class="q-no">[[${q.questionNo}]]</td>
                             <td><span class="choice" th:attr="data-index=${iterStat.index}" data-choice="1">①</span></td>
                             <td><span class="choice" th:attr="data-index=${iterStat.index}" data-choice="2">②</span></td>
                             <td><span class="choice" th:attr="data-index=${iterStat.index}" data-choice="3">③</span></td>
