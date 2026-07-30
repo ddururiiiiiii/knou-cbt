@@ -8,4 +8,6 @@ RUN gradle clean build -x test
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
 COPY --from=build /app/build/libs/knou-cbt-0.0.1-SNAPSHOT.jar app.jar
+RUN useradd --system --no-create-home appuser
+USER appuser
 ENTRYPOINT ["java", "-jar", "app.jar"]

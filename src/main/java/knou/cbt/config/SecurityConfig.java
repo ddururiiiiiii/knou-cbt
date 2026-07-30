@@ -4,6 +4,7 @@ import knou.cbt.global.security.CustomUserDetailsService;
 import knou.cbt.global.security.LoginAttemptFilter;
 import knou.cbt.global.security.LoginAttemptService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -20,6 +21,9 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final LoginAttemptService loginAttemptService;
+
+    @Value("${remember-me.key:knou-cbt-remember-key}")
+    private String rememberMeKey;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -73,7 +77,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .rememberMe(rememberMe -> rememberMe
-                        .key("knou-cbt-remember-key")
+                        .key(rememberMeKey)
                         .tokenValiditySeconds(14 * 24 * 60 * 60) // 14일
                         .userDetailsService(customUserDetailsService)
                 )
