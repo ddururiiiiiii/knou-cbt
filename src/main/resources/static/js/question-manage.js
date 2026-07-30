@@ -63,6 +63,7 @@ function updateQuestionCount() {
     const tbody = document.getElementById('questionTable');
     const count = tbody.rows.length;
     document.getElementById('countValue').textContent = count;
+    document.getElementById('countValueBottom').textContent = count;
 }
 
 function addRow() {

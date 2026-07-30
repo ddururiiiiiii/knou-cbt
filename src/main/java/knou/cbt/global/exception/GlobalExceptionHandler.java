@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @Slf4j
 @ControllerAdvice
@@ -74,6 +75,15 @@ public class GlobalExceptionHandler {
         log.warn("Invalid file upload: {}", ex.getMessage());
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         model.addAttribute("message", ex.getMessage());
+        return "error/400";
+    }
+
+    // 첨부 파일이 허용 용량을 초과한 경우
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public String handleMaxUploadSizeExceeded(HttpServletRequest request, Model model, HttpServletResponse response) {
+        log.warn("Max upload size exceeded at {}", request.getRequestURI());
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        model.addAttribute("message", "첨부한 파일 용량이 너무 큽니다. 파일당 20MB 이하로 업로드해주세요.");
         return "error/400";
     }
 
