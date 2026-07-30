@@ -459,6 +459,11 @@ h1, h2, h3, h4, h5, h6 {
    문제 관리 (questionManage.html)
    ========================================================================== */
 
+/* 컬럼이 많아 공간이 부족해서 이 화면만 좌우 여백을 줄임 (네비/푸터 컨테이너는 그대로) */
+body:has(#questionForm) > .container {
+    max-width: 100%;
+}
+
 .question-table td input {
     width: 100%;
     border: none;
