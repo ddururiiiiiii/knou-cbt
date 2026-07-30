@@ -109,13 +109,14 @@
                 <td><input type="checkbox" class="row-check"/></td>
                 <td>
                     <input type="text" class="form-control" th:name="|questions[${iterStat.index}].questionNo|"
-                           th:value="${q.questionNo}"/>
+                           th:value="${q.questionNo}" th:title="${q.questionNo}"/>
                     <div class="invalid-feedback">숫자만 입력</div>
                 </td>
-                <td><input type="text" class="form-control" th:name="|questions[${iterStat.index}].questionText|" th:value="${q.questionText}"/></td>
+                <td><input type="text" class="form-control" th:name="|questions[${iterStat.index}].questionText|" th:value="${q.questionText}" th:title="${q.questionText}"/></td>
                 <td>
                     <select class="form-select form-select-sm option-type-select"
-                            th:name="|questions[${iterStat.index}].optionType|">
+                            th:name="|questions[${iterStat.index}].optionType|"
+                            th:title="${q.optionType != null and q.optionType.name() == 'IMAGE'} ? '이미지' : '텍스트'">
                         <option value="TEXT" th:selected="${q.optionType == null or q.optionType.name() == 'TEXT'}">텍스트</option>
                         <option value="IMAGE" th:selected="${q.optionType != null and q.optionType.name() == 'IMAGE'}">이미지</option>
                     </select>
@@ -123,7 +124,8 @@
                 <td>
                     <select class="form-select form-select-sm image-layout-select"
                             th:name="|questions[${iterStat.index}].imageLayout|"
-                            th:disabled="${q.optionType == null or q.optionType.name() != 'IMAGE'}">
+                            th:disabled="${q.optionType == null or q.optionType.name() != 'IMAGE'}"
+                            th:title="${q.imageLayout != null and q.imageLayout.name() == 'STACK_1X4'} ? '1단(세로4줄)' : '2단(2x2)'">
                         <option value="GRID_2X2" th:selected="${q.imageLayout == null or q.imageLayout.name() == 'GRID_2X2'}">2단(2x2)</option>
                         <option value="STACK_1X4" th:selected="${q.imageLayout != null and q.imageLayout.name() == 'STACK_1X4'}">1단(세로4줄)</option>
                     </select>
@@ -132,9 +134,9 @@
                     th:with="optVal=${n == 1 ? q.option1 : (n == 2 ? q.option2 : (n == 3 ? q.option3 : q.option4))}">
                     <input type="text" class="form-control form-control-sm option-text-input mb-1"
                            th:name="|questions[${iterStat.index}].option__${n}__|"
-                           th:value="${optVal}"/>
+                           th:value="${optVal}" th:title="${optVal}"/>
                     <input type="file" class="form-control form-control-sm option-file-input" accept="image/*"
-                           th:name="|questions[${iterStat.index}].option__${n}__File|"/>
+                           th:name="|questions[${iterStat.index}].option__${n}__File|" title="첨부파일 없음"/>
                     <span th:if="${optVal != null and optVal.startsWith('http')}"
                           class="text-primary option-image-preview"
                           style="cursor:pointer;"
@@ -150,7 +152,7 @@
                 <td>
                     <input type="text" class="form-control"
                            th:name="|questions[${iterStat.index}].answers|"
-                           th:value="${q.answers}"/>
+                           th:value="${q.answers}" th:title="${q.answers}"/>
                     <div class="invalid-feedback">숫자(쉼표 구분)만 입력</div>
                 </td>
                 <td th:if="${q.imageUrl != null}">
@@ -173,13 +175,30 @@
                     <input type="file"
                            class="form-control"
                            th:name="|questions[${iterStat.index}].imageFile|"
-                           accept="image/*"/>
+                           accept="image/*" title="첨부파일 없음"/>
                 </td>
                 <td>
                     <button type="button" class="btn btn-danger btn-sm btn-delete-row">삭제</button>
                 </td>
             </tr>
             </tbody>
+            <tfoot class="table-light">
+            <tr>
+                <th><input type="checkbox" id="selectAllBottom"/></th>
+                <th>번호</th>
+                <th>문제</th>
+                <th>보기유형</th>
+                <th>레이아웃</th>
+                <th>보기1</th>
+                <th>보기2</th>
+                <th>보기3</th>
+                <th>보기4</th>
+                <th>정답</th>
+                <th>이미지</th>
+                <th>업로드</th>
+                <th>삭제</th>
+            </tr>
+            </tfoot>
         </table>
         </div>
 

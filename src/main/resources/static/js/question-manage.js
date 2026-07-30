@@ -10,6 +10,9 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("selectAll").addEventListener("click", function () {
         toggleAll(this);
     });
+    document.getElementById("selectAllBottom").addEventListener("click", function () {
+        toggleAll(this);
+    });
     document.getElementById("uploadExcelBtn").addEventListener("click", confirmAndUpload);
 
     ["previewBtn", "previewBtnBottom"].forEach(function (id) {
@@ -29,6 +32,9 @@ window.addEventListener("DOMContentLoaded", () => {
         } else if (e.target.matches("input[name*='.answers']")) {
             e.target.value = e.target.value.replace(/[^0-9,]/g, '');
         }
+        if (e.target.matches("input[type='text']")) {
+            e.target.title = e.target.value;
+        }
     });
     table.addEventListener("click", function (e) {
         const delBtn = e.target.closest(".btn-delete-row");
@@ -39,6 +45,12 @@ window.addEventListener("DOMContentLoaded", () => {
     table.addEventListener("change", function (e) {
         if (e.target.matches(".option-type-select")) {
             applyOptionTypeToRow(e.target);
+        }
+        if (e.target.matches("select")) {
+            e.target.title = e.target.options[e.target.selectedIndex].text;
+        }
+        if (e.target.matches("input[type='file']")) {
+            e.target.title = e.target.files.length > 0 ? e.target.files[0].name : "첨부파일 없음";
         }
     });
 
@@ -87,7 +99,7 @@ function addRow() {
 
     cell = row.insertCell();
     cell.innerHTML = `
-        <input type="text" class="form-control" name="questions[${rowCount}].questionNo" value="${rowCount + 1}"/>
+        <input type="text" class="form-control" name="questions[${rowCount}].questionNo" value="${rowCount + 1}" title="${rowCount + 1}"/>
         <div class="invalid-feedback">숫자만 입력</div>
     `;
 
@@ -96,14 +108,14 @@ function addRow() {
 
     cell = row.insertCell();
     cell.innerHTML = `
-        <select class="form-select form-select-sm option-type-select" name="questions[${rowCount}].optionType">
+        <select class="form-select form-select-sm option-type-select" name="questions[${rowCount}].optionType" title="텍스트">
             <option value="TEXT" selected>텍스트</option>
             <option value="IMAGE">이미지</option>
         </select>`;
 
     cell = row.insertCell();
     cell.innerHTML = `
-        <select class="form-select form-select-sm image-layout-select" name="questions[${rowCount}].imageLayout" disabled>
+        <select class="form-select form-select-sm image-layout-select" name="questions[${rowCount}].imageLayout" disabled title="2단(2x2)">
             <option value="GRID_2X2" selected>2단(2x2)</option>
             <option value="STACK_1X4">1단(세로4줄)</option>
         </select>`;
@@ -112,7 +124,7 @@ function addRow() {
         cell = row.insertCell();
         cell.innerHTML = `
             <input type="text" class="form-control form-control-sm option-text-input mb-1" name="questions[${rowCount}].option${n}"/>
-            <input type="file" class="form-control form-control-sm option-file-input" accept="image/*" name="questions[${rowCount}].option${n}File"/>`;
+            <input type="file" class="form-control form-control-sm option-file-input" accept="image/*" name="questions[${rowCount}].option${n}File" title="첨부파일 없음"/>`;
     }
 
     cell = row.insertCell();
@@ -125,7 +137,7 @@ function addRow() {
     cell.innerHTML = `<span class="text-muted">-</span>`;
 
     cell = row.insertCell();
-    cell.innerHTML = `<input type="file" class="form-control" name="questions[${rowCount}].imageFile" accept="image/*"/>`;
+    cell.innerHTML = `<input type="file" class="form-control" name="questions[${rowCount}].imageFile" accept="image/*" title="첨부파일 없음"/>`;
 
     cell = row.insertCell();
     cell.innerHTML = `<button type="button" class="btn btn-danger btn-sm btn-delete-row">삭제</button>`;
@@ -179,6 +191,12 @@ function sortRows() {
 function toggleAll(master) {
     const checks = document.querySelectorAll('.row-check');
     checks.forEach(chk => chk.checked = master.checked);
+    ["selectAll", "selectAllBottom"].forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el && el !== master) {
+            el.checked = master.checked;
+        }
+    });
 }
 
 function confirmAndUpload() {
