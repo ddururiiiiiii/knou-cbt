@@ -1,5 +1,8 @@
+const SCROLL_TO_BOTTOM_KEY = "kcbt_questionManage_scrollToBottom";
+
 window.addEventListener("DOMContentLoaded", () => {
     updateQuestionCount();
+    restoreScrollPosition();
 
     document.getElementById("addRowBtn").addEventListener("click", addRow);
     document.getElementById("addRowBtnBottom").addEventListener("click", addRow);
@@ -58,6 +61,12 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!validateBeforeSave()) {
             e.preventDefault();
             appAlert("입력값을 다시 확인해주세요.");
+            return;
+        }
+        if (e.submitter && e.submitter.id === "saveBtnBottom") {
+            sessionStorage.setItem(SCROLL_TO_BOTTOM_KEY, "1");
+        } else {
+            sessionStorage.removeItem(SCROLL_TO_BOTTOM_KEY);
         }
     });
 
@@ -65,6 +74,17 @@ window.addEventListener("DOMContentLoaded", () => {
         this.form.submit();
     });
 });
+
+function restoreScrollPosition() {
+    if (sessionStorage.getItem(SCROLL_TO_BOTTOM_KEY) !== "1") {
+        return;
+    }
+    sessionStorage.removeItem(SCROLL_TO_BOTTOM_KEY);
+    const bottomBar = document.getElementById("saveBtnBottom");
+    if (bottomBar) {
+        bottomBar.scrollIntoView({block: "center"});
+    }
+}
 
 function applyOptionTypeToRow(select) {
     const row = select.closest("tr");

@@ -45,7 +45,7 @@ public class SecurityConfig {
                                         "script-src 'self' uicdn.toast.com cdn.jsdelivr.net www.googletagmanager.com; " +
                                         "style-src 'self' cdn.jsdelivr.net uicdn.toast.com 'unsafe-inline'; " +
                                         "font-src 'self' cdn.jsdelivr.net uicdn.toast.com; " +
-                                        "img-src 'self' data: www.google-analytics.com; " +
+                                        "img-src 'self' data: www.google-analytics.com https://*.supabase.co; " +
                                         "connect-src 'self' www.google-analytics.com;"
                                 )
                         )
