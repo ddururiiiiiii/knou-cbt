@@ -2,19 +2,24 @@ window.addEventListener("DOMContentLoaded", () => {
     updateQuestionCount();
 
     document.getElementById("addRowBtn").addEventListener("click", addRow);
+    document.getElementById("addRowBtnBottom").addEventListener("click", addRow);
     document.getElementById("deleteSelectedBtn").addEventListener("click", deleteSelectedRows);
+    document.getElementById("deleteSelectedBtnBottom").addEventListener("click", deleteSelectedRows);
     document.getElementById("sortRowsBtn").addEventListener("click", sortRows);
+    document.getElementById("sortRowsBtnBottom").addEventListener("click", sortRows);
     document.getElementById("selectAll").addEventListener("click", function () {
         toggleAll(this);
     });
     document.getElementById("uploadExcelBtn").addEventListener("click", confirmAndUpload);
 
-    const previewBtn = document.getElementById("previewBtn");
-    if (previewBtn) {
-        previewBtn.addEventListener("click", function () {
-            openPreview(previewBtn.dataset.examId);
-        });
-    }
+    ["previewBtn", "previewBtnBottom"].forEach(function (id) {
+        const previewBtn = document.getElementById(id);
+        if (previewBtn) {
+            previewBtn.addEventListener("click", function () {
+                openPreview(previewBtn.dataset.examId);
+            });
+        }
+    });
 
     // 동적으로 추가되는 행(input/button)까지 한번에 처리하는 이벤트 위임
     const table = document.getElementById("questionTable");
