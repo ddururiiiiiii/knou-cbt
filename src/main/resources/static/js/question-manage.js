@@ -36,7 +36,7 @@ window.addEventListener("DOMContentLoaded", () => {
             e.target.value = e.target.value.replace(/[^0-9,]/g, '');
         }
         if (e.target.matches("input[type='text']")) {
-            e.target.title = e.target.value;
+            updateTooltipContent(e.target, e.target.value);
         }
     });
     table.addEventListener("click", function (e) {
@@ -44,16 +44,27 @@ window.addEventListener("DOMContentLoaded", () => {
         if (delBtn) {
             deleteRow(delBtn);
         }
+        const delOptionImageBtn = e.target.closest(".btn-delete-option-image");
+        if (delOptionImageBtn) {
+            clearOptionImageCell(delOptionImageBtn.closest("td"));
+        }
+        const delQuestionImageBtn = e.target.closest(".btn-delete-question-image");
+        if (delQuestionImageBtn) {
+            clearQuestionImageCell(delQuestionImageBtn.closest("td"));
+        }
     });
     table.addEventListener("change", function (e) {
         if (e.target.matches(".option-type-select")) {
             applyOptionTypeToRow(e.target);
         }
         if (e.target.matches("select")) {
-            e.target.title = e.target.options[e.target.selectedIndex].text;
+            updateTooltipContent(e.target, e.target.options[e.target.selectedIndex].text);
         }
         if (e.target.matches("input[type='file']")) {
-            e.target.title = e.target.files.length > 0 ? e.target.files[0].name : "첨부파일 없음";
+            updateTooltipContent(e.target, e.target.files.length > 0 ? e.target.files[0].name : "첨부파일 없음");
+        }
+        if (e.target.matches(".option-file-input, input[name*='.imageFile']")) {
+            updateLocalImagePreview(e.target);
         }
     });
 
@@ -75,6 +86,73 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+function initTooltips(root) {
+    (root || document).querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+        const existing = bootstrap.Tooltip.getInstance(el);
+        if (existing) {
+            existing.dispose();
+        }
+        new bootstrap.Tooltip(el);
+    });
+}
+
+function updateTooltipContent(el, text) {
+    el.setAttribute("title", text);
+    const instance = bootstrap.Tooltip.getInstance(el);
+    if (!text) {
+        // Bootstrap은 title이 비어있어도 최초 생성 시점 설정값으로 표시 여부를 판단하기 때문에,
+        // setContent로 내용만 비우면 빈 말풍선(테두리+화살표)만 뜨는 버그가 생긴다.
+        // 내용이 없을 땐 아예 인스턴스를 없애서 호버해도 아무것도 안 뜨게 한다.
+        instance?.dispose();
+        return;
+    }
+    if (instance) {
+        instance.setContent({".tooltip-inner": text});
+    } else if (el.matches('[data-bs-toggle="tooltip"]')) {
+        new bootstrap.Tooltip(el);
+    }
+}
+
+const IMAGE_ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-image" viewBox="0 0 16 16">'
+    + '<path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>'
+    + '<path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>'
+    + '</svg>';
+
+function updateLocalImagePreview(fileInput) {
+    let preview = fileInput.nextElementSibling;
+    if (!preview || !preview.classList.contains("local-image-preview")) {
+        preview = null;
+    }
+
+    const file = fileInput.files[0];
+    if (!file) {
+        if (preview) {
+            URL.revokeObjectURL(preview.dataset.objectUrl);
+            bootstrap.Tooltip.getInstance(preview)?.dispose();
+            preview.remove();
+        }
+        return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    if (!preview) {
+        preview = document.createElement("span");
+        preview.className = "text-success local-image-preview ms-1";
+        preview.style.cursor = "pointer";
+        preview.setAttribute("data-bs-toggle", "tooltip");
+        preview.setAttribute("data-bs-html", "true");
+        preview.innerHTML = IMAGE_ICON_SVG;
+        fileInput.insertAdjacentElement("afterend", preview);
+    } else {
+        URL.revokeObjectURL(preview.dataset.objectUrl);
+        bootstrap.Tooltip.getInstance(preview)?.dispose();
+    }
+
+    preview.dataset.objectUrl = objectUrl;
+    preview.setAttribute("title", `<img src="${objectUrl}" class="tooltip-img-preview" alt="미리보기"/>`);
+    new bootstrap.Tooltip(preview);
+}
+
 function restoreScrollPosition() {
     if (sessionStorage.getItem(SCROLL_TO_BOTTOM_KEY) !== "1") {
         return;
@@ -93,6 +171,70 @@ function applyOptionTypeToRow(select) {
     row.classList.toggle("row-option-image", isImage);
     if (layoutSelect) {
         layoutSelect.disabled = !isImage;
+    }
+    // 보기 형식(텍스트/이미지) 전환 시 반대 형식의 값이 그대로 남아있으면
+    // (텍스트로는 URL 문자열이, 이미지로는 일반 텍스트가 저장되어) 저장 시 깨지므로 초기화한다.
+    row.querySelectorAll(".option-text-input").forEach(function (textInput) {
+        clearOptionImageCell(textInput.closest("td"));
+    });
+}
+
+function clearOptionImageCell(td) {
+    if (!td) {
+        return;
+    }
+    const textInput = td.querySelector(".option-text-input");
+    if (textInput) {
+        textInput.value = "";
+        updateTooltipContent(textInput, "");
+    }
+    const fileInput = td.querySelector(".option-file-input");
+    if (fileInput) {
+        fileInput.value = "";
+        updateTooltipContent(fileInput, "첨부파일 없음");
+    }
+    const previewWrap = td.querySelector(".option-image-preview-wrap");
+    if (previewWrap) {
+        previewWrap.classList.add("d-none");
+        const icon = previewWrap.querySelector("[data-bs-toggle='tooltip']");
+        if (icon) {
+            bootstrap.Tooltip.getInstance(icon)?.dispose();
+        }
+    }
+    const localPreview = td.querySelector(".local-image-preview");
+    if (localPreview) {
+        URL.revokeObjectURL(localPreview.dataset.objectUrl);
+        bootstrap.Tooltip.getInstance(localPreview)?.dispose();
+        localPreview.remove();
+    }
+}
+
+function clearQuestionImageCell(td) {
+    if (!td) {
+        return;
+    }
+    const urlInput = td.querySelector(".question-image-url-input");
+    if (urlInput) {
+        urlInput.value = "";
+    }
+    const fileInput = td.querySelector("input[type='file']");
+    if (fileInput) {
+        fileInput.value = "";
+        updateTooltipContent(fileInput, "첨부파일 없음");
+    }
+    const previewWrap = td.querySelector(".question-image-preview-wrap");
+    if (previewWrap) {
+        previewWrap.classList.add("d-none");
+        const icon = previewWrap.querySelector("[data-bs-toggle='tooltip']");
+        if (icon) {
+            bootstrap.Tooltip.getInstance(icon)?.dispose();
+        }
+    }
+    const localPreview = td.querySelector(".local-image-preview");
+    if (localPreview) {
+        URL.revokeObjectURL(localPreview.dataset.objectUrl);
+        bootstrap.Tooltip.getInstance(localPreview)?.dispose();
+        localPreview.remove();
     }
 }
 
@@ -119,23 +261,23 @@ function addRow() {
 
     cell = row.insertCell();
     cell.innerHTML = `
-        <input type="text" class="form-control" name="questions[${rowCount}].questionNo" value="${rowCount + 1}" title="${rowCount + 1}"/>
+        <input type="text" class="form-control" name="questions[${rowCount}].questionNo" value="${rowCount + 1}" title="${rowCount + 1}" data-bs-toggle="tooltip" data-bs-placement="top"/>
         <div class="invalid-feedback">숫자만 입력</div>
     `;
 
     cell = row.insertCell();
-    cell.innerHTML = `<input type="text" class="form-control" name="questions[${rowCount}].questionText"/>`;
+    cell.innerHTML = `<input type="text" class="form-control" name="questions[${rowCount}].questionText" data-bs-toggle="tooltip" data-bs-placement="top"/>`;
 
     cell = row.insertCell();
     cell.innerHTML = `
-        <select class="form-select form-select-sm option-type-select" name="questions[${rowCount}].optionType" title="텍스트">
+        <select class="form-select form-select-sm option-type-select" name="questions[${rowCount}].optionType" title="텍스트" data-bs-toggle="tooltip" data-bs-placement="top">
             <option value="TEXT" selected>텍스트</option>
             <option value="IMAGE">이미지</option>
         </select>`;
 
     cell = row.insertCell();
     cell.innerHTML = `
-        <select class="form-select form-select-sm image-layout-select" name="questions[${rowCount}].imageLayout" disabled title="2단(2x2)">
+        <select class="form-select form-select-sm image-layout-select" name="questions[${rowCount}].imageLayout" disabled title="2단(2x2)" data-bs-toggle="tooltip" data-bs-placement="top">
             <option value="GRID_2X2" selected>2단(2x2)</option>
             <option value="STACK_1X4">1단(세로4줄)</option>
         </select>`;
@@ -143,24 +285,25 @@ function addRow() {
     for (let n = 1; n <= 4; n++) {
         cell = row.insertCell();
         cell.innerHTML = `
-            <input type="text" class="form-control form-control-sm option-text-input mb-1" name="questions[${rowCount}].option${n}"/>
-            <input type="file" class="form-control form-control-sm option-file-input" accept="image/*" name="questions[${rowCount}].option${n}File" title="첨부파일 없음"/>`;
+            <input type="text" class="form-control form-control-sm option-text-input mb-1" name="questions[${rowCount}].option${n}" data-bs-toggle="tooltip" data-bs-placement="top"/>
+            <input type="file" class="form-control form-control-sm option-file-input" accept="image/*" name="questions[${rowCount}].option${n}File" title="첨부파일 없음" data-bs-toggle="tooltip" data-bs-placement="top"/>`;
     }
 
     cell = row.insertCell();
     cell.innerHTML = `
-        <input type="text" class="form-control" name="questions[${rowCount}].answers"/>
+        <input type="text" class="form-control" name="questions[${rowCount}].answers" data-bs-toggle="tooltip" data-bs-placement="top"/>
         <div class="invalid-feedback">숫자(쉼표 구분)만 입력</div>
     `;
 
     cell = row.insertCell();
-    cell.innerHTML = `<span class="text-muted">-</span>`;
-
-    cell = row.insertCell();
-    cell.innerHTML = `<input type="file" class="form-control" name="questions[${rowCount}].imageFile" accept="image/*" title="첨부파일 없음"/>`;
+    cell.innerHTML = `
+        <input type="hidden" name="questions[${rowCount}].imageUrl" value="" class="question-image-url-input"/>
+        <input type="file" class="form-control form-control-sm" name="questions[${rowCount}].imageFile" accept="image/*" title="첨부파일 없음" data-bs-toggle="tooltip" data-bs-placement="top"/>
+        <span class="question-image-preview-wrap d-none"></span>`;
 
     cell = row.insertCell();
     cell.innerHTML = `<button type="button" class="btn btn-danger btn-sm btn-delete-row">삭제</button>`;
+    initTooltips(row);
     updateQuestionCount();
 }
 

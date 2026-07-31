@@ -16,13 +16,13 @@
 
     <div th:replace="~{fragments/help-banner :: banner('학과 → 과목 → 구분 → 년도 순서로 선택하면 원하는 시험을 빠르게 찾을 수 있어요. 시험 시간은 문제당 1분씩 계산돼요 (25문제면 총 25분).')}"></div>
 
-    <div class="mb-3 d-flex justify-content-between align-items-center">
+    <div class="mb-3 d-flex justify-content-between align-items-center gap-2 exam-toolbar-row">
         <!-- 왼쪽: 검색 + 초기화 -->
-        <div class="d-flex align-items-center">
-            <form th:action="@{/exams}" method="get" id="searchForm" class="d-flex align-items-center">
+        <div class="d-flex align-items-center gap-2 exam-filter-scroll">
+            <form th:action="@{/exams}" method="get" id="searchForm" class="d-flex align-items-center gap-2 exam-filter-form">
 
                 <!-- 학과 -->
-                <select class="form-select form-select-sm me-2" name="departmentId" id="departmentSelect" style="width: 190px;">
+                <select class="form-select form-select-sm exam-filter-select" name="departmentId" id="departmentSelect">
                     <option value="">학과 선택</option>
                     <option th:each="dept : ${departments}"
                             th:value="${dept.id}"
@@ -32,7 +32,7 @@
                 </select>
 
                 <!-- 과목 -->
-                <select class="form-select form-select-sm me-2" name="subjectId" id="subjectSelect" style="width: 190px;"
+                <select class="form-select form-select-sm exam-filter-select" name="subjectId" id="subjectSelect"
                         th:disabled="${departmentId == null}">
                     <option value="">과목 선택</option>
                     <option th:each="subj : ${subjects}"
@@ -43,7 +43,7 @@
                 </select>
 
                 <!-- 구분 -->
-                <select class="form-select form-select-sm me-2" name="examType" id="examTypeSelect" style="width: 170px;"
+                <select class="form-select form-select-sm exam-filter-select" name="examType" id="examTypeSelect"
                         th:disabled="${subjectId == null}">
                     <option value="">구분 선택</option>
                     <option th:each="type : ${examTypes}"
@@ -54,7 +54,7 @@
                 </select>
 
                 <!-- 년도 -->
-                <select class="form-select form-select-sm me-2" name="year" id="yearSelect" style="width: 130px;"
+                <select class="form-select form-select-sm exam-filter-select" name="year" id="yearSelect"
                         th:disabled="${examType == null}">
                     <option value="">년도 선택</option>
                     <option th:each="y : ${#numbers.sequence(2001, 2019)}"
@@ -66,11 +66,11 @@
             </form>
 
             <!-- 초기화 버튼 -->
-            <button type="button" class="btn btn-secondary btn-sm ms-2" id="resetBtn">초기화</button>
+            <button type="button" class="btn btn-secondary btn-sm flex-shrink-0" id="resetBtn">초기화</button>
         </div>
 
         <!-- 오른쪽: 등록 버튼 (관리자 전용) -->
-        <a class="btn btn-primary btn-sm" th:href="@{/admin/exams/new}" sec:authorize="hasRole('ADMIN')">등록</a>
+        <a class="btn btn-primary btn-sm flex-shrink-0 exam-register-btn" th:href="@{/admin/exams/new}" sec:authorize="hasRole('ADMIN')">등록</a>
     </div>
 
     <span style="font-weight: bold;" th:text="|총 ${pagination.totalElements} 건|"></span>

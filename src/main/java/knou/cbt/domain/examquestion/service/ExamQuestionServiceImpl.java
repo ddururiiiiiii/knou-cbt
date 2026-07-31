@@ -38,7 +38,7 @@ public class ExamQuestionServiceImpl implements ExamQuestionService {
                     req.getQuestionText(),
                     blankToNull(req.getOption1()), blankToNull(req.getOption2()),
                     blankToNull(req.getOption3()), blankToNull(req.getOption4()),
-                    req.getImageUrl(),
+                    blankToNull(req.getImageUrl()),
                     req.getOptionType(), req.getImageLayout()
             );
             mapper.insertQuestion(question);
