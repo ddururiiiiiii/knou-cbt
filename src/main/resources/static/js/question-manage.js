@@ -302,7 +302,7 @@ function addRow() {
         <span class="question-image-preview-wrap d-none"></span>`;
 
     cell = row.insertCell();
-    cell.innerHTML = `<button type="button" class="btn btn-danger btn-sm btn-delete-row">삭제</button>`;
+    cell.innerHTML = `<button type="button" class="btn btn-link btn-delete-row p-0" title="문제 삭제"><i class="bi bi-x-circle-fill text-danger fs-4"></i></button>`;
     initTooltips(row);
     updateQuestionCount();
 }
