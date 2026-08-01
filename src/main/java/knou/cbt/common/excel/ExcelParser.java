@@ -32,13 +32,12 @@ public class ExcelParser {
 
                 // 시험 ID 컬럼이 있을 경우
                 if (withExamId) {
-                    q.setExamId((long) row.getCell(colIdx++).getNumericCellValue());
+                    q.setExamId((long) getNumericValue(row.getCell(colIdx++)));
                 } else {
                     colIdx++; // 시험ID 컬럼 건너뛰기
                 }
 
-
-                q.setQuestionNo((int) row.getCell(colIdx++).getNumericCellValue());
+                q.setQuestionNo((int) getNumericValue(row.getCell(colIdx++)));
                 q.setQuestionText(getCellValue(row.getCell(colIdx++)));
                 q.setOption1(getCellValue(row.getCell(colIdx++)));
                 q.setOption2(getCellValue(row.getCell(colIdx++)));
@@ -53,6 +52,25 @@ public class ExcelParser {
         }
 
         return questions;
+    }
+
+    // 파싱 단계에서는 형식을 엄격히 검사하지 않는다 — 숫자가 비었거나 잘못돼도 0으로 채워서
+    // 일단 화면(수정 가능한 표)에 올리고, 실제 검증은 저장 시(questionManage.html의 검증 로직)에 맡긴다.
+    private static double getNumericValue(Cell cell) {
+        if (cell == null) {
+            return 0;
+        }
+        return switch (cell.getCellType()) {
+            case NUMERIC -> cell.getNumericCellValue();
+            case STRING -> {
+                try {
+                    yield Double.parseDouble(cell.getStringCellValue().trim());
+                } catch (NumberFormatException e) {
+                    yield 0;
+                }
+            }
+            default -> 0;
+        };
     }
 
     private static String getCellValue(Cell cell) {

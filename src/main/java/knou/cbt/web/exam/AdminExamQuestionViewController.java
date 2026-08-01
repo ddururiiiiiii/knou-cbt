@@ -144,8 +144,17 @@ public class AdminExamQuestionViewController {
     public String uploadExcel(@PathVariable("examId") Long examId,
                               @RequestParam("file") MultipartFile file,
                               Model model) {
-        // 무조건 엑셀에는 시험ID가 들어있다고 가정
-        List<ExamQuestionRequest> questions = ExcelParser.parse(file, true);
+        List<ExamQuestionRequest> questions;
+        try {
+            // 무조건 엑셀에는 시험ID가 들어있다고 가정
+            questions = ExcelParser.parse(file, true);
+        } catch (RuntimeException e) {
+            model.addAttribute("examId", examId);
+            model.addAttribute("exam", examService.get(examId));
+            model.addAttribute("questions", examQuestionService.getQuestions(examId));
+            model.addAttribute("errorMessage", "엑셀 양식을 다시 확인해주세요: " + e.getMessage());
+            return "admin/exam/questionManage";
+        }
 
         // 특정 시험 업로드일 경우 → examId 덮어쓰기
         if (examId != 0) {
