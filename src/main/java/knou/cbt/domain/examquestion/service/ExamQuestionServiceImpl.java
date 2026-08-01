@@ -43,9 +43,13 @@ public class ExamQuestionServiceImpl implements ExamQuestionService {
             );
             mapper.insertQuestion(question);
 
-            if (req.getAnswers() != null) {
+            if (req.getAnswers() != null && !req.getAnswers().isBlank()) {
                 for (String answer : req.getAnswers().split(",")) {
-                    Integer optionNo = Integer.parseInt(answer.trim()); // 문자열 → 숫자 변환
+                    String trimmed = answer.trim();
+                    if (trimmed.isEmpty()) {
+                        continue; // "1,,3"처럼 빈 항목이 섞여도 무시
+                    }
+                    Integer optionNo = Integer.parseInt(trimmed); // 문자열 → 숫자 변환
                     ExamQuestionAnswer ans = ExamQuestionAnswer.create(null, question.getId(), optionNo);
                     mapper.insertAnswer(ans);
                 }

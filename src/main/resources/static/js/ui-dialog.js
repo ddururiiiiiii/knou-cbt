@@ -35,6 +35,16 @@ function appConfirm(message, options = {}) {
     });
 }
 
+function showLoading(message) {
+    const overlay = document.getElementById('appLoadingOverlay');
+    document.getElementById('appLoadingMessage').textContent = message || '처리 중입니다...';
+    overlay.classList.remove('d-none');
+}
+
+function hideLoading() {
+    document.getElementById('appLoadingOverlay').classList.add('d-none');
+}
+
 function appAlert(message, options = {}) {
     return new Promise((resolve) => {
         const modalEl = document.getElementById('appAlertModal');

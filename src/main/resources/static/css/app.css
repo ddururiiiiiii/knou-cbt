@@ -551,3 +551,45 @@ body:has(#questionForm) > .container {
 .blink {
     animation: kcbt-blink 1s step-start infinite;
 }
+
+/* ==========================================================================
+   전역 로딩 오버레이 (fragments/dialogs.html) — 저장/업로드 등 페이지 이동을
+   동반하는 폼 제출 중에 잠깐 떠 있다가 다음 페이지 렌더링과 함께 사라짐.
+   ========================================================================== */
+.app-loading-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(30, 34, 48, 0.28);
+    backdrop-filter: blur(1px);
+    opacity: 0;
+    animation: kcbt-loading-fade-in 0.15s ease forwards;
+}
+.app-loading-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2.25rem 2.75rem;
+    background: var(--kcbt-surface);
+    border-radius: var(--kcbt-radius);
+    box-shadow: var(--kcbt-shadow-hover);
+}
+.app-loading-box .spinner-border {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-width: 0.3rem;
+    color: var(--kcbt-accent);
+}
+.app-loading-message {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--kcbt-ink);
+}
+@keyframes kcbt-loading-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

@@ -45,7 +45,9 @@
 
         <form th:action="@{/admin/exams/{examId}/questions/excel-upload(examId=${exam.id})}"
               method="post" enctype="multipart/form-data" class="d-inline">
-            <input type="file" id="excelFile" name="file" accept=".xlsx,.xls" style="display: none;">
+            <input type="file" id="excelFile" name="file"
+                   accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                   style="display: none;">
             <button type="button" id="uploadExcelBtn" class="btn btn-outline-primary">
                 엑셀 업로드
             </button>

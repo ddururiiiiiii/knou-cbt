@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -96,7 +97,13 @@ public class AdminExamQuestionViewController {
             }
         }
 
-        examQuestionService.saveAll(examId, wrapper.getQuestions());
+        try {
+            examQuestionService.saveAll(examId, wrapper.getQuestions());
+        } catch (DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "저장 중 오류가 발생했습니다. 문제번호가 중복되지 않았는지 확인해주세요.");
+            return "redirect:/admin/exams/{examId}/questions";
+        }
         redirectAttributes.addFlashAttribute("saveSuccess", true);
         return "redirect:/admin/exams/{examId}/questions";
     }

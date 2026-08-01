@@ -79,9 +79,11 @@ window.addEventListener("DOMContentLoaded", () => {
         } else {
             sessionStorage.removeItem(SCROLL_TO_BOTTOM_KEY);
         }
+        showLoading("문제를 저장하고 있습니다...");
     });
 
     document.getElementById("excelFile").addEventListener("change", function () {
+        showLoading("엑셀 파일을 업로드하고 있습니다...");
         this.form.submit();
     });
 });
@@ -374,17 +376,16 @@ function confirmAndUpload() {
 function validateBeforeSave() {
     let valid = true;
     const rows = document.querySelectorAll("#questionTable tr");
+    const noValueCounts = {};
 
     rows.forEach((row) => {
         const noInput = row.querySelector("input[name*='.questionNo']");
         const answerInput = row.querySelector("input[name*='.answers']");
 
         if (noInput) {
-            if (!/^\d+$/.test(noInput.value.trim())) {
-                noInput.classList.add("is-invalid");
-                valid = false;
-            } else {
-                noInput.classList.remove("is-invalid");
+            const trimmed = noInput.value.trim();
+            if (/^\d+$/.test(trimmed)) {
+                noValueCounts[trimmed] = (noValueCounts[trimmed] || 0) + 1;
             }
         }
 
@@ -395,6 +396,31 @@ function validateBeforeSave() {
             } else {
                 answerInput.classList.remove("is-invalid");
             }
+        }
+    });
+
+    rows.forEach((row) => {
+        const noInput = row.querySelector("input[name*='.questionNo']");
+        if (!noInput) {
+            return;
+        }
+        const feedback = noInput.parentElement.querySelector(".invalid-feedback");
+        const trimmed = noInput.value.trim();
+
+        if (!/^\d+$/.test(trimmed)) {
+            noInput.classList.add("is-invalid");
+            if (feedback) {
+                feedback.textContent = "숫자만 입력";
+            }
+            valid = false;
+        } else if (noValueCounts[trimmed] > 1) {
+            noInput.classList.add("is-invalid");
+            if (feedback) {
+                feedback.textContent = "문제번호가 중복되었습니다";
+            }
+            valid = false;
+        } else {
+            noInput.classList.remove("is-invalid");
         }
     });
 
