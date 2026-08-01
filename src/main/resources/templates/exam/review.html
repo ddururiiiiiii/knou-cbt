@@ -75,7 +75,7 @@
         <div class="d-flex align-items-center">
             <div class="review-hero-icon"><i class="bi bi-search"></i></div>
             <div>
-                <p class="text-muted mb-1" th:text="|${exam.departmentName} · ${exam.year}년도 ${exam.grade}학년|"></p>
+                <p class="text-muted mb-1" th:text="|${exam.departmentName} · ${exam.year}년도 ${exam.gradeDisplay} ${exam.semester.description}|"></p>
                 <h3 class="fw-bold mb-0" th:text="|${exam.subjectName} (${exam.examType.description})|"></h3>
             </div>
         </div>

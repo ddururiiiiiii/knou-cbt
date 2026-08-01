@@ -241,7 +241,7 @@
             <div class="d-flex align-items-center">
                 <div class="solve-subject-icon"><i class="bi bi-pencil-square"></i></div>
                 <div>
-                    <div class="text-muted small" th:text="|${exam.departmentName} · ${exam.year}년도 ${exam.grade}학년|"></div>
+                    <div class="text-muted small" th:text="|${exam.departmentName} · ${exam.year}년도 ${exam.gradeDisplay} ${exam.semester.description}|"></div>
                     <h5 class="fw-bold mb-0" th:text="|${exam.subjectName} (${exam.examType.description})|"></h5>
                 </div>
             </div>

@@ -66,6 +66,7 @@
             <th>번호</th>
             <th>학과명</th>
             <th>학년</th>
+            <th>학기</th>
             <th>과목 구분</th>
             <th>과목명</th>
             <th>사용 여부</th>
@@ -76,10 +77,17 @@
         <tr th:each="subject, stat : ${pagination.content}">
             <td th:text="${stat.index + 1}" style="text-align: center;"></td>
             <td th:text="${subject.departmentName}"></td>
-            <td th:text="|${subject.grade}학년|" style="text-align: center;"></td>
+            <td th:text="${subject.gradeDisplay}" style="text-align: center;"></td>
+            <td th:text="${subject.semester.description}" style="text-align: center;"></td>
             <td th:text="${subject.subjectCategory.description}"></td>
             <td th:text="${subject.subjectName}"></td>
-            <td th:text="${subject.useYn.description}" style="text-align: center;"></td>
+            <td style="text-align: center;">
+                <span th:text="${subject.useYn.description}"></span>
+                <i th:if="${subject.useYn.name() == 'Y' and !subject.effectivelyActive}"
+                   class="bi bi-exclamation-triangle-fill text-warning"
+                   data-bs-toggle="tooltip"
+                   title="상위 학과가 미사용 상태라 이 과목의 모든 시험이 비회원에게는 안 보입니다."></i>
+            </td>
             <td>
                 <a th:href="@{'/admin/subjects/' + ${subject.id} + '/edit'}"
                    class="btn btn-sm btn-outline-primary">수정</a>
@@ -103,7 +111,7 @@
             </td>
         </tr>
         <tr th:if="${pagination.content.size() == 0}">
-            <td colspan="7" class="text-center">등록된 과목이 없습니다.</td>
+            <td colspan="8" class="text-center">등록된 과목이 없습니다.</td>
         </tr>
         </tbody>
     </table>

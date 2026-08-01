@@ -34,7 +34,7 @@
                 <option value="">과목 선택</option>
                 <option th:each="subj : ${subjects}"
                         th:value="${subj.id}"
-                        th:text="${subj.subjectName}">
+                        th:text="|${subj.subjectName} (${subj.gradeDisplay}, ${subj.semester.description})|">
                 </option>
             </select>
             <div class="invalid-feedback" th:if="${#fields.hasErrors('subjectId')}">

@@ -37,7 +37,7 @@
                     <option value="">과목 선택</option>
                     <option th:each="subj : ${subjects}"
                             th:value="${subj.id}"
-                            th:text="${subj.subjectName}"
+                            th:text="|${subj.subjectName} (${subj.gradeDisplay}, ${subj.semester.description})|"
                             th:selected="${subjectId != null and subjectId == subj.id}">
                     </option>
                 </select>
@@ -83,6 +83,7 @@
             <th>과목명</th>
             <th>학과명</th>
             <th>학년</th>
+            <th>학기</th>
             <th>시험 구분</th>
             <th>년도</th>
             <th sec:authorize="hasRole('ADMIN')">사용 여부</th>
@@ -94,10 +95,17 @@
             <td th:text="${stat.index + 1}" style="text-align: center;"></td>
             <td th:text="${exam.subjectName}"></td>
             <td th:text="${exam.departmentName}"></td>
-            <td th:text="${exam.grade}" style="text-align: center;"></td>
+            <td th:text="${exam.gradeDisplay}" style="text-align: center;"></td>
+            <td th:text="${exam.semester.description}" style="text-align: center;"></td>
             <td th:text="${exam.examType.description}"></td>
             <td th:text="${exam.year}" style="text-align: center;"></td>
-            <td th:text="${exam.useYn.description}" style="text-align: center;" sec:authorize="hasRole('ADMIN')"></td>
+            <td style="text-align: center;" sec:authorize="hasRole('ADMIN')">
+                <span th:text="${exam.useYn.description}"></span>
+                <i th:if="${exam.useYn.name() == 'Y' and !exam.effectivelyActive}"
+                   class="bi bi-exclamation-triangle-fill text-warning"
+                   data-bs-toggle="tooltip"
+                   title="상위 과목 또는 학과가 미사용 상태라 비회원에게는 안 보입니다."></i>
+            </td>
             <td class="text-center">
                 <!-- 수정 버튼 (관리자 전용) -->
                 <a th:href="@{'/admin/exams/' + ${exam.id} + '/edit'}"
@@ -136,15 +144,15 @@
                 <!-- 문제 풀기 (일반 사용자도 가능) -->
                 <button type="button" class="btn btn-sm btn-primary"
                         th:data-solve-url="@{/exams/{examId}/solve(examId=${exam.id})}"
-                        th:data-solve-info="|${exam.departmentName} ${exam.subjectName} ${exam.grade}학년 ${exam.examType.description} ${exam.year}년|">
+                        th:data-solve-info="|${exam.departmentName} ${exam.subjectName} ${exam.gradeDisplay} ${exam.semester.description} ${exam.examType.description} ${exam.year}년|">
                     문제 풀기
                 </button>
             </td>
 
         </tr>
         <tr th:if="${pagination.content.size() == 0}">
-            <td colspan="8" class="text-center" sec:authorize="hasRole('ADMIN')">등록된 시험이 없습니다.</td>
-            <td colspan="7" class="text-center" sec:authorize="!hasRole('ADMIN')">등록된 시험이 없습니다.</td>
+            <td colspan="9" class="text-center" sec:authorize="hasRole('ADMIN')">등록된 시험이 없습니다.</td>
+            <td colspan="8" class="text-center" sec:authorize="!hasRole('ADMIN')">등록된 시험이 없습니다.</td>
         </tr>
         </tbody>
     </table>

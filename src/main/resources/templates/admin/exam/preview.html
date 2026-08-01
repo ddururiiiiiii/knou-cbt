@@ -49,7 +49,7 @@
 
     <!-- 시험 정보 -->
     <div class="mb-3">
-        <p class="text-muted mb-1" th:text="|${exam.departmentName} · ${exam.year}년도 ${exam.grade}학년|"></p>
+        <p class="text-muted mb-1" th:text="|${exam.departmentName} · ${exam.year}년도 ${exam.gradeDisplay} ${exam.semester.description}|"></p>
         <h4 class="fw-bold" th:text="|${exam.subjectName} (${exam.examType.description})|"></h4>
     </div>
 

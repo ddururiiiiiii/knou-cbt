@@ -3,9 +3,11 @@ package knou.cbt.web.exam;
 import jakarta.servlet.http.HttpSession;
 import knou.cbt.domain.exam.dto.AnswerForm;
 import knou.cbt.domain.exam.dto.ExamResponse;
+import knou.cbt.domain.exam.exception.ExamNotFoundException;
 import knou.cbt.domain.exam.service.ExamService;
 import knou.cbt.domain.examquestion.dto.ExamQuestionResponse;
 import knou.cbt.domain.examquestion.service.ExamQuestionService;
+import knou.cbt.global.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,6 +33,10 @@ public class ExamSolveController {
     @GetMapping("/solve")
     public String solve(@PathVariable("examId") Long examId, Model model) {
         ExamResponse exam = examService.get(examId);
+        if (!SecurityUtils.isAdmin() && !exam.effectivelyActive()) {
+            // 비관리자에게는 미사용 시험(또는 상위 과목/학과가 미사용)이 존재하지 않는 것처럼 처리
+            throw new ExamNotFoundException(examId);
+        }
         List<ExamQuestionResponse> questions = examQuestionService.getQuestions(examId);
 
         model.addAttribute("exam", exam);

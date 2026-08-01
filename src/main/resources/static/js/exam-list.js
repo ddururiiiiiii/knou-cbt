@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 let options = '<option value="">과목 선택</option>';
                 data.forEach(subj => {
                     const isSelected = String(subj.id) === String(selected) ? "selected" : "";
-                    options += `<option value="${subj.id}" ${isSelected}>${subj.subjectName}</option>`;
+                    options += `<option value="${subj.id}" ${isSelected}>${subj.subjectName} (${subj.gradeDisplay}, ${subj.semesterDescription})</option>`;
                 });
                 subjectSelect.innerHTML = options;
                 subjectSelect.disabled = false;

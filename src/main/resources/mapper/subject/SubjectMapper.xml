@@ -15,7 +15,7 @@
             AND s.department_id = #{departmentId}
         </if>
         <if test="grade != null">
-            AND s.grade = #{grade}
+            AND (',' || s.grade || ',') LIKE CONCAT('%,', #{grade}, ',%')
         </if>
         <if test="subjectCategory != null">
             AND s.subject_category = #{subjectCategory}
@@ -29,7 +29,9 @@
             s.subject_category,
             s.department_id,
             d.department_name,
+            d.use_yn AS department_use_yn,
             s.grade,
+            s.semester,
             s.use_yn,
             s.created_at,
             s.updated_at
@@ -43,6 +45,9 @@
         <result property="subjectCategory" column="subject_category"/>
         <result property="departmentId" column="department_id"/>
         <result property="departmentName" column="department_name"/>
+        <result property="departmentUseYn" column="department_use_yn"/>
+        <result property="grade" column="grade"/>
+        <result property="semester" column="semester"/>
         <result property="useYn" column="use_yn"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
@@ -75,17 +80,17 @@
     </select>
 
     <select id="findGradesByDepartment" resultType="int">
-        SELECT DISTINCT grade
-        FROM subject
+        SELECT DISTINCT g::int
+        FROM subject, unnest(string_to_array(grade, ',')) AS g
         WHERE department_id = #{departmentId}
-        ORDER BY grade
+        ORDER BY 1
     </select>
 
     <select id="findCategoriesByDepartmentAndGrade" resultType="knou.cbt.domain.subject.model.SubjectCategory">
         SELECT DISTINCT subject_category
         FROM subject
         WHERE department_id = #{departmentId}
-          AND grade = #{grade}
+          AND (',' || grade || ',') LIKE CONCAT('%,', #{grade}, ',%')
     </select>
 
     <select id="findByIdWithDepartment" parameterType="long" resultMap="SubjectResultMap">
@@ -95,16 +100,18 @@
         </where>
     </select>
 
-    <select id="findByNameWithDepartment" parameterType="string" resultMap="SubjectResultMap">
+    <select id="findByNameDeptSemester" resultMap="SubjectResultMap">
         <include refid="BaseSelectColumns"/>
         <where>
             s.subject_name = #{name}
+            AND s.department_id = #{departmentId}
+            AND s.semester = #{semester}
         </where>
         LIMIT 1
     </select>
 
     <select id="findByDepartmentId" resultType="knou.cbt.domain.subject.dto.SubjectDto">
-        SELECT s.id, s.subject_name, s.subject_category, s.grade,
+        SELECT s.id, s.subject_name, s.subject_category, s.grade, s.semester,
                s.department_id, d.department_name, s.use_yn
         FROM subject s
         JOIN department d ON s.department_id = d.id
@@ -112,15 +119,16 @@
             s.department_id = #{deptId}
             AND s.use_yn = 'Y'
         </where>
-        ORDER BY s.subject_name COLLATE "C"
+        ORDER BY s.subject_name COLLATE "C", s.semester
     </select>
 
     <insert id="insert" parameterType="knou.cbt.domain.subject.model.Subject">
-        INSERT INTO subject (subject_name, subject_category, grade, department_id, use_yn)
+        INSERT INTO subject (subject_name, subject_category, grade, semester, department_id, use_yn)
         VALUES (
                    #{subjectName},
                    #{subjectCategory},
                    #{grade},
+                   #{semester},
                    #{departmentId},
                    COALESCE(#{useYn}, 'Y')
                )
@@ -130,7 +138,9 @@
         UPDATE subject
         SET subject_name     = #{subjectName},
             subject_category = #{subjectCategory},
-            department_id    = #{departmentId}
+            department_id    = #{departmentId},
+            grade            = #{grade},
+            semester         = #{semester}
         <if test="useYn != null">
             , use_yn = #{useYn}
         </if>

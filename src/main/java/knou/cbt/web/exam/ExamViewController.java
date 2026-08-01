@@ -8,6 +8,7 @@ import knou.cbt.domain.exam.dto.ExamResponse;
 import knou.cbt.domain.exam.model.ExamType;
 import knou.cbt.domain.exam.service.ExamService;
 import knou.cbt.domain.subject.service.SubjectService;
+import knou.cbt.global.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,8 +47,9 @@ public class ExamViewController {
                        @RequestParam(required = false) String useYn,
                        Model model) {
 
+        boolean isAdmin = SecurityUtils.isAdmin();
         PageResponse<ExamResponse> pageResponse =
-                examService.listPage(departmentId, subjectId, examType, year, useYn, pageRequest);
+                examService.listPage(departmentId, subjectId, examType, year, useYn, pageRequest, !isAdmin);
 
         model.addAttribute("pagination", pageResponse);
 

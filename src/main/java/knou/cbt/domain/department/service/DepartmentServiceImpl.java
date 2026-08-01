@@ -31,7 +31,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public List<DepartmentResponse> findAll() {
-        return mapper.findAll();
+        return mapper.findAll().stream()
+                .map(DepartmentResponse::of)
+                .toList();
     }
 
     @Override

@@ -35,7 +35,8 @@ public class ExamServiceImpl implements ExamService {
                                                ExamType examType,
                                                Integer year,
                                                String useYn,
-                                               PageRequest pageRequest) {
+                                               PageRequest pageRequest,
+                                               boolean onlyActive) {
 
         List<ExamDto> exams = mapper.findAllExamDetails(
                 pageRequest.offset(),
@@ -44,7 +45,8 @@ public class ExamServiceImpl implements ExamService {
                 departmentId,
                 subjectId,
                 examType,
-                year
+                year,
+                onlyActive
         );
 
         List<Long> examIds = exams.stream().map(ExamDto::getId).toList();
@@ -59,7 +61,7 @@ public class ExamServiceImpl implements ExamService {
                 ))
                 .toList();
 
-        int total = mapper.countAll(useYn, departmentId, subjectId, examType, year);
+        int total = mapper.countAll(useYn, departmentId, subjectId, examType, year, onlyActive);
         int totalPages = (int) Math.ceil((double) total / pageRequest.sizeOrDefault());
 
         return new PageResponse<>(
@@ -77,7 +79,7 @@ public class ExamServiceImpl implements ExamService {
                      Long subjectId,
                      ExamType examType,
                      Integer year) {
-        return mapper.countAll(useYn, departmentId, subjectId, examType, year);
+        return mapper.countAll(useYn, departmentId, subjectId, examType, year, true);
     }
 
     @Override

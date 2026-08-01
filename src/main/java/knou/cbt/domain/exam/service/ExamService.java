@@ -17,7 +17,8 @@ public interface ExamService {
             ExamType examType,
             Integer year,
             String useYn,
-            PageRequest pageRequest
+            PageRequest pageRequest,
+            boolean onlyActive
     );
 
     int count(@Param("useYn") String useYn,

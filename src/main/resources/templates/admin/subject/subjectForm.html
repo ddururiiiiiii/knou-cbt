@@ -48,21 +48,33 @@
             </div>
         </div>
 
-        <!-- 학년 선택 -->
+        <!-- 학년 선택 (복수 선택 가능 — 하나의 과목이 여러 학년에서 개설되는 경우 대비) -->
         <div class="mb-3">
-            <label for="grade" class="form-label">학년</label>
+            <label class="form-label d-block">학년</label>
+            <div class="form-check form-check-inline" th:each="i : ${#numbers.sequence(1,4)}">
+                <input type="checkbox" class="form-check-input" th:field="*{grades}" th:value="${i}"/>
+                <label class="form-check-label" th:for="${#ids.prev('grades')}" th:text="|${i}학년|"></label>
+            </div>
+            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('grades')}">
+                <small th:errors="*{grades}"></small>
+            </div>
+        </div>
+
+        <!-- 학기 선택 -->
+        <div class="mb-3">
+            <label for="semester" class="form-label">학기</label>
             <select class="form-select"
-                    id="grade"
-                    th:field="*{grade}"
-                    th:classappend="${#fields.hasErrors('grade')} ? ' is-invalid'">
-                <option value="">학년 선택</option>
-                <option th:each="i : ${#numbers.sequence(1,4)}"
-                        th:value="${i}"
-                        th:text="|${i}학년|">
+                    id="semester"
+                    th:field="*{semester}"
+                    th:classappend="${#fields.hasErrors('semester')} ? ' is-invalid'">
+                <option value="">학기 선택</option>
+                <option th:each="s : ${semesters}"
+                        th:value="${s}"
+                        th:text="${s.description}">
                 </option>
             </select>
-            <div class="invalid-feedback" th:if="${#fields.hasErrors('grade')}">
-                <small th:errors="*{grade}"></small>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('semester')}">
+                <small th:errors="*{semester}"></small>
             </div>
         </div>
 
@@ -77,7 +89,7 @@
                 <option value="0">학과 선택</option>
                 <option th:each="dept : ${departments}"
                         th:value="${dept.id}"
-                        th:text="${dept.departmentName}">
+                        th:text="${dept.useYn != null and dept.useYn.name() == 'N'} ? |${dept.departmentName} (미사용)| : ${dept.departmentName}">
                 </option>
             </select>
             <div class="invalid-feedback" th:if="${#fields.hasErrors('departmentId')}">

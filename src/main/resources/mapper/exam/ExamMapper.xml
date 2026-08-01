@@ -20,6 +20,11 @@
         <if test="year != null">
             AND e.year = #{year}
         </if>
+        <!-- 비관리자(비회원 포함)에게는 시험/과목/학과 중 하나라도 미사용이면 안 보이게 강제.
+             관리자는 이 조건과 무관하게 전부 조회 가능(관리 목적). -->
+        <if test="onlyActive">
+            AND e.use_yn = 'Y' AND s.use_yn = 'Y' AND d.use_yn = 'Y'
+        </if>
     </sql>
 
     <sql id="BaseSelectColumns">
@@ -31,8 +36,11 @@
             d.department_name,
             e.exam_type,
             s.grade,
+            s.semester,
             e.year,
             e.use_yn,
+            s.use_yn AS subject_use_yn,
+            d.use_yn AS department_use_yn,
             e.created_at,
             e.updated_at
         FROM exam e
@@ -48,8 +56,11 @@
         <result property="departmentName" column="department_name"/>
         <result property="examType" column="exam_type"/>
         <result property="grade" column="grade"/>
+        <result property="semester" column="semester"/>
         <result property="year" column="year"/>
         <result property="useYn" column="use_yn"/>
+        <result property="subjectUseYn" column="subject_use_yn"/>
+        <result property="departmentUseYn" column="department_use_yn"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>

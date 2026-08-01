@@ -11,6 +11,7 @@ import knou.cbt.domain.subject.exception.DuplicateSubjectNameException;
 import knou.cbt.domain.subject.exception.SubjectDeleteNotAllowedException;
 import knou.cbt.domain.subject.exception.SubjectNotFoundException;
 import knou.cbt.domain.subject.mapper.SubjectMapper;
+import knou.cbt.domain.subject.model.Semester;
 import knou.cbt.domain.subject.model.Subject;
 import knou.cbt.domain.subject.model.SubjectCategory;
 import lombok.RequiredArgsConstructor;
@@ -109,7 +110,7 @@ public class SubjectServiceImpl implements SubjectService{
 
     @Override
     public void create(SubjectRequest request) {
-        validateDuplicateName(request.getSubjectName(), null);
+        validateDuplicateName(request.getSubjectName(), request.getDepartmentId(), request.getSemester(), null);
         Subject subject = SubjectDtoMapper.fromCreateRequest(request);
         mapper.insert(subject);
     }
@@ -117,7 +118,7 @@ public class SubjectServiceImpl implements SubjectService{
     @Override
     public void update(Long id, SubjectRequest request) {
         findSubjectOrThrow(id);
-        validateDuplicateName(request.getSubjectName(), id);
+        validateDuplicateName(request.getSubjectName(), request.getDepartmentId(), request.getSemester(), id);
         Subject subject = SubjectDtoMapper.fromUpdateRequest(id, request);
         mapper.update(subject);
     }
@@ -128,8 +129,8 @@ public class SubjectServiceImpl implements SubjectService{
         mapper.delete(id);
     }
 
-    private void validateDuplicateName(String name, Long excludeId) {
-        SubjectDto existing = mapper.findByNameWithDepartment(name);
+    private void validateDuplicateName(String name, Long departmentId, Semester semester, Long excludeId) {
+        SubjectDto existing = mapper.findByNameDeptSemester(name, departmentId, semester);
         if (existing != null && (excludeId == null || !existing.getId().equals(excludeId))) {
             throw new DuplicateSubjectNameException(name);
         }

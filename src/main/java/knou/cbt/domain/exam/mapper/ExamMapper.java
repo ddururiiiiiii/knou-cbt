@@ -19,13 +19,15 @@ public interface ExamMapper {
                                      @Param("departmentId") Long departmentId,
                                      @Param("subjectId") Long subjectId,
                                      @Param("examType") ExamType examType,
-                                     @Param("year") Integer year);
+                                     @Param("year") Integer year,
+                                     @Param("onlyActive") boolean onlyActive);
 
     int countAll(@Param("useYn") String useYn,
                  @Param("departmentId") Long departmentId,
                  @Param("subjectId") Long subjectId,
                  @Param("examType") ExamType examType,
-                 @Param("year") Integer year);
+                 @Param("year") Integer year,
+                 @Param("onlyActive") boolean onlyActive);
 
     ExamDto findExamExtendedById(@Param("id") Long id);
 

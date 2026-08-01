@@ -1,6 +1,7 @@
 package knou.cbt.domain.subject.mapper;
 
 import knou.cbt.domain.subject.dto.SubjectDto;
+import knou.cbt.domain.subject.model.Semester;
 import knou.cbt.domain.subject.model.Subject;
 import knou.cbt.domain.subject.model.SubjectCategory;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,7 +29,9 @@ public interface SubjectMapper {
 
     SubjectDto findByIdWithDepartment(Long id);
 
-    SubjectDto findByNameWithDepartment(String name);
+    SubjectDto findByNameDeptSemester(@Param("name") String name,
+                                      @Param("departmentId") Long departmentId,
+                                      @Param("semester") Semester semester);
 
     List<SubjectDto> findByDepartmentId(@Param("deptId") Long deptId);
 

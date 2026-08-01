@@ -8,10 +8,9 @@ import knou.cbt.domain.notice.dto.NoticeResponse;
 import knou.cbt.domain.notice.exception.NoticeNotFoundException;
 import knou.cbt.domain.notice.model.Notice;
 import knou.cbt.domain.notice.service.NoticeService;
+import knou.cbt.global.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,7 +38,7 @@ public class NoticeViewController {
                        Model model) {
 
         // 관리자가 아니면 공개(Y) 게시물만 노출 (비공개 여부는 클라이언트가 임의로 우회할 수 없도록 서버에서 강제)
-        String effectiveUseYn = isAdmin() ? useYn : "Y";
+        String effectiveUseYn = SecurityUtils.isAdmin() ? useYn : "Y";
 
         PageResponse<NoticeResponse> pageResponse =
                 noticeService.listPage(keyword, effectiveUseYn, pageRequest);
@@ -60,18 +59,12 @@ public class NoticeViewController {
     @GetMapping("/{id}")
     public String detail(@PathVariable("id") Long id, Model model) {
         Notice notice = noticeService.get(id);
-        if (!isAdmin() && notice.getUseYn() != null && notice.getUseYn().name().equals("N")) {
+        if (!SecurityUtils.isAdmin() && notice.getUseYn() != null && notice.getUseYn().name().equals("N")) {
             // 비관리자에게는 비공개 글이 아예 존재하지 않는 것처럼 처리
             throw new NoticeNotFoundException(id);
         }
         model.addAttribute("notice", NoticeResponse.of(notice));
         return "notice/noticeDetail";
-    }
-
-    private boolean isAdmin() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
     }
 
     /**
