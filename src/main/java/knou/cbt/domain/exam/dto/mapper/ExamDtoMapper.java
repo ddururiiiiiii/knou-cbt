@@ -18,7 +18,7 @@ public class ExamDtoMapper {
                 req.getSubjectId(),
                 req.getExamType(),
                 req.getYear(),
-                UseYn.Y
+                UseYn.N // 등록 직후엔 문제가 아직 없으므로 기본은 비공개. 문제 다 채운 뒤 수정화면에서 사용으로 전환
         );
     }
 

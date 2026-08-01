@@ -47,13 +47,11 @@ public record ExamResponse(
                 hasExamQuestions,
                 exam.getCreatedAt(),
                 exam.getUpdatedAt(),
-                UseYn.Y.equals(exam.getUseYn())
+                hasExamQuestions
+                        && UseYn.Y.equals(exam.getUseYn())
                         && UseYn.Y.equals(exam.getSubjectUseYn())
                         && UseYn.Y.equals(exam.getDepartmentUseYn())
         );
-    }
-    public static ExamResponse of(ExamDto exam) {
-        return of(exam, false);
     }
 }
 

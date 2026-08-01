@@ -128,7 +128,7 @@ public class ExamServiceImpl implements ExamService {
         if (dto == null) {
             throw new ExamNotFoundException(id);
         }
-        return ExamResponse.of(dto); // DTO → Response 변환
+        return ExamResponse.of(dto, examQuestionMapper.existsByExamId(id)); // DTO → Response 변환
     }
 
     private void validateExamExists(Long id) {
