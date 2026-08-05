@@ -482,6 +482,10 @@ body:has(#questionForm) > .container {
 .question-table tr.row-option-image .option-file-input {
     display: block;
 }
+/* 5행마다 굵은 구분선을 넣어 문제를 그룹 단위로 훑어보기 쉽게 함 */
+.question-table tbody tr:nth-child(5n) td {
+    border-bottom: 2px solid var(--kcbt-muted);
+}
 
 /* ==========================================================================
    문제 등록 화면 (questionManage.html) — 이미지 미리보기 툴팁 크기

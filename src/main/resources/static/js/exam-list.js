@@ -128,8 +128,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelectorAll("[data-solve-url]").forEach(function (btn) {
         btn.addEventListener("click", function () {
-            appAlert(`${btn.dataset.solveInfo} 시험을 시작합니다.`).then(function () {
-                window.location.href = btn.dataset.solveUrl;
+            appConfirm(`${btn.dataset.solveInfo} 시험을 시작합니다.`).then(function (ok) {
+                if (ok) {
+                    window.location.href = btn.dataset.solveUrl;
+                }
             });
         });
     });

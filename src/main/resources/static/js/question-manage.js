@@ -365,6 +365,11 @@ function toggleAll(master) {
 }
 
 function confirmAndUpload() {
+    const tbody = document.getElementById('questionTable');
+    if (tbody.rows.length === 0) {
+        document.getElementById('excelFile').click();
+        return;
+    }
     appConfirm("엑셀 파일을 업로드하면 화면의 기존 데이터는 지워지고 업로드한 데이터로 대체됩니다. 진행하시겠습니까?")
         .then(function (ok) {
             if (ok) {
