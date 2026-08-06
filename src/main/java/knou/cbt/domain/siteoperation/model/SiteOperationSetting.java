@@ -45,12 +45,4 @@ public class SiteOperationSetting {
                 bannerScheduledAt,
                 updatedAt);
     }
-
-    public boolean isMaintenanceEnabled() {
-        return Boolean.TRUE.equals(maintenanceEnabled);
-    }
-
-    public boolean isBannerEnabled() {
-        return Boolean.TRUE.equals(bannerEnabled);
-    }
 }

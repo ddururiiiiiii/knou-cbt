@@ -19,6 +19,6 @@ public class OperationBannerAdvice {
     @ModelAttribute("operationBanner")
     public SiteOperationSetting operationBanner() {
         SiteOperationSetting setting = settingService.get();
-        return setting.isBannerEnabled() ? setting : null;
+        return Boolean.TRUE.equals(setting.getBannerEnabled()) ? setting : null;
     }
 }

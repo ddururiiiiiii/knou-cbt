@@ -29,7 +29,7 @@ public class MaintenanceInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         SiteOperationSetting setting = settingService.get();
 
-        if (!setting.isMaintenanceEnabled()) {
+        if (!Boolean.TRUE.equals(setting.getMaintenanceEnabled())) {
             return true;
         }
 
