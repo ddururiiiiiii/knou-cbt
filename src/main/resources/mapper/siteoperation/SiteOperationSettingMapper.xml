@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="knou.cbt.domain.siteoperation.mapper.SiteOperationSettingMapper">
+
+    <resultMap id="SiteOperationSettingResultMap" type="knou.cbt.domain.siteoperation.model.SiteOperationSetting">
+        <id property="id" column="id"/>
+        <result property="maintenanceEnabled" column="maintenance_enabled"/>
+        <result property="maintenanceMessage" column="maintenance_message"/>
+        <result property="maintenanceExpectedEndAt" column="maintenance_expected_end_at"/>
+        <result property="bannerEnabled" column="banner_enabled"/>
+        <result property="bannerMessage" column="banner_message"/>
+        <result property="bannerScheduledAt" column="banner_scheduled_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="find" resultMap="SiteOperationSettingResultMap">
+        SELECT id,
+               maintenance_enabled,
+               maintenance_message,
+               maintenance_expected_end_at,
+               banner_enabled,
+               banner_message,
+               banner_scheduled_at,
+               updated_at
+        FROM site_operation_setting
+        WHERE id = 1
+    </select>
+
+    <update id="update" parameterType="knou.cbt.domain.siteoperation.model.SiteOperationSetting">
+        UPDATE site_operation_setting
+        SET maintenance_enabled = #{maintenanceEnabled},
+            maintenance_message = #{maintenanceMessage},
+            maintenance_expected_end_at = #{maintenanceExpectedEndAt},
+            banner_enabled = #{bannerEnabled},
+            banner_message = #{bannerMessage},
+            banner_scheduled_at = #{bannerScheduledAt},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = 1
+    </update>
+
+</mapper>
