@@ -3,7 +3,7 @@
 ## 프로젝트 개요
 KNOU CBT — 한국방송통신대학교 학생을 위한 비공식 전자 기출문제집 서비스.
 Spring Boot 3.2.6 / Java 17 / MyBatis / Thymeleaf / Spring Security, PostgreSQL(Supabase), Render 배포.
-자세한 내용은 `README.md`, 운영 전환 계획은 `ROADMAP.md` 참고.
+자세한 내용은 `README.md` 참고.
 
 ## 세션 간 작업 공유 (중요)
 이 저장소는 여러 Claude Code 세션(웹/로컬, 서로 다른 브랜치)에서 병렬로 작업됩니다.
