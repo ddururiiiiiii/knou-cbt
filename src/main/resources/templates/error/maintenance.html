@@ -2,20 +2,149 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="60">
     <title>서비스 점검 중 : KNOU - CBT</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="/css/app.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        .maint-main {
+            flex: 1 1 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 1rem;
+        }
+        .maint-card {
+            width: 100%;
+            max-width: 560px;
+            background-color: var(--kcbt-surface);
+            border: 1px solid var(--kcbt-border);
+            border-radius: var(--kcbt-radius);
+            box-shadow: var(--kcbt-shadow-hover);
+            padding: 2.75rem 2.25rem;
+            text-align: center;
+        }
+        .maint-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background-color: var(--kcbt-accent);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.9rem;
+            margin: 0 auto 1.1rem;
+            box-shadow: 0 10px 24px rgba(79, 70, 229, 0.28);
+        }
+        .maint-title {
+            font-weight: 800;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
+            color: var(--kcbt-accent-dark);
+            margin-bottom: 0.6rem;
+        }
+        .maint-message {
+            color: var(--kcbt-muted);
+            white-space: pre-line;
+            margin-bottom: 1.25rem;
+        }
+        .maint-eta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background-color: var(--kcbt-accent-soft);
+            border: 1px solid #e0e7ff;
+            border-radius: 999px;
+            padding: 0.5rem 1.1rem;
+            font-size: 0.9rem;
+            color: var(--kcbt-accent-dark);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .maint-eta i {
+            color: var(--kcbt-accent);
+        }
+        .maint-actions .btn {
+            border-radius: 999px;
+            font-weight: 700;
+            padding-left: 1.4rem;
+            padding-right: 1.4rem;
+        }
+        .maint-nav-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background-color: rgba(165, 180, 252, 0.14);
+            color: #a5b4fc;
+            border: 1px solid rgba(165, 180, 252, 0.3);
+            border-radius: 999px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+    </style>
 </head>
-<body class="bg-light d-flex align-items-center" style="height:100vh;">
-<div class="container text-center">
-    <h1 class="display-3 text-primary">점검 중</h1>
-    <h3 class="mb-3">서비스 점검이 진행 중입니다.</h3>
-    <p class="text-muted" th:text="${message} ?: '더 나은 서비스 제공을 위해 시스템을 점검하고 있습니다. 잠시 후 다시 시도해주세요.'">
-        더 나은 서비스 제공을 위해 시스템을 점검하고 있습니다.<br>
-        잠시 후 다시 시도해주세요.
-    </p>
-    <p class="text-muted" th:if="${expectedEndAt != null}">
-        예상 종료 시각: <span th:text="${#temporals.format(expectedEndAt, 'yyyy-MM-dd HH:mm')}"></span>
-    </p>
-</div>
+<body>
+
+<!-- 공통 네비게이션 (점검 중에는 메뉴 없이 브랜드 마크만) -->
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+            <i class="bi bi-mortarboard-fill" style="color: #a5b4fc; font-size: 1.3rem;"></i>
+            <span>KNOU<span style="color: #a5b4fc;">·</span>CBT</span>
+        </a>
+        <span class="maint-nav-badge"><i class="bi bi-tools"></i> 점검중</span>
+    </div>
+</nav>
+
+<main class="maint-main">
+    <div class="maint-card">
+        <div class="maint-icon">
+            <i class="bi bi-cone-striped"></i>
+        </div>
+        <div class="maint-title">서비스 점검 중입니다</div>
+        <p class="maint-message"
+           th:text="${message} ?: '더 나은 서비스 제공을 위해 시스템을 점검하고 있습니다. 잠시 후 다시 시도해주세요.'">
+            더 나은 서비스 제공을 위해 시스템을 점검하고 있습니다. 잠시 후 다시 시도해주세요.
+        </p>
+        <div class="maint-eta" th:if="${expectedEndAt != null}">
+            <i class="bi bi-clock-history"></i>
+            <span>예상 종료 <span th:text="${#temporals.format(expectedEndAt, 'yyyy-MM-dd HH:mm')}"></span></span>
+        </div>
+        <div class="maint-actions">
+            <a href="/" class="btn btn-primary"><i class="bi bi-arrow-clockwise"></i> 새로고침</a>
+        </div>
+    </div>
+</main>
+
+<!-- 풋터 -->
+<footer class="site-footer mt-auto">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 py-4">
+            <div class="footer-brand">
+                <i class="bi bi-mortarboard-fill"></i> KNOU<span class="footer-dot">·</span>CBT
+            </div>
+            <div class="footer-links">
+                <a href="mailto:workingsg913@gmail.com"><i class="bi bi-envelope"></i> 문의하기</a>
+                <a href="https://github.com/ddururiiiiiii/knou-cbt" target="_blank"><i class="bi bi-github"></i> GitHub</a>
+            </div>
+        </div>
+        <div class="footer-note text-center pb-4">
+            © 2026 KNOU-CBT · 한국방송통신대학교 학생들을 위한 비공식 전자 기출문제집입니다
+        </div>
+    </div>
+</footer>
+
 </body>
 </html>
