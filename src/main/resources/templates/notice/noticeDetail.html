@@ -14,6 +14,25 @@
     <h2>공지사항</h2>
   </div>
 
+  <!-- 버튼 영역 (수정/삭제/목록) - 상단 -->
+  <div class="d-flex justify-content-end gap-2 mb-3">
+    <!-- 관리자만 보이는 버튼 -->
+    <a th:href="@{/notices/{id}/edit(id=${notice.id})}"
+       class="btn btn-outline-primary btn-sm"
+       sec:authorize="hasRole('ADMIN')">수정</a>
+
+    <form th:action="@{/notices/{id}(id=${notice.id})}"
+          method="post"
+          sec:authorize="hasRole('ADMIN')"
+          data-confirm="정말 삭제하시겠습니까?">
+      <input type="hidden" name="_method" value="delete"/>
+      <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+    </form>
+
+    <!-- 목록 버튼 (누구나 볼 수 있음) -->
+    <a th:href="@{/notices}" class="btn btn-secondary btn-sm">목록</a>
+  </div>
+
   <!-- 공지 제목 + 작성일 -->
   <div class="mb-3 d-flex justify-content-between align-items-end flex-wrap gap-2">
     <h3 class="mb-0">
@@ -31,7 +50,7 @@
     공지사항 내용
   </div>
 
-  <!-- 버튼 영역 (수정/삭제/목록) -->
+  <!-- 버튼 영역 (수정/삭제/목록) - 하단 -->
   <div class="d-flex justify-content-end gap-2 mt-3">
     <!-- 관리자만 보이는 버튼 -->
     <a th:href="@{/notices/{id}/edit(id=${notice.id})}"
