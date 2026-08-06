@@ -22,5 +22,6 @@
 |---|---|---|---|---|---|
 | `claude/memory-cli-workflow-8847cj` | 세션 간 작업 공유 워크플로우 정리 (이 파일 자체) | 완료 | - | - | 2026-08-06 |
 | `claude/beta-notice-message-update-xglihe` | 메인화면 Beta 안내 문구에 오탈자/버그 양해 문구 추가 및 줄바꿈 정리 (`index.html`) | 완료 | - | - | 2026-08-06 |
+| `claude/notice-detail-top-buttons-v0klmh` | 공지사항 상세 화면(`noticeDetail.html`)에 하단에만 있던 수정/삭제/목록 버튼을 상단에도 동일하게 추가 | 완료 | - | - | 2026-08-06 |
 
 <!-- 새 세션에서 작업을 시작하면 위 표에 행을 추가하세요. 상태 예시: 설계 중 / 구현 중 / 리뷰 대기 / 완료 -->
