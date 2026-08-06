@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>배포/점검 관리</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="py-3 text-center">
+        <h2>배포/점검 관리</h2>
+    </div>
+
+    <form th:action="@{/admin/maintenance}" method="post">
+
+        <div class="card mb-4">
+            <div class="card-header">점검 모드</div>
+            <div class="card-body">
+                <p class="text-muted small">
+                    켜면 일반 사용자는 점검 안내 화면만 보게 됩니다. (관리자 로그인 상태에서는 계속 접근 가능,
+                    이미 응시 중이던 시험의 최종 제출은 통과시킵니다.)
+                </p>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch"
+                           id="maintenanceEnabled" name="maintenanceEnabled"
+                           th:checked="${setting.maintenanceEnabled}">
+                    <label class="form-check-label" for="maintenanceEnabled">점검 모드 사용</label>
+                </div>
+                <div class="mb-3">
+                    <label for="maintenanceMessage" class="form-label">점검 안내 문구</label>
+                    <textarea class="form-control" id="maintenanceMessage" name="maintenanceMessage" rows="2"
+                              th:text="${setting.maintenanceMessage}"
+                              placeholder="예) 안정적인 서비스 제공을 위해 긴급 점검 중입니다."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="maintenanceExpectedEndAt" class="form-label">예상 종료 시각</label>
+                    <input type="datetime-local" class="form-control" id="maintenanceExpectedEndAt"
+                           name="maintenanceExpectedEndAt"
+                           th:value="${setting.maintenanceExpectedEndAt != null} ? ${#temporals.format(setting.maintenanceExpectedEndAt, 'yyyy-MM-dd''T''HH:mm')} : ''">
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">사전 공지 배너</div>
+            <div class="card-body">
+                <p class="text-muted small">
+                    메인 화면 상단에 노출되는 배너입니다. 정기 점검을 며칠 전부터 미리 알릴 때 사용하세요.
+                    (점검 모드와 별개로 동작하며, 점검 모드가 켜지면 점검 화면이 우선 표시됩니다.)
+                </p>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch"
+                           id="bannerEnabled" name="bannerEnabled"
+                           th:checked="${setting.bannerEnabled}">
+                    <label class="form-check-label" for="bannerEnabled">배너 노출</label>
+                </div>
+                <div class="mb-3">
+                    <label for="bannerMessage" class="form-label">배너 문구</label>
+                    <textarea class="form-control" id="bannerMessage" name="bannerMessage" rows="2"
+                              th:text="${setting.bannerMessage}"
+                              placeholder="예) 8/10(월) 02:00~04:00 정기 점검이 예정되어 있습니다."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="bannerScheduledAt" class="form-label">점검 예정 시각 (참고용)</label>
+                    <input type="datetime-local" class="form-control" id="bannerScheduledAt"
+                           name="bannerScheduledAt"
+                           th:value="${setting.bannerScheduledAt != null} ? ${#temporals.format(setting.bannerScheduledAt, 'yyyy-MM-dd''T''HH:mm')} : ''">
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3" style="text-align: right;">
+            <button type="submit" class="btn btn-primary">저장</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

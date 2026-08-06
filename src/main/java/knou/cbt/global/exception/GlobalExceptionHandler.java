@@ -8,6 +8,7 @@ import knou.cbt.domain.department.exception.DepartmentNotFoundException;
 import knou.cbt.domain.exam.exception.ExamHasQuestionsException;
 import knou.cbt.domain.exam.exception.ExamNotFoundException;
 import knou.cbt.domain.notice.exception.NoticeNotFoundException;
+import knou.cbt.domain.siteoperation.exception.MaintenanceModeException;
 import knou.cbt.domain.subject.exception.SubjectDeleteNotAllowedException;
 import knou.cbt.domain.subject.exception.SubjectNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -85,6 +86,15 @@ public class GlobalExceptionHandler {
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         model.addAttribute("message", "첨부한 파일 용량이 너무 큽니다. 파일당 20MB 이하로 업로드해주세요.");
         return "error/400";
+    }
+
+    // 서비스 점검 중 접근
+    @ExceptionHandler(MaintenanceModeException.class)
+    public String handleMaintenanceMode(MaintenanceModeException ex, Model model, HttpServletResponse response) {
+        response.setStatus(HttpStatus.SERVICE_UNAVAILABLE.value());
+        model.addAttribute("message", ex.getMaintenanceMessage());
+        model.addAttribute("expectedEndAt", ex.getExpectedEndAt());
+        return "error/maintenance";
     }
 
     // 그 외 모든 예외
