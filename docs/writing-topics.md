@@ -90,19 +90,19 @@
 - [x] 06-render-supabase-deployment.md
 - [x] 07-session-vs-jwt-auth-design.md
 - [x] 08-pdf-exam-extraction-pipeline.md
-- [x] 09-render-auto-deploy-webhook-incident.md — ⚠️ git 히스토리에 근거 없는 부분(정확한 원인/타임라인)은 `[ ]` 빈칸으로 남겨둠, 발행 전 기억으로 채워야 함
-- [x] 10-flyway-supabase-connection-pooler.md — ⚠️ 코드/git 히스토리에 흔적 전혀 없음. 일반론 뼈대만 세워둠, 실제 겪은 내용 전체를 채워야 발행 가능
+- [x] 09-render-auto-deploy-webhook-incident.md — 최초엔 git 근거만으로 `[ ]` 빈칸 초안 작성했으나, `project_roadmap` 메모리에 실제 원인(GitHub App 연결 끊김)·해결 절차 전부 있어서 채워 넣어 완결함
+- [x] 10-flyway-supabase-connection-pooler.md — 위와 동일하게 `project_roadmap` 메모리에서 실제 에러(`prepared statement "S_2" already exists`)·해결책(`prepareThreshold=0`) 확인 후 완결함
 - [x] 11-postgresql-korean-collation-bug.md
 - [x] 12-csp-inline-script-button-bug.md
 - [x] 13-n-plus-one-query-optimization.md
 - [x] 14-notice-unauthenticated-crud-vulnerability.md
-- [x] 15-giving-up-pdf-automation.md — ⚠️ "왜 그만뒀는지"는 커밋 활동 패턴으로 추론, 실제 이유는 `[ ]` 빈칸
+- [x] 15-giving-up-pdf-automation.md — `project_roadmap` 메모리에서 확정된 결정(2026-07-30, 수기 전환)과 같은 날 있었던 V5 데이터품질 사고를 근거로 완결함
 - [x] 16-question-image-disappearing-bug.md
-- [x] 17-image-uploaded-but-not-visible-csp.md — 원래 소재("CSP+RLS 이중원인")를 코드 대조 후 "CSP+서버 예외처리"로 정정해서 작성함(RLS 근거 없음)
+- [x] 17-image-uploaded-but-not-visible-csp.md — 처음엔 코드에 흔적 없다고 "RLS 근거없음"으로 잘못 정정했다가, `project_roadmap` 메모리에서 실제 RLS 원인(anon 키→service_role 키 교체, Render 환경변수라 git엔 안 남음) 확인 후 원래 "CSP+RLS 이중원인" 소재로 재정정함
 - [x] 18-custom-alert-confirm-toast.md
 - [x] 19-import-validation-strictness-retrospective.md
 
 ## 다음 액션
 1. Tier 2 나머지 5건은 관련 세션 작업할 때 곁다리로 기록 (별도 시간 안 내도 됨)
-2. **09, 10, 15번 글은 `[ ]` 빈칸이 있는 초안** — 실제 기억을 채워 넣어야 발행 가능. 나머지 16개는 바로 다듬어서 발행해도 되는 수준
+2. 19편 전부 빈칸 없이 완결됨 — `docs/blog/*.md` 그대로 다듬어서 발행 가능
 3. `docs/drafts/*.md`, `docs/blog/*.md`는 실제 게시판/블로그에 옮겨적은 뒤엔 삭제해도 무방 (임시 저장용)
