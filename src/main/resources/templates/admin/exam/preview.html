@@ -21,6 +21,9 @@
             white-space: pre-line;
         }
         .option {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
             border: 1px solid var(--kcbt-border);
             border-radius: var(--kcbt-radius-sm);
             padding: 0.6rem 1rem;
@@ -32,11 +35,29 @@
             font-weight: 700;
             color: #15803d;
         }
+        .option-no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            border: 2px solid var(--kcbt-border);
+            font-size: 1.2rem;
+            line-height: 1;
+            color: var(--kcbt-muted);
+        }
+        .option.is-answer .option-no {
+            background: #16a34a;
+            border-color: #16a34a;
+            color: #fff;
+        }
         .preview-image-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
         .preview-image-grid.stack { grid-template-columns: 1fr; }
         .preview-image-choice { position: relative; text-align: center; padding: 0.5rem; border-radius: 0.5rem; border: 2px solid var(--kcbt-border); }
         .preview-image-choice img { max-width: 100%; max-height: 150px; object-fit: contain; border-radius: 0.5rem; }
-        .preview-image-choice .badge-no { position: absolute; top: 0.3rem; left: 0.3rem; background: var(--kcbt-surface); border: 1px solid var(--kcbt-border); border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+        .preview-image-choice .badge-no { position: absolute; top: 0.3rem; left: 0.3rem; background: var(--kcbt-surface); border: 1px solid var(--kcbt-border); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 700; }
         .preview-image-choice.is-answer { border-color: #16a34a; background-color: #ecfdf5; }
         .preview-image-choice.is-answer .badge-no { background: #16a34a; color: #fff; border-color: #16a34a; }
     </style>
@@ -62,17 +83,21 @@
 
         <div th:if="${q.optionType == null or q.optionType.name() != 'IMAGE'}">
             <div class="option" th:if="${q.option1 != null}"
-                 th:classappend="${q.answers != null and #strings.contains(','+q.answers+',', ',1,')} ? 'is-answer'"
-                 th:text="|① ${q.option1}|"></div>
+                 th:classappend="${q.answers != null and #strings.contains(','+q.answers+',', ',1,')} ? 'is-answer'">
+                <span class="option-no">①</span><span th:text="${q.option1}"></span>
+            </div>
             <div class="option" th:if="${q.option2 != null}"
-                 th:classappend="${q.answers != null and #strings.contains(','+q.answers+',', ',2,')} ? 'is-answer'"
-                 th:text="|② ${q.option2}|"></div>
+                 th:classappend="${q.answers != null and #strings.contains(','+q.answers+',', ',2,')} ? 'is-answer'">
+                <span class="option-no">②</span><span th:text="${q.option2}"></span>
+            </div>
             <div class="option" th:if="${q.option3 != null}"
-                 th:classappend="${q.answers != null and #strings.contains(','+q.answers+',', ',3,')} ? 'is-answer'"
-                 th:text="|③ ${q.option3}|"></div>
+                 th:classappend="${q.answers != null and #strings.contains(','+q.answers+',', ',3,')} ? 'is-answer'">
+                <span class="option-no">③</span><span th:text="${q.option3}"></span>
+            </div>
             <div class="option" th:if="${q.option4 != null}"
-                 th:classappend="${q.answers != null and #strings.contains(','+q.answers+',', ',4,')} ? 'is-answer'"
-                 th:text="|④ ${q.option4}|"></div>
+                 th:classappend="${q.answers != null and #strings.contains(','+q.answers+',', ',4,')} ? 'is-answer'">
+                <span class="option-no">④</span><span th:text="${q.option4}"></span>
+            </div>
         </div>
 
         <div th:if="${q.optionType != null and q.optionType.name() == 'IMAGE'}"

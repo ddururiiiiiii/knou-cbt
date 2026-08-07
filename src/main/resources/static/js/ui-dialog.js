@@ -45,6 +45,45 @@ function hideLoading() {
     document.getElementById('appLoadingOverlay').classList.add('d-none');
 }
 
+let appToastTimer = null;
+
+function appToast(message, options = {}) {
+    const toast = document.getElementById('appToast');
+    const icon = document.getElementById('appToastIcon');
+    const closeBtn = document.getElementById('appToastClose');
+    const type = options.type || 'info';
+    const duration = options.duration || 3000;
+
+    document.getElementById('appToastMessage').textContent = message;
+
+    toast.classList.remove('app-toast-info', 'app-toast-warning', 'app-toast-danger', 'app-toast-success');
+    toast.classList.add(`app-toast-${type}`);
+
+    const icons = {
+        info: 'bi-info-circle-fill',
+        warning: 'bi-exclamation-triangle-fill',
+        danger: 'bi-x-circle-fill',
+        success: 'bi-check-circle-fill',
+    };
+    icon.className = `bi app-toast-icon ${icons[type] || icons.info}`;
+
+    function hide() {
+        toast.classList.remove('app-toast-show');
+        if (appToastTimer) {
+            clearTimeout(appToastTimer);
+            appToastTimer = null;
+        }
+    }
+
+    closeBtn.onclick = hide;
+
+    if (appToastTimer) {
+        clearTimeout(appToastTimer);
+    }
+    toast.classList.add('app-toast-show');
+    appToastTimer = setTimeout(hide, duration);
+}
+
 function appAlert(message, options = {}) {
     return new Promise((resolve) => {
         const modalEl = document.getElementById('appAlertModal');

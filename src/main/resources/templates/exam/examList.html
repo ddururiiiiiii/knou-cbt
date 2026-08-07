@@ -63,6 +63,13 @@
                             th:selected="${year != null and year == y}">
                     </option>
                 </select>
+
+                <!-- 미사용만 보기 (관리자 전용) -->
+                <div class="form-check form-check-sm flex-shrink-0" sec:authorize="hasRole('ADMIN')">
+                    <input class="form-check-input" type="checkbox" name="useYn" value="N" id="useYnCheck"
+                           th:checked="${useYn == 'N'}">
+                    <label class="form-check-label" for="useYnCheck">미사용만 보기</label>
+                </div>
             </form>
 
             <!-- 초기화 버튼 -->
@@ -144,7 +151,8 @@
                 <!-- 문제 풀기 (일반 사용자도 가능) -->
                 <button type="button" class="btn btn-sm btn-primary"
                         th:data-solve-url="@{/exams/{examId}/solve(examId=${exam.id})}"
-                        th:data-solve-info="|${exam.departmentName} ${exam.subjectName} ${exam.gradeDisplay} ${exam.semester.description} ${exam.examType.description} ${exam.year}년|">
+                        th:data-solve-info="|${exam.departmentName} ${exam.subjectName} ${exam.gradeDisplay} ${exam.semester.description} ${exam.examType.description} ${exam.year}년|"
+                        th:data-has-questions="${exam.hasExamQuestions}">
                     문제 풀기
                 </button>
             </td>

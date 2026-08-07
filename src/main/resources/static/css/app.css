@@ -597,3 +597,67 @@ body:has(#questionForm) > .container {
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
+/* ==========================================================================
+   전역 토스트 알림 (fragments/dialogs.html) — 확인이 필요 없는 짧은 안내용.
+   ========================================================================== */
+.app-toast-container {
+    position: fixed;
+    top: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2100;
+    pointer-events: none;
+}
+.app-toast {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 260px;
+    max-width: min(90vw, 420px);
+    padding: 0.85rem 1rem;
+    background: var(--kcbt-surface);
+    border: 1px solid var(--kcbt-border);
+    border-left: 4px solid var(--kcbt-accent);
+    border-radius: var(--kcbt-radius-sm);
+    box-shadow: var(--kcbt-shadow-hover);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-0.5rem);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+    pointer-events: auto;
+}
+.app-toast.app-toast-show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.app-toast-icon {
+    flex-shrink: 0;
+    font-size: 1.15rem;
+    color: var(--kcbt-accent);
+}
+.app-toast-warning { border-left-color: #f59e0b; }
+.app-toast-warning .app-toast-icon { color: #f59e0b; }
+.app-toast-danger { border-left-color: #dc3545; }
+.app-toast-danger .app-toast-icon { color: #dc3545; }
+.app-toast-success { border-left-color: #198754; }
+.app-toast-success .app-toast-icon { color: #198754; }
+.app-toast-message {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--kcbt-ink);
+}
+.app-toast-close {
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    color: var(--kcbt-muted);
+    font-size: 1.15rem;
+    line-height: 1;
+    padding: 0 0.15rem;
+}
+.app-toast-close:hover {
+    color: var(--kcbt-ink);
+}

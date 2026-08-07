@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const yearSelect = document.getElementById("yearSelect");
     const form = document.getElementById("searchForm");
     const resetBtn = document.getElementById("resetBtn");
+    const useYnCheck = document.getElementById("useYnCheck");
 
     const params = new URLSearchParams(window.location.search);
     const selectedDeptId = params.get("departmentId");
@@ -63,8 +64,17 @@ document.addEventListener("DOMContentLoaded", function () {
         examTypeSelect.disabled = true;
         yearSelect.innerHTML = '<option value="">년도 선택</option>';
         yearSelect.disabled = true;
+        if (useYnCheck) {
+            useYnCheck.checked = false;
+        }
         form.submit();
     });
+
+    if (useYnCheck) {
+        useYnCheck.addEventListener("change", function () {
+            form.submit();
+        });
+    }
 
     // 최초 로딩 시 이전 선택값 복원
     if (selectedDeptId) {
@@ -128,6 +138,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelectorAll("[data-solve-url]").forEach(function (btn) {
         btn.addEventListener("click", function () {
+            if (btn.dataset.hasQuestions === "false") {
+                appToast("등록된 문제가 없습니다.", {type: "warning"});
+                return;
+            }
             appConfirm(`${btn.dataset.solveInfo} 시험을 시작합니다.`).then(function (ok) {
                 if (ok) {
                     window.location.href = btn.dataset.solveUrl;

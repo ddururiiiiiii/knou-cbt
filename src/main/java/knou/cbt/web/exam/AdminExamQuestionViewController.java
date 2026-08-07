@@ -163,6 +163,15 @@ public class AdminExamQuestionViewController {
             return "admin/exam/questionManage";
         }
 
+        String validationError = validateExcelBatch(questions, examId);
+        if (validationError != null) {
+            model.addAttribute("examId", examId);
+            model.addAttribute("exam", examService.get(examId));
+            model.addAttribute("questions", examQuestionService.getQuestions(examId));
+            model.addAttribute("errorMessage", validationError);
+            return "admin/exam/questionManage";
+        }
+
         // 특정 시험 업로드일 경우 → examId 덮어쓰기
         if (examId != 0) {
             questions.forEach(q -> q.setExamId(examId));
@@ -173,5 +182,32 @@ public class AdminExamQuestionViewController {
         model.addAttribute("questions", questions);
 
         return "admin/exam/questionManage";
+    }
+
+    /**
+     * 엑셀 업로드 시 문제 단위 형식 검증(정답 형식 등)과 별개로,
+     * 파일 전체 단위의 구조적 정합성만 확인한다. 시험 아이디가 뒤섞였거나,
+     * 지금 열려 있는 화면의 시험과 다르거나, 문제 번호가 비어 있으면
+     * 잘못된 파일을 그대로 업로드한 것일 가능성이 높아 편집 화면으로 넘기지 않고 바로 막는다.
+     */
+    private String validateExcelBatch(List<ExamQuestionRequest> questions, Long targetExamId) {
+        if (questions.isEmpty()) {
+            return "엑셀 파일에 문제 데이터가 없습니다.";
+        }
+        if (questions.stream().anyMatch(q -> q.getQuestionNo() <= 0)) {
+            return "문제 번호가 없는 행이 있습니다. 모든 행에 문제 번호를 입력해주세요.";
+        }
+        long distinctExamIds = questions.stream()
+                .map(ExamQuestionRequest::getExamId)
+                .distinct()
+                .count();
+        if (distinctExamIds > 1) {
+            return "엑셀 파일 안의 시험 아이디가 서로 다릅니다. 하나의 시험에 대한 문제만 업로드해주세요.";
+        }
+        if (targetExamId != 0 && !targetExamId.equals(questions.get(0).getExamId())) {
+            return "엑셀 파일의 시험 아이디(" + questions.get(0).getExamId() + ")가 현재 화면의 시험 아이디("
+                    + targetExamId + ")와 다릅니다. 올바른 시험의 엑셀 파일인지 확인해주세요.";
+        }
+        return null;
     }
 }

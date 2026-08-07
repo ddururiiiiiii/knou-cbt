@@ -99,11 +99,15 @@
 
         <!-- 사용 여부 (수정 모드에서만 노출) -->
         <div class="mb-3" th:if="${mode == 'edit'}">
-            <label for="useYn" class="form-label">사용 여부</label>
-            <select class="form-select" id="useYn" th:field="*{useYn}">
-                <option value="Y">사용</option>
-                <option value="N">미사용</option>
-            </select>
+            <label class="form-label d-block">사용 여부</label>
+            <div class="form-check form-check-inline">
+                <input type="radio" class="form-check-input" id="useYnY" th:field="*{useYn}" value="Y"/>
+                <label class="form-check-label" for="useYnY">사용</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input type="radio" class="form-check-input" id="useYnN" th:field="*{useYn}" value="N"/>
+                <label class="form-check-label" for="useYnN">미사용</label>
+            </div>
         </div>
 
         <!-- 버튼 영역 -->
