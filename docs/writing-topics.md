@@ -79,7 +79,30 @@
 
 ---
 
+## ✅ Tier 3 — 19/19 작성 완료 (2026-08-07)
+`docs/blog/` 아래 19개 마크다운 파일로 저장함. 코드/git log를 실제로 조사해서 근거 있는 내용으로 작성.
+
+- [x] 01-spring-security-roles-prefix.md
+- [x] 02-lombok-mybatis-ambiguous-getter.md
+- [x] 03-hierarchical-use-yn-visibility.md
+- [x] 04-admin-login-bruteforce-protection.md
+- [x] 05-adding-sentry-to-side-project.md
+- [x] 06-render-supabase-deployment.md
+- [x] 07-session-vs-jwt-auth-design.md
+- [x] 08-pdf-exam-extraction-pipeline.md
+- [x] 09-render-auto-deploy-webhook-incident.md — ⚠️ git 히스토리에 근거 없는 부분(정확한 원인/타임라인)은 `[ ]` 빈칸으로 남겨둠, 발행 전 기억으로 채워야 함
+- [x] 10-flyway-supabase-connection-pooler.md — ⚠️ 코드/git 히스토리에 흔적 전혀 없음. 일반론 뼈대만 세워둠, 실제 겪은 내용 전체를 채워야 발행 가능
+- [x] 11-postgresql-korean-collation-bug.md
+- [x] 12-csp-inline-script-button-bug.md
+- [x] 13-n-plus-one-query-optimization.md
+- [x] 14-notice-unauthenticated-crud-vulnerability.md
+- [x] 15-giving-up-pdf-automation.md — ⚠️ "왜 그만뒀는지"는 커밋 활동 패턴으로 추론, 실제 이유는 `[ ]` 빈칸
+- [x] 16-question-image-disappearing-bug.md
+- [x] 17-image-uploaded-but-not-visible-csp.md — 원래 소재("CSP+RLS 이중원인")를 코드 대조 후 "CSP+서버 예외처리"로 정정해서 작성함(RLS 근거 없음)
+- [x] 18-custom-alert-confirm-toast.md
+- [x] 19-import-validation-strictness-retrospective.md
+
 ## 다음 액션
 1. Tier 2 나머지 5건은 관련 세션 작업할 때 곁다리로 기록 (별도 시간 안 내도 됨)
-2. Tier 3는 위 "추천 착수 순서" 1~5번부터 시작
-3. `docs/drafts/*.md`는 실제 게시판/블로그에 옮겨적은 뒤엔 삭제해도 무방 (임시 저장용)
+2. **09, 10, 15번 글은 `[ ]` 빈칸이 있는 초안** — 실제 기억을 채워 넣어야 발행 가능. 나머지 16개는 바로 다듬어서 발행해도 되는 수준
+3. `docs/drafts/*.md`, `docs/blog/*.md`는 실제 게시판/블로그에 옮겨적은 뒤엔 삭제해도 무방 (임시 저장용)
