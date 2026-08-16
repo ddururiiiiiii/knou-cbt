@@ -21,3 +21,8 @@ supabase:
   bucket:
     notice: notice
     exam: exam
+
+sentry:
+  dsn: ${SENTRY_DSN:}
+  environment: prod
+  traces-sample-rate: 0.1
