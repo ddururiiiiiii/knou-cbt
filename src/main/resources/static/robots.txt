@@ -4,4 +4,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://knou-cbt.onrender.com/sitemap.xml
+Sitemap: https://www.knou-cbt.com/sitemap.xml
