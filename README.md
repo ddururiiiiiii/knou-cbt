@@ -6,6 +6,7 @@
 - KNOU CBT는 한국방송통신대학교 학생들을 위한 **비공식 전자 기출문제집 서비스**입니다.
 - 관리자는 학과/과목/시험/문제/공지사항을 등록·수정·삭제할 수 있고, 사용자는 실제 시험처럼 문제를 풀고 결과와 답안을 확인할 수 있습니다.
 - 현재 [Render](https://render.com) + [Supabase](https://supabase.com) 기반으로 배포되어 있는 Beta 서비스입니다.
+- 🔗 실제 서비스: [www.knou-cbt.com](https://www.knou-cbt.com)
 
 ----
 
