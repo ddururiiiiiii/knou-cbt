@@ -53,7 +53,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 누구나 접근 가능
                         .requestMatchers("/", "/exams/**", "/requests/**", "/notices/**", "/api/**",
-                                "/css/**", "/js/**", "/error/**", "/uploads/**", "/privacy").permitAll()
+                                "/css/**", "/js/**", "/error/**", "/uploads/**", "/privacy",
+                                "/robots.txt", "/sitemap.xml", "/ads.txt").permitAll()
                         // 로그인 화면은 누구나 접근 가능
                         .requestMatchers("/admin/login", "/login").permitAll()
                         // 관리자 전용
