@@ -63,6 +63,8 @@ dependencies {
 
     /* Sentry */
     implementation 'io.sentry:sentry-spring-boot-starter-jakarta:7.14.0'
+    // 커스텀 logback-spring.xml을 쓰고 있어서 starter가 자동으로 Logback 연동을 못 붙임 -> 명시적으로 추가
+    implementation 'io.sentry:sentry-logback:7.14.0'
 
     /* Test */
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
