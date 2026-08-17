@@ -26,3 +26,4 @@ sentry:
   dsn: ${SENTRY_DSN:}
   environment: prod
   traces-sample-rate: 0.1
+  debug: true
