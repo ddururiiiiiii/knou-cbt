@@ -20,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
 @ControllerAdvice
@@ -48,7 +49,8 @@ public class GlobalExceptionHandler {
             ExamNotFoundException.class,
             SubjectNotFoundException.class,
             DepartmentNotFoundException.class,
-            NoticeNotFoundException.class
+            NoticeNotFoundException.class,
+            NoResourceFoundException.class // 존재하지 않는 정적 리소스 요청 (봇 스캔 등 노이즈성 요청 다수 포함)
     })
     public String handleNotFound(RuntimeException ex, Model model, HttpServletResponse response) {
         log.warn("Resource not found: {}", ex.getMessage());
