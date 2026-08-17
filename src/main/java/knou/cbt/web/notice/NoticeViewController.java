@@ -32,7 +32,7 @@ public class NoticeViewController {
      * @return
      */
     @GetMapping
-    public String list(@Valid PageRequest pageRequest,
+    public String list(PageRequest pageRequest,
                        @RequestParam(required = false) String keyword,
                        @RequestParam(required = false) String useYn,
                        Model model) {

@@ -1,11 +1,10 @@
 package knou.cbt.common.api;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-
+// page/size는 컨트롤러에서 검증하지 않고 항상 pageOrDefault()/sizeOrDefault()로 보정해서 씀
+// (잘못된 값이 들어와도 500 대신 조용히 기본값으로 처리하기 위함)
 public record PageRequest(
-        @Min(1) Integer page,
-        @Min(1) @Max(100) Integer size
+        Integer page,
+        Integer size
 ) {
     // 기본값 보정
     public int pageOrDefault() {
@@ -13,7 +12,10 @@ public record PageRequest(
     }
 
     public int sizeOrDefault() {
-        return size == null || size < 1 ? 10 : size;
+        if (size == null || size < 1) {
+            return 10;
+        }
+        return Math.min(size, 100);
     }
 
     public int offset() {

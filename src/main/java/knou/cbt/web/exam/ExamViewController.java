@@ -1,6 +1,5 @@
 package knou.cbt.web.exam;
 
-import jakarta.validation.Valid;
 import knou.cbt.common.api.PageRequest;
 import knou.cbt.common.api.PageResponse;
 import knou.cbt.domain.department.service.DepartmentService;
@@ -39,7 +38,7 @@ public class ExamViewController {
      * @return
      */
     @GetMapping
-    public String list(@Valid PageRequest pageRequest,
+    public String list(PageRequest pageRequest,
                        @RequestParam(required = false) Long departmentId,
                        @RequestParam(required = false) Long subjectId,
                        @RequestParam(required = false) ExamType examType,
