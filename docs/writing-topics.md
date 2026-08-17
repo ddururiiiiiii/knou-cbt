@@ -2,7 +2,7 @@
 
 > 로컬 CLI 세션의 메모리를 Claude Code 웹 세션과 공유하기 위한 임시 파일입니다.
 > 글쓰기 작업이 다 끝나면 이 파일과 `docs/drafts/`는 삭제해도 됩니다.
-> (2026-07-30 최초 정리, 2026-08-07 우선순위 정리 → Tier1 전체 + Tier2 5건 초안 작성 완료)
+> (2026-07-30 최초 정리, 2026-08-07 우선순위 정리 → Tier1 전체 + Tier2 5건 초안 작성 완료, 2026-08-17 Tier1 일부 실사용 검증으로 빈칸 채움 + Tier2 신규 2건 추가)
 
 ## 우선순위 정리 기준
 - **Tier 1 (배포 전 필수)**: 9/1 정식 운영 전환에 실제로 필요한 운영 문서. 없으면 배포 당일/직후에 곤란해지는 것들.
@@ -12,7 +12,8 @@
 ## 지금 세션에서 한 작업 (CLI에서 이어받을 때 참고)
 - 웹 세션에서 Tier 1(7개) 전부 + Tier 2(5개) 초안을 채팅으로 작성 → `docs/drafts/` 밑에 마크다운 파일로 저장해둠
 - 각 초안은 코드/커밋 기록을 실제로 조사해서 근거 있는 내용으로 작성함 (빈칸 표시된 부분은 직접 겪은 사람 기억 필요)
-- 다음 시작 지점: **Tier 3(블로그) 작성**, 추천 순서는 아래 Tier 3 섹션 참고
+- 2026-08-17 로컬 세션: 도메인 구매·Sentry·애드센스·DB 백업 리허설 작업을 실제로 진행하면서 나온 결과물로 `tier1-05`의 빈칸(백업 정책 확인, 복원 리허설)을 채우고, 신규 Tier2 2건(`tier2-06` Sentry logback 누락, `tier2-07` 정적파일 permitAll 누락)을 추가 작성함
+- 다음 시작 지점: Tier2 나머지 5건(여유될 때) 또는 **Tier 3(블로그) 작성**, 추천 순서는 아래 Tier 3 섹션 참고
 
 ---
 
@@ -23,11 +24,13 @@
 - [x] 배포 전 스모크 테스트 체크리스트 → [`docs/drafts/tier1-02-smoke-test-checklist.md`](drafts/tier1-02-smoke-test-checklist.md)
 - [x] 모니터링 도구 구성 (Sentry) → [`docs/drafts/tier1-03-sentry-monitoring.md`](drafts/tier1-03-sentry-monitoring.md) — prod.yml에 sentry 설정 누락된 것 발견, 배포 전 확인 필요 항목으로 반영함
 - [x] 관리자 계정 운영 매뉴얼 → [`docs/drafts/tier1-04-admin-account-manual.md`](drafts/tier1-04-admin-account-manual.md)
-- [x] DB 백업/복구 리허설·롤백 절차 → [`docs/drafts/tier1-05-db-backup-restore.md`](drafts/tier1-05-db-backup-restore.md)
+- [x] DB 백업/복구 리허설·롤백 절차 → [`docs/drafts/tier1-05-db-backup-restore.md`](drafts/tier1-05-db-backup-restore.md) — 2026-08-17 실제 리허설 진행 후 빈칸 채움: 무료 플랜은 백업 자체가 없다는 사실 확인, 로컬 복원+forward-fix 마이그레이션 실제 검증 완료. Render 롤백만 아직 미실행으로 남음
 - [x] Render GitHub App 연결 끊김 원인/재연결 절차 → [`docs/drafts/tier1-06-render-github-app-reconnect.md`](drafts/tier1-06-render-github-app-reconnect.md) — 실제 원인은 빈칸, 기억나면 채워넣기
 - [x] 점검 모드(유지보수) 기능 사용법 → [`docs/drafts/tier1-07-maintenance-mode-manual.md`](drafts/tier1-07-maintenance-mode-manual.md)
 
-## 📁 Tier 2 — 배포 전 기록 권장 (설계/트러블슈팅 로그, 내부용) — 5/10 초안 완료
+> 참고: Sentry 알림이 실제로 왜 안 왔는지(근본원인)는 이 문서(`tier1-03`)가 아니라 Tier2 신규 문서 `tier2-06`에 정리함 — `sentry-logback` 모듈 누락 문제.
+
+## 📁 Tier 2 — 배포 전 기록 권장 (설계/트러블슈팅 로그, 내부용) — 7/12 초안 완료
 순서 무관, 각 이슈를 해결한 세션이 있다면 그때그때 짧게 기록.
 
 - [x] YAML 설정 트러블슈팅 노트 (multipart 무시 사례) → [`docs/drafts/tier2-01-yaml-multipart-troubleshooting.md`](drafts/tier2-01-yaml-multipart-troubleshooting.md) — 실제 커밋(`87e6376`→`55d6ec6`) 근거로 작성
@@ -35,6 +38,8 @@
 - [x] 예외 처리 (전역 예외 핸들러 컨벤션, 에러 코드 체계) → [`docs/drafts/tier2-03-exception-handling-convention.md`](drafts/tier2-03-exception-handling-convention.md)
 - [x] 계층적 사용여부(use_yn) 로직 설계 노트 → [`docs/drafts/tier2-04-use-yn-hierarchical-design.md`](drafts/tier2-04-use-yn-hierarchical-design.md)
 - [x] DB 마이그레이션 의사결정 로그 (V1~V8) → [`docs/drafts/tier2-05-migration-decision-log.md`](drafts/tier2-05-migration-decision-log.md)
+- [x] Sentry 알림이 전혀 안 오던 이유 (`sentry-logback` 누락) → [`docs/drafts/tier2-06-sentry-logback-missing-integration.md`](drafts/tier2-06-sentry-logback-missing-integration.md) — 2026-08-17 세션에서 새로 발생한 실제 트러블슈팅, 커밋 `912e5a8`→`511f0be`→`7e336fb` 근거
+- [x] robots.txt/sitemap.xml/ads.txt가 로그인 화면으로 리다이렉트되던 버그 → [`docs/drafts/tier2-07-static-file-security-permitall.md`](drafts/tier2-07-static-file-security-permitall.md) — 2026-08-17 세션에서 애드센스 인증 작업 중 발견, 커밋 `f32cdbd` 근거
 - [ ] Flyway + Supabase Connection Pooler 이슈 노트 — 증상/에러메시지 기억 필요, 미착수
 - [ ] 스키마-애플리케이션 로직 불일치 체크리스트 — 구체적 컬럼 사례 기억 필요, 미착수 (V7 마이그레이션 로그와 연결 가능)
 - [ ] 가져오기(Import) 기능 검증 원칙 확정본 — 설계 판단 히스토리 기억 필요, 미착수
@@ -42,6 +47,7 @@
 - [ ] 개인 프로젝트 월별 운영비 트래킹 — 지금은 틀만, 실제 수치는 운영 이후 누적, 미착수
 
 > 참고: "Render 자동배포 웹훅 트러블슈팅 로그"는 Tier1 "Render GitHub App 재연결 절차" 문서로 흡수·통합함 (중복 제거).
+> 참고: 커스텀 도메인 구매+상표/저작권 리스크 검토 로그, 애드센스 계정 정책(중복계정 금지) 등도 2026-08-17 세션에서 새로 나온 소재지만, 이번엔 목록/초안에서 제외함(사용자 요청).
 
 ---
 
