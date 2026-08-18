@@ -48,7 +48,8 @@ public class SecurityConfig {
                                         "style-src 'self' cdn.jsdelivr.net uicdn.toast.com 'unsafe-inline'; " +
                                         "font-src 'self' cdn.jsdelivr.net uicdn.toast.com; " +
                                         "img-src 'self' data: blob: www.google-analytics.com https://*.supabase.co " +
-                                                "pagead2.googlesyndication.com googleads.g.doubleclick.net *.google.com *.gstatic.com; " +
+                                                "pagead2.googlesyndication.com googleads.g.doubleclick.net *.google.com *.gstatic.com " +
+                                                "*.adtrafficquality.google; " +
                                         "connect-src 'self' www.google-analytics.com pagead2.googlesyndication.com googleads.g.doubleclick.net " +
                                                 "*.adtrafficquality.google; " +
                                         "frame-src googleads.g.doubleclick.net tpc.googlesyndication.com *.google.com " +
