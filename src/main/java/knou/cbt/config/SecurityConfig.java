@@ -43,13 +43,16 @@ public class SecurityConfig {
                                 csp.policyDirectives(
                                         "default-src 'self'; " +
                                         "script-src 'self' uicdn.toast.com cdn.jsdelivr.net www.googletagmanager.com " +
-                                                "pagead2.googlesyndication.com googleads.g.doubleclick.net tpc.googlesyndication.com; " +
+                                                "pagead2.googlesyndication.com googleads.g.doubleclick.net tpc.googlesyndication.com " +
+                                                "*.adtrafficquality.google; " +
                                         "style-src 'self' cdn.jsdelivr.net uicdn.toast.com 'unsafe-inline'; " +
                                         "font-src 'self' cdn.jsdelivr.net uicdn.toast.com; " +
                                         "img-src 'self' data: blob: www.google-analytics.com https://*.supabase.co " +
                                                 "pagead2.googlesyndication.com googleads.g.doubleclick.net *.google.com *.gstatic.com; " +
-                                        "connect-src 'self' www.google-analytics.com pagead2.googlesyndication.com googleads.g.doubleclick.net; " +
-                                        "frame-src googleads.g.doubleclick.net tpc.googlesyndication.com *.google.com;"
+                                        "connect-src 'self' www.google-analytics.com pagead2.googlesyndication.com googleads.g.doubleclick.net " +
+                                                "*.adtrafficquality.google; " +
+                                        "frame-src googleads.g.doubleclick.net tpc.googlesyndication.com *.google.com " +
+                                                "*.adtrafficquality.google;"
                                 )
                         )
                 )
