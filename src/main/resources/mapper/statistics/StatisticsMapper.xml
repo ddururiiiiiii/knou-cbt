@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="knou.cbt.domain.statistics.mapper.StatisticsMapper">
+
+    <insert id="insertAttemptLog" parameterType="knou.cbt.domain.statistics.model.ExamAttemptLog">
+        INSERT INTO exam_attempt_log
+            (exam_id, subject_id, subject_name, exam_type, year, score, total_count, elapsed_seconds)
+        VALUES
+            (#{examId}, #{subjectId}, #{subjectName}, #{examType}, #{year}, #{score}, #{totalCount}, #{elapsedSeconds})
+    </insert>
+
+    <select id="countAttemptsSince" resultType="long">
+        SELECT COUNT(*)
+        FROM exam_attempt_log
+        WHERE submitted_at >= #{since}
+    </select>
+
+    <select id="countAttemptsTotal" resultType="long">
+        SELECT COUNT(*)
+        FROM exam_attempt_log
+    </select>
+
+    <select id="findDailyAttemptCounts" resultType="knou.cbt.domain.statistics.dto.DailyAttemptCountResponse">
+        SELECT DATE(submitted_at) AS date,
+               COUNT(*)           AS attempt_count
+        FROM exam_attempt_log
+        WHERE submitted_at >= #{since}
+        GROUP BY DATE(submitted_at)
+        ORDER BY DATE(submitted_at)
+    </select>
+
+    <select id="findTopSubjects" resultType="knou.cbt.domain.statistics.dto.SubjectRankingResponse">
+        SELECT subject_id                                                AS subject_id,
+               subject_name                                              AS subject_name,
+               COUNT(*)                                                  AS attempt_count,
+               COALESCE(AVG(score::float8 / NULLIF(total_count, 0)), 0)  AS average_accuracy
+        FROM exam_attempt_log
+        GROUP BY subject_id, subject_name
+        ORDER BY attempt_count DESC, subject_name
+        LIMIT #{limit}
+    </select>
+
+    <select id="findTopExams" resultType="knou.cbt.domain.statistics.dto.ExamRankingResponse">
+        SELECT exam_id                                                   AS exam_id,
+               subject_name                                              AS subject_name,
+               exam_type                                                 AS exam_type,
+               year                                                      AS year,
+               COUNT(*)                                                  AS attempt_count
+        FROM exam_attempt_log
+        GROUP BY exam_id, subject_name, exam_type, year
+        ORDER BY attempt_count DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="countDepartments" resultType="long">
+        SELECT COUNT(*) FROM department WHERE use_yn = 'Y'
+    </select>
+
+    <select id="countSubjects" resultType="long">
+        SELECT COUNT(*) FROM subject WHERE use_yn = 'Y'
+    </select>
+
+    <select id="countExams" resultType="long">
+        SELECT COUNT(*) FROM exam WHERE use_yn = 'Y'
+    </select>
+
+    <select id="countExamQuestions" resultType="long">
+        SELECT COUNT(*) FROM exam_question
+    </select>
+
+    <select id="findExamsWithoutQuestions" resultType="string">
+        SELECT e.year || '년도 ' || s.subject_name || ' ' ||
+               CASE e.exam_type
+                   WHEN 'ATTENDANCE' THEN '출석대체시험'
+                   WHEN 'FINAL' THEN '기말시험'
+                   WHEN 'SEASONAL' THEN '계절학기시험'
+                   ELSE e.exam_type
+               END
+        FROM exam e
+                 JOIN subject s ON s.id = e.subject_id
+        WHERE e.use_yn = 'Y'
+          AND NOT EXISTS (SELECT 1 FROM exam_question eq WHERE eq.exam_id = e.id)
+        ORDER BY e.year DESC
+        LIMIT 20
+    </select>
+
+</mapper>

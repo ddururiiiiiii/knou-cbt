@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>통계 대시보드</title>
+</head>
+<body>
+<div layout:fragment="content" class="stats-dashboard">
+
+    <div class="stats-header">
+        <h2><i class="bi bi-bar-chart-line-fill"></i> 통계 대시보드</h2>
+        <p class="text-muted mb-0">응시 트래픽과 인기 과목/시험, 콘텐츠 현황을 한눈에 확인하세요.</p>
+    </div>
+
+    <!-- 콘텐츠 현황 -->
+    <div class="card stats-card mb-4">
+        <div class="card-header stats-card-header">
+            <i class="bi bi-database-check"></i> 콘텐츠 현황
+        </div>
+        <div class="card-body">
+            <div class="stats-row d-flex flex-wrap gap-2 mb-3">
+                <span class="stat-badge"><i class="bi bi-mortarboard"></i> 학과 <strong
+                        th:text="${dashboard.contentCoverage.departmentCount}"></strong>개</span>
+                <span class="stat-badge"><i class="bi bi-journal-text"></i> 과목 <strong
+                        th:text="${dashboard.contentCoverage.subjectCount}"></strong>개</span>
+                <span class="stat-badge"><i class="bi bi-clipboard-check"></i> 시험 <strong
+                        th:text="${dashboard.contentCoverage.examCount}"></strong>개</span>
+                <span class="stat-badge"><i class="bi bi-list-check"></i> 문제 <strong
+                        th:text="${dashboard.contentCoverage.examQuestionCount}"></strong>개</span>
+            </div>
+
+            <div th:if="${#lists.isEmpty(dashboard.contentCoverage.examsWithoutQuestions)}" class="coverage-ok">
+                <i class="bi bi-check-circle-fill"></i> 문제가 비어있는 시험이 없어요.
+            </div>
+            <div th:unless="${#lists.isEmpty(dashboard.contentCoverage.examsWithoutQuestions)}">
+                <p class="text-muted small mb-2">
+                    <i class="bi bi-exclamation-triangle"></i> 등록만 되고 문제가 아직 없는 시험입니다. 최대 20건까지 표시돼요.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="coverage-gap-chip" th:each="name : ${dashboard.contentCoverage.examsWithoutQuestions}"
+                          th:text="${name}">시험명</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI 카드 -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="kpi-card">
+                <div class="kpi-icon"><i class="bi bi-calendar-check"></i></div>
+                <div class="kpi-value" th:text="${dashboard.summary.todayCount}">0</div>
+                <div class="kpi-label">오늘 응시</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="kpi-card">
+                <div class="kpi-icon"><i class="bi bi-graph-up"></i></div>
+                <div class="kpi-value" th:text="${dashboard.summary.last7DaysCount}">0</div>
+                <div class="kpi-label">최근 7일 응시</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="kpi-card">
+                <div class="kpi-icon"><i class="bi bi-stack"></i></div>
+                <div class="kpi-value" th:text="${dashboard.summary.totalCount}">0</div>
+                <div class="kpi-label">누적 응시</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="kpi-card">
+                <div class="kpi-icon"><i class="bi bi-journal-text"></i></div>
+                <div class="kpi-value" th:text="${dashboard.contentCoverage.examCount}">0</div>
+                <div class="kpi-label">등록 시험 수</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 응시 추이 -->
+    <div class="card stats-card mb-4">
+        <div class="card-header stats-card-header">
+            <i class="bi bi-activity"></i> 최근 14일 응시 추이
+        </div>
+        <div class="card-body">
+            <div th:if="${dashboard.summary.totalCount == 0}" class="stats-empty">
+                <i class="bi bi-inboxes"></i>
+                <p>아직 쌓인 응시 데이터가 없어요. 첫 시험 제출부터 여기에 표시됩니다.</p>
+            </div>
+            <div th:unless="${dashboard.summary.totalCount == 0}"
+                 id="trendChartWrap"
+                 th:data-labels="${trendLabelsCsv}"
+                 th:data-counts="${trendCountsCsv}"
+                 class="chart-box">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <!-- 인기 과목 TOP 10 -->
+        <div class="col-lg-6">
+            <div class="card stats-card h-100">
+                <div class="card-header stats-card-header">
+                    <i class="bi bi-trophy"></i> 인기 과목 TOP 10
+                </div>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(dashboard.topSubjects)}" class="stats-empty">
+                        <i class="bi bi-inboxes"></i>
+                        <p>아직 응시 데이터가 없어요.</p>
+                    </div>
+                    <div th:unless="${#lists.isEmpty(dashboard.topSubjects)}">
+                        <div id="subjectChartWrap"
+                             th:data-labels="${subjectLabelsCsv}"
+                             th:data-counts="${subjectCountsCsv}"
+                             class="chart-box chart-box-sm">
+                            <canvas id="subjectChart"></canvas>
+                        </div>
+                        <ul class="rank-list mt-3">
+                            <li class="rank-item" th:each="s, iter : ${dashboard.topSubjects}">
+                                <span class="rank-badge" th:classappend="${iter.index < 3} ? 'rank-badge-top'"
+                                      th:text="${iter.index + 1}">1</span>
+                                <span class="rank-name" th:text="${s.subjectName}">과목명</span>
+                                <span class="rank-accuracy"
+                                      th:text="${#numbers.formatDecimal(s.averageAccuracy * 100, 1, 1)} + '%'">0.0%</span>
+                                <span class="rank-count" th:text="${s.attemptCount} + '회'">0회</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 인기 시험 TOP 10 -->
+        <div class="col-lg-6">
+            <div class="card stats-card h-100">
+                <div class="card-header stats-card-header">
+                    <i class="bi bi-clipboard-data"></i> 인기 시험 TOP 10
+                </div>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(dashboard.topExams)}" class="stats-empty">
+                        <i class="bi bi-inboxes"></i>
+                        <p>아직 응시 데이터가 없어요.</p>
+                    </div>
+                    <ul th:unless="${#lists.isEmpty(dashboard.topExams)}" class="rank-list">
+                        <li class="rank-item" th:each="e, iter : ${dashboard.topExams}">
+                            <span class="rank-badge" th:classappend="${iter.index < 3} ? 'rank-badge-top'"
+                                  th:text="${iter.index + 1}">1</span>
+                            <span class="rank-name" th:text="${e.displayName()}">시험명</span>
+                            <span class="rank-count" th:text="${e.attemptCount} + '회'">0회</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+<th:block layout:fragment="script">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="/js/admin-statistics.js"></script>
+</th:block>
+</html>
