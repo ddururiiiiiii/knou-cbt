@@ -7,8 +7,10 @@ import knou.cbt.domain.exam.exception.ExamNotFoundException;
 import knou.cbt.domain.exam.service.ExamService;
 import knou.cbt.domain.examquestion.dto.ExamQuestionResponse;
 import knou.cbt.domain.examquestion.service.ExamQuestionService;
+import knou.cbt.domain.statistics.service.StatisticsService;
 import knou.cbt.global.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/exams/{examId}")
@@ -23,6 +26,7 @@ public class ExamSolveController {
 
     private final ExamService examService;
     private final ExamQuestionService examQuestionService;
+    private final StatisticsService statisticsService;
 
     /**
      * 문제풀기 화면
@@ -87,6 +91,15 @@ public class ExamSolveController {
 
         session.setAttribute("userAnswers_" + examId, answers);
         session.setAttribute("elapsedSeconds_" + examId, elapsedSeconds != null ? elapsedSeconds : 0);
+
+        try {
+            statisticsService.logAttempt(examId, exam.subjectId(), exam.subjectName(), exam.examType(),
+                    exam.year(), score, questions.size(), elapsedSeconds);
+        } catch (Exception e) {
+            // 통계 로그 실패가 실제 채점/제출 흐름을 막으면 안 됨
+            log.warn("응시 통계 로그 저장 실패 (examId={})", examId, e);
+        }
+
         model.addAttribute("exam", exam);
         model.addAttribute("questions", questions);
         model.addAttribute("score", score);

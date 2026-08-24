@@ -54,6 +54,9 @@
                     <a class="nav-link nav-link-admin" th:href="@{/admin/subjects}">과목관리</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link nav-link-admin" th:href="@{/admin/statistics}">통계</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link nav-link-admin" th:href="@{/admin/maintenance}">배포/점검관리</a>
                 </li>
                 <li class="nav-item d-flex align-items-center" sec:authorize="hasRole('ADMIN')">
