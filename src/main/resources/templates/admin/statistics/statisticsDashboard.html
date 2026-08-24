@@ -14,6 +14,38 @@
         <p class="text-muted mb-0">응시 트래픽과 인기 과목/시험, 콘텐츠 현황을 한눈에 확인하세요.</p>
     </div>
 
+    <!-- 콘텐츠 현황 -->
+    <div class="card stats-card mb-4">
+        <div class="card-header stats-card-header">
+            <i class="bi bi-database-check"></i> 콘텐츠 현황
+        </div>
+        <div class="card-body">
+            <div class="stats-row d-flex flex-wrap gap-2 mb-3">
+                <span class="stat-badge"><i class="bi bi-mortarboard"></i> 학과 <strong
+                        th:text="${dashboard.contentCoverage.departmentCount}"></strong>개</span>
+                <span class="stat-badge"><i class="bi bi-journal-text"></i> 과목 <strong
+                        th:text="${dashboard.contentCoverage.subjectCount}"></strong>개</span>
+                <span class="stat-badge"><i class="bi bi-clipboard-check"></i> 시험 <strong
+                        th:text="${dashboard.contentCoverage.examCount}"></strong>개</span>
+                <span class="stat-badge"><i class="bi bi-list-check"></i> 문제 <strong
+                        th:text="${dashboard.contentCoverage.examQuestionCount}"></strong>개</span>
+            </div>
+
+            <div th:if="${#lists.isEmpty(dashboard.contentCoverage.examsWithoutQuestions)}" class="coverage-ok">
+                <i class="bi bi-check-circle-fill"></i> 문제가 비어있는 시험이 없어요.
+            </div>
+            <div th:unless="${#lists.isEmpty(dashboard.contentCoverage.examsWithoutQuestions)}">
+                <p class="text-muted small mb-2">
+                    <i class="bi bi-exclamation-triangle"></i> 등록만 되고 문제가 아직 없는 시험입니다. 최대 20건까지 표시돼요.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="coverage-gap-chip" th:each="name : ${dashboard.contentCoverage.examsWithoutQuestions}"
+                          th:text="${name}">시험명</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- KPI 카드 -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-lg-3">
@@ -119,38 +151,6 @@
                             <span class="rank-count" th:text="${e.attemptCount} + '회'">0회</span>
                         </li>
                     </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 콘텐츠 현황 -->
-    <div class="card stats-card">
-        <div class="card-header stats-card-header">
-            <i class="bi bi-database-check"></i> 콘텐츠 현황
-        </div>
-        <div class="card-body">
-            <div class="stats-row d-flex flex-wrap gap-2 mb-3">
-                <span class="stat-badge"><i class="bi bi-mortarboard"></i> 학과 <strong
-                        th:text="${dashboard.contentCoverage.departmentCount}"></strong>개</span>
-                <span class="stat-badge"><i class="bi bi-journal-text"></i> 과목 <strong
-                        th:text="${dashboard.contentCoverage.subjectCount}"></strong>개</span>
-                <span class="stat-badge"><i class="bi bi-clipboard-check"></i> 시험 <strong
-                        th:text="${dashboard.contentCoverage.examCount}"></strong>개</span>
-                <span class="stat-badge"><i class="bi bi-list-check"></i> 문제 <strong
-                        th:text="${dashboard.contentCoverage.examQuestionCount}"></strong>개</span>
-            </div>
-
-            <div th:if="${#lists.isEmpty(dashboard.contentCoverage.examsWithoutQuestions)}" class="coverage-ok">
-                <i class="bi bi-check-circle-fill"></i> 문제가 비어있는 시험이 없어요.
-            </div>
-            <div th:unless="${#lists.isEmpty(dashboard.contentCoverage.examsWithoutQuestions)}">
-                <p class="text-muted small mb-2">
-                    <i class="bi bi-exclamation-triangle"></i> 등록만 되고 문제가 아직 없는 시험입니다. 최대 20건까지 표시돼요.
-                </p>
-                <div class="d-flex flex-wrap gap-2">
-                    <span class="coverage-gap-chip" th:each="name : ${dashboard.contentCoverage.examsWithoutQuestions}"
-                          th:text="${name}">시험명</span>
                 </div>
             </div>
         </div>
