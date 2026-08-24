@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectedYear = params.get("year");
 
     function fillSubjects(deptId, selected) {
-        return fetch(`/api/departments/${deptId}/subjects`)
+        return fetchWithTimeout(`/api/departments/${deptId}/subjects`)
             .then(res => res.json())
             .then(data => {
                 let options = '<option value="">과목 선택</option>';
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function fillExamTypes(subjectId, selected) {
         const descriptions = {ATTENDANCE: "출석대체시험", FINAL: "기말시험", SEASONAL: "계절학기시험"};
-        return fetch(`/api/subjects/${subjectId}/exam-types`)
+        return fetchWithTimeout(`/api/subjects/${subjectId}/exam-types`)
             .then(res => res.json())
             .then(types => {
                 let options = '<option value="">구분 선택</option>';
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function fillYears(subjectId, examType, selected) {
-        return fetch(`/api/subjects/${subjectId}/exam-types/${examType}/years`)
+        return fetchWithTimeout(`/api/subjects/${subjectId}/exam-types/${examType}/years`)
             .then(res => res.json())
             .then(years => {
                 let options = '<option value="">년도 선택</option>';
@@ -82,11 +82,11 @@ document.addEventListener("DOMContentLoaded", function () {
             if (selectedSubjectId) {
                 fillExamTypes(selectedSubjectId, selectedExamType).then(() => {
                     if (selectedExamType) {
-                        fillYears(selectedSubjectId, selectedExamType, selectedYear);
+                        fillYears(selectedSubjectId, selectedExamType, selectedYear).catch(handleFetchError);
                     }
-                });
+                }).catch(handleFetchError);
             }
-        });
+        }).catch(handleFetchError);
     }
 
     deptSelect.addEventListener("change", function () {
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
             form.submit();
             return;
         }
-        fillSubjects(deptId, null).then(() => form.submit());
+        fillSubjects(deptId, null).then(() => form.submit()).catch(handleFetchError);
     });
 
     subjectSelect.addEventListener("change", function () {
@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
             form.submit();
             return;
         }
-        fillExamTypes(subjectId, null).then(() => form.submit());
+        fillExamTypes(subjectId, null).then(() => form.submit()).catch(handleFetchError);
     });
 
     examTypeSelect.addEventListener("change", function () {
@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
             form.submit();
             return;
         }
-        fillYears(subjectId, examType, null).then(() => form.submit());
+        fillYears(subjectId, examType, null).then(() => form.submit()).catch(handleFetchError);
     });
 
     yearSelect.addEventListener("change", function () {
