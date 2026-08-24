@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectedCategory = params.get("subjectCategory");
 
     function fillGrades(deptId, selected) {
-        return fetch(`/api/departments/${deptId}/grades`)
+        return fetchWithTimeout(`/api/departments/${deptId}/grades`)
             .then(res => res.json())
             .then(grades => {
                 let options = '<option value="">학년 선택</option>';
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function fillCategories(deptId, grade, selected) {
-        return fetch(`/api/departments/${deptId}/grades/${grade}/categories`)
+        return fetchWithTimeout(`/api/departments/${deptId}/grades/${grade}/categories`)
             .then(res => res.json())
             .then(categories => {
                 let options = '<option value="">과목구분 선택</option>';
@@ -44,9 +44,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (selectedDeptId) {
         fillGrades(selectedDeptId, selectedGrade).then(() => {
             if (selectedGrade) {
-                fillCategories(selectedDeptId, selectedGrade, selectedCategory);
+                fillCategories(selectedDeptId, selectedGrade, selectedCategory).catch(handleFetchError);
             }
-        });
+        }).catch(handleFetchError);
     }
 
     deptSelect.addEventListener("change", function () {
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
             form.submit();
             return;
         }
-        fillGrades(deptId, null).then(() => form.submit());
+        fillGrades(deptId, null).then(() => form.submit()).catch(handleFetchError);
     });
 
     gradeSelect.addEventListener("change", function () {
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
             form.submit();
             return;
         }
-        fillCategories(deptId, grade, null).then(() => form.submit());
+        fillCategories(deptId, grade, null).then(() => form.submit()).catch(handleFetchError);
     });
 
     categorySelect.addEventListener("change", function () {
