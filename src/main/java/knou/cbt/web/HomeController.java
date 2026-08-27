@@ -36,4 +36,14 @@ public class HomeController {
     public String privacy() {
         return "privacy";
     }
+
+    @GetMapping("/about")
+    public String about() {
+        return "about";
+    }
+
+    @GetMapping("/faq")
+    public String faq() {
+        return "faq";
+    }
 }
