@@ -1,3 +1,10 @@
+server:
+  # Render(및 앞단 CDN)가 리버스 프록시로 붙어있어서, 이걸 켜야 Spring이 X-Forwarded-Proto/Host
+  # 헤더를 신뢰해서 실제 요청 scheme/host(https://knou-cbt.com)를 알아본다.
+  # 이게 없으면 OAuth2 redirect_uri의 {baseUrl}이 프록시 뒤 내부 주소로 잘못 계산돼
+  # 구글/카카오/네이버에 등록해둔 콜백 URL과 안 맞아서 로그인이 막힌다.
+  forward-headers-strategy: framework
+
 spring:
   application:
     name: knou-cbt
