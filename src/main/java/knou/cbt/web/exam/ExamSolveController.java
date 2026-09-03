@@ -8,6 +8,7 @@ import knou.cbt.domain.exam.service.ExamService;
 import knou.cbt.domain.examquestion.dto.ExamQuestionResponse;
 import knou.cbt.domain.examquestion.service.ExamQuestionService;
 import knou.cbt.domain.statistics.service.StatisticsService;
+import knou.cbt.global.security.MemberSecurityUtils;
 import knou.cbt.global.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -94,7 +95,7 @@ public class ExamSolveController {
 
         try {
             statisticsService.logAttempt(examId, exam.subjectId(), exam.subjectName(), exam.examType(),
-                    exam.year(), score, questions.size(), elapsedSeconds);
+                    exam.year(), score, questions.size(), elapsedSeconds, MemberSecurityUtils.currentMemberId());
         } catch (Exception e) {
             // 통계 로그 실패가 실제 채점/제출 흐름을 막으면 안 됨
             log.warn("응시 통계 로그 저장 실패 (examId={})", examId, e);

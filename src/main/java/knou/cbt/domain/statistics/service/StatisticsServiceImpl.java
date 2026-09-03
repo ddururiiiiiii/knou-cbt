@@ -1,6 +1,9 @@
 package knou.cbt.domain.statistics.service;
 
+import knou.cbt.common.api.PageRequest;
+import knou.cbt.common.api.PageResponse;
 import knou.cbt.domain.exam.model.ExamType;
+import knou.cbt.domain.statistics.dto.AttemptHistoryResponse;
 import knou.cbt.domain.statistics.dto.AttemptSummaryResponse;
 import knou.cbt.domain.statistics.dto.ContentCoverageResponse;
 import knou.cbt.domain.statistics.dto.DailyAttemptCountResponse;
@@ -32,9 +35,26 @@ public class StatisticsServiceImpl implements StatisticsService {
                             int year,
                             int score,
                             int totalCount,
-                            Integer elapsedSeconds) {
+                            Integer elapsedSeconds,
+                            Long userId) {
         statisticsMapper.insertAttemptLog(
-                ExamAttemptLog.of(examId, subjectId, subjectName, examType, year, score, totalCount, elapsedSeconds));
+                ExamAttemptLog.of(examId, subjectId, subjectName, examType, year, score, totalCount, elapsedSeconds, userId));
+    }
+
+    @Override
+    public PageResponse<AttemptHistoryResponse> getMemberAttemptHistory(Long userId, PageRequest pageRequest) {
+        long totalElements = statisticsMapper.countAttemptsByUserId(userId);
+        List<AttemptHistoryResponse> content = statisticsMapper.findAttemptsByUserId(
+                userId, pageRequest.sizeOrDefault(), pageRequest.offset());
+        int totalPages = (int) Math.ceil((double) totalElements / pageRequest.sizeOrDefault());
+
+        return new PageResponse<>(content, pageRequest.pageOrDefault(), pageRequest.sizeOrDefault(),
+                totalElements, totalPages);
+    }
+
+    @Override
+    public void anonymizeMemberAttempts(Long userId) {
+        statisticsMapper.anonymizeAttemptLogsByUserId(userId);
     }
 
     @Override

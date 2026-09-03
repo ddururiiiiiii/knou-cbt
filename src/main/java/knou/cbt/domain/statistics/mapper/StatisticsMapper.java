@@ -1,5 +1,6 @@
 package knou.cbt.domain.statistics.mapper;
 
+import knou.cbt.domain.statistics.dto.AttemptHistoryResponse;
 import knou.cbt.domain.statistics.dto.DailyAttemptCountResponse;
 import knou.cbt.domain.statistics.dto.ExamRankingResponse;
 import knou.cbt.domain.statistics.dto.SubjectRankingResponse;
@@ -14,6 +15,14 @@ import java.util.List;
 public interface StatisticsMapper {
 
     void insertAttemptLog(ExamAttemptLog log);
+
+    List<AttemptHistoryResponse> findAttemptsByUserId(@Param("userId") Long userId,
+                                                        @Param("limit") int limit,
+                                                        @Param("offset") int offset);
+
+    long countAttemptsByUserId(@Param("userId") Long userId);
+
+    void anonymizeAttemptLogsByUserId(@Param("userId") Long userId);
 
     long countAttemptsSince(@Param("since") LocalDate since);
 

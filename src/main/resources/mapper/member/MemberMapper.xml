@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="knou.cbt.domain.member.mapper.MemberMapper">
+
+    <resultMap id="MemberResultMap" type="knou.cbt.domain.member.model.Member">
+        <id property="id" column="id"/>
+        <result property="provider" column="provider"/>
+        <result property="providerId" column="provider_id"/>
+        <result property="email" column="email"/>
+        <result property="nickname" column="nickname"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="lastLoginAt" column="last_login_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findByProviderAndProviderId" resultMap="MemberResultMap">
+        SELECT *
+        FROM member
+        WHERE provider = #{provider} AND provider_id = #{providerId}
+    </select>
+
+    <select id="findById" resultMap="MemberResultMap">
+        SELECT *
+        FROM member
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="knou.cbt.domain.member.model.Member" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO member (provider, provider_id, email, nickname, department_id)
+        VALUES (#{provider}, #{providerId}, #{email}, #{nickname}, #{departmentId})
+    </insert>
+
+    <update id="updateLastLoginAt">
+        UPDATE member
+        SET last_login_at = CURRENT_TIMESTAMP,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateProfile">
+        UPDATE member
+        SET nickname = #{nickname},
+            department_id = #{departmentId},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM member WHERE id = #{id}
+    </delete>
+
+    <sql id="MemberFilter">
+        <if test="keyword != null and keyword != ''">
+            AND (nickname LIKE CONCAT('%', #{keyword}, '%') OR email LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </sql>
+
+    <select id="findPage" resultMap="MemberResultMap">
+        SELECT *
+        FROM member
+        <where>
+            <include refid="MemberFilter"/>
+        </where>
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*)
+        FROM member
+        <where>
+            <include refid="MemberFilter"/>
+        </where>
+    </select>
+
+</mapper>
