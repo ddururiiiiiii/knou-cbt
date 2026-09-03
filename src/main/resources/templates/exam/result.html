@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
   <link href="/css/bootstrap.min.css" rel="stylesheet">
@@ -70,6 +70,9 @@
     </a>
     <a th:href="@{/exams}" class="btn btn-secondary">
       <i class="bi bi-list"></i> 목록으로
+    </a>
+    <a th:href="@{/mypage}" sec:authorize="hasRole('USER')" class="btn btn-outline-primary">
+      <i class="bi bi-clock-history"></i> 시험 기록보기
     </a>
   </div>
 </div>

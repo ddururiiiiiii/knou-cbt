@@ -94,8 +94,9 @@ public class ExamSolveController {
         session.setAttribute("elapsedSeconds_" + examId, elapsedSeconds != null ? elapsedSeconds : 0);
 
         try {
+            String answersCsv = String.join(",", answers.stream().map(a -> a == null ? "" : a).toList());
             statisticsService.logAttempt(examId, exam.subjectId(), exam.subjectName(), exam.examType(),
-                    exam.year(), score, questions.size(), elapsedSeconds, MemberSecurityUtils.currentMemberId());
+                    exam.year(), score, questions.size(), elapsedSeconds, MemberSecurityUtils.currentMemberId(), answersCsv);
         } catch (Exception e) {
             // 통계 로그 실패가 실제 채점/제출 흐름을 막으면 안 됨
             log.warn("응시 통계 로그 저장 실패 (examId={})", examId, e);

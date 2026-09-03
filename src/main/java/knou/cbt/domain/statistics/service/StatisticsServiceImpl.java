@@ -10,6 +10,7 @@ import knou.cbt.domain.statistics.dto.DailyAttemptCountResponse;
 import knou.cbt.domain.statistics.dto.ExamRankingResponse;
 import knou.cbt.domain.statistics.dto.StatisticsDashboardResponse;
 import knou.cbt.domain.statistics.dto.SubjectRankingResponse;
+import knou.cbt.domain.statistics.exception.AttemptNotFoundException;
 import knou.cbt.domain.statistics.mapper.StatisticsMapper;
 import knou.cbt.domain.statistics.model.ExamAttemptLog;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +37,10 @@ public class StatisticsServiceImpl implements StatisticsService {
                             int score,
                             int totalCount,
                             Integer elapsedSeconds,
-                            Long userId) {
+                            Long userId,
+                            String answers) {
         statisticsMapper.insertAttemptLog(
-                ExamAttemptLog.of(examId, subjectId, subjectName, examType, year, score, totalCount, elapsedSeconds, userId));
+                ExamAttemptLog.of(examId, subjectId, subjectName, examType, year, score, totalCount, elapsedSeconds, userId, answers));
     }
 
     @Override
@@ -50,6 +52,15 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         return new PageResponse<>(content, pageRequest.pageOrDefault(), pageRequest.sizeOrDefault(),
                 totalElements, totalPages);
+    }
+
+    @Override
+    public AttemptHistoryResponse getMemberAttemptDetail(Long attemptId, Long userId) {
+        AttemptHistoryResponse attempt = statisticsMapper.findMemberAttemptDetail(attemptId, userId);
+        if (attempt == null) {
+            throw new AttemptNotFoundException(attemptId);
+        }
+        return attempt;
     }
 
     @Override

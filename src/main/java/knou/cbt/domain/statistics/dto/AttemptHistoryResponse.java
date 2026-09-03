@@ -5,6 +5,7 @@ import knou.cbt.domain.exam.model.ExamType;
 import java.time.LocalDateTime;
 
 public record AttemptHistoryResponse(
+        Long id,
         Long examId,
         String subjectName,
         ExamType examType,
@@ -12,6 +13,7 @@ public record AttemptHistoryResponse(
         int score,
         int totalCount,
         Integer elapsedSeconds,
-        LocalDateTime submittedAt
+        LocalDateTime submittedAt,
+        String answers
 ) {
 }

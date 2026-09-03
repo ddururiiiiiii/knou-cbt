@@ -6,21 +6,27 @@
 
     <insert id="insertAttemptLog" parameterType="knou.cbt.domain.statistics.model.ExamAttemptLog">
         INSERT INTO exam_attempt_log
-            (exam_id, subject_id, subject_name, exam_type, year, score, total_count, elapsed_seconds, user_id)
+            (exam_id, subject_id, subject_name, exam_type, year, score, total_count, elapsed_seconds, user_id, answers)
         VALUES
-            (#{examId}, #{subjectId}, #{subjectName}, #{examType}, #{year}, #{score}, #{totalCount}, #{elapsedSeconds}, #{userId})
+            (#{examId}, #{subjectId}, #{subjectName}, #{examType}, #{year}, #{score}, #{totalCount}, #{elapsedSeconds}, #{userId}, #{answers})
     </insert>
 
-    <select id="findAttemptsByUserId" resultType="knou.cbt.domain.statistics.dto.AttemptHistoryResponse">
-        SELECT exam_id       AS exam_id,
+    <sql id="AttemptHistoryColumns">
+        SELECT id            AS id,
+               exam_id       AS exam_id,
                subject_name  AS subject_name,
                exam_type     AS exam_type,
                year          AS year,
                score         AS score,
                total_count   AS total_count,
                elapsed_seconds AS elapsed_seconds,
-               submitted_at  AS submitted_at
+               submitted_at  AS submitted_at,
+               answers       AS answers
         FROM exam_attempt_log
+    </sql>
+
+    <select id="findAttemptsByUserId" resultType="knou.cbt.domain.statistics.dto.AttemptHistoryResponse">
+        <include refid="AttemptHistoryColumns"/>
         WHERE user_id = #{userId}
         ORDER BY submitted_at DESC
         LIMIT #{limit} OFFSET #{offset}
@@ -30,6 +36,11 @@
         SELECT COUNT(*)
         FROM exam_attempt_log
         WHERE user_id = #{userId}
+    </select>
+
+    <select id="findMemberAttemptDetail" resultType="knou.cbt.domain.statistics.dto.AttemptHistoryResponse">
+        <include refid="AttemptHistoryColumns"/>
+        WHERE id = #{id} AND user_id = #{userId}
     </select>
 
     <update id="anonymizeAttemptLogsByUserId">

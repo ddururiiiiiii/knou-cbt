@@ -16,11 +16,14 @@ public interface StatisticsService {
                      int score,
                      int totalCount,
                      Integer elapsedSeconds,
-                     Long userId);
+                     Long userId,
+                     String answers);
 
     StatisticsDashboardResponse getDashboard();
 
     PageResponse<AttemptHistoryResponse> getMemberAttemptHistory(Long userId, PageRequest pageRequest);
+
+    AttemptHistoryResponse getMemberAttemptDetail(Long attemptId, Long userId);
 
     void anonymizeMemberAttempts(Long userId);
 }

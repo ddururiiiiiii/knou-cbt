@@ -54,6 +54,7 @@
                 <th>시험</th>
                 <th>점수</th>
                 <th>소요시간</th>
+                <th>관리</th>
             </tr>
             </thead>
             <tbody>
@@ -63,9 +64,16 @@
                 <td th:text="|${attempt.year}년도 ${attempt.examType.description}|"></td>
                 <td th:text="|${attempt.score} / ${attempt.totalCount}|"></td>
                 <td th:text="${attempt.elapsedSeconds != null ? attempt.elapsedSeconds + '초' : '-'}"></td>
+                <td>
+                    <a th:href="@{/mypage/attempts/{id}(id=${attempt.id})}" class="btn btn-outline-primary btn-sm">답안보기</a>
+                    <a th:href="@{/exams/{examId}/solve(examId=${attempt.examId})}" class="btn btn-outline-secondary btn-sm">다시풀기</a>
+                </td>
             </tr>
             <tr th:if="${#lists.isEmpty(pagination.content)}">
-                <td colspan="5" class="text-center text-muted">아직 응시 기록이 없어요. 시험을 풀어보세요!</td>
+                <td colspan="6" class="text-center text-muted py-4">
+                    <p class="mb-3">아직 응시 기록이 없어요. 시험을 풀어보세요!</p>
+                    <a th:href="@{/exams}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i> 시험보러가기</a>
+                </td>
             </tr>
             </tbody>
         </table>

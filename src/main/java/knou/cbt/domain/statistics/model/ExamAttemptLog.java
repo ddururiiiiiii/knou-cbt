@@ -21,6 +21,7 @@ public class ExamAttemptLog {
     private int totalCount;
     private Integer elapsedSeconds;
     private Long userId;
+    private String answers;
 
     public static ExamAttemptLog of(Long examId,
                                      Long subjectId,
@@ -30,8 +31,9 @@ public class ExamAttemptLog {
                                      int score,
                                      int totalCount,
                                      Integer elapsedSeconds,
-                                     Long userId) {
+                                     Long userId,
+                                     String answers) {
         return new ExamAttemptLog(null, examId, subjectId, subjectName, examType, year,
-                score, totalCount, elapsedSeconds, userId);
+                score, totalCount, elapsedSeconds, userId, answers);
     }
 }

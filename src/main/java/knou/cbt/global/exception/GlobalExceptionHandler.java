@@ -9,6 +9,7 @@ import knou.cbt.domain.exam.exception.ExamHasQuestionsException;
 import knou.cbt.domain.exam.exception.ExamNotFoundException;
 import knou.cbt.domain.notice.exception.NoticeNotFoundException;
 import knou.cbt.domain.siteoperation.exception.MaintenanceModeException;
+import knou.cbt.domain.statistics.exception.AttemptNotFoundException;
 import knou.cbt.domain.subject.exception.SubjectDeleteNotAllowedException;
 import knou.cbt.domain.subject.exception.SubjectNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,7 @@ public class GlobalExceptionHandler {
             SubjectNotFoundException.class,
             DepartmentNotFoundException.class,
             NoticeNotFoundException.class,
+            AttemptNotFoundException.class,
             NoResourceFoundException.class // 존재하지 않는 정적 리소스 요청 (봇 스캔 등 노이즈성 요청 다수 포함)
     })
     public String handleNotFound(RuntimeException ex, Model model, HttpServletResponse response) {

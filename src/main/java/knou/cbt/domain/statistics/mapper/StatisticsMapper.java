@@ -22,6 +22,8 @@ public interface StatisticsMapper {
 
     long countAttemptsByUserId(@Param("userId") Long userId);
 
+    AttemptHistoryResponse findMemberAttemptDetail(@Param("id") Long id, @Param("userId") Long userId);
+
     void anonymizeAttemptLogsByUserId(@Param("userId") Long userId);
 
     long countAttemptsSince(@Param("since") LocalDate since);
