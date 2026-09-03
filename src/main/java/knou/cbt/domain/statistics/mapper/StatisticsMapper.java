@@ -2,7 +2,9 @@ package knou.cbt.domain.statistics.mapper;
 
 import knou.cbt.domain.statistics.dto.AttemptHistoryResponse;
 import knou.cbt.domain.statistics.dto.DailyAttemptCountResponse;
+import knou.cbt.domain.statistics.dto.DailySignupCountResponse;
 import knou.cbt.domain.statistics.dto.ExamRankingResponse;
+import knou.cbt.domain.statistics.dto.ProviderCountResponse;
 import knou.cbt.domain.statistics.dto.SubjectRankingResponse;
 import knou.cbt.domain.statistics.model.ExamAttemptLog;
 import org.apache.ibatis.annotations.Mapper;
@@ -45,4 +47,16 @@ public interface StatisticsMapper {
     long countExamQuestions();
 
     List<String> findExamsWithoutQuestions();
+
+    long countMembersTotal();
+
+    long countMembersSince(@Param("since") LocalDate since);
+
+    List<DailySignupCountResponse> findDailySignupCounts(@Param("since") LocalDate since);
+
+    List<ProviderCountResponse> countMembersByProvider();
+
+    long countAttemptsWithMember();
+
+    long countAttemptsWithoutMember();
 }

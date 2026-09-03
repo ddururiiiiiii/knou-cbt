@@ -8,6 +8,7 @@ import knou.cbt.domain.statistics.dto.AttemptSummaryResponse;
 import knou.cbt.domain.statistics.dto.ContentCoverageResponse;
 import knou.cbt.domain.statistics.dto.DailyAttemptCountResponse;
 import knou.cbt.domain.statistics.dto.ExamRankingResponse;
+import knou.cbt.domain.statistics.dto.MemberStatsResponse;
 import knou.cbt.domain.statistics.dto.StatisticsDashboardResponse;
 import knou.cbt.domain.statistics.dto.SubjectRankingResponse;
 import knou.cbt.domain.statistics.exception.AttemptNotFoundException;
@@ -93,5 +94,23 @@ public class StatisticsServiceImpl implements StatisticsService {
         );
 
         return new StatisticsDashboardResponse(summary, dailyTrend, topSubjects, topExams, contentCoverage);
+    }
+
+    @Override
+    public MemberStatsResponse getMemberStats() {
+        LocalDate today = LocalDate.now();
+
+        long totalMembers = statisticsMapper.countMembersTotal();
+        long todaySignups = statisticsMapper.countMembersSince(today);
+        long last7DaysSignups = statisticsMapper.countMembersSince(today.minusDays(6));
+
+        var signupTrend = statisticsMapper.findDailySignupCounts(today.minusDays(RECENT_TREND_DAYS - 1L));
+        var providerBreakdown = statisticsMapper.countMembersByProvider();
+
+        long memberAttemptCount = statisticsMapper.countAttemptsWithMember();
+        long anonymousAttemptCount = statisticsMapper.countAttemptsWithoutMember();
+
+        return new MemberStatsResponse(totalMembers, todaySignups, last7DaysSignups,
+                signupTrend, providerBreakdown, memberAttemptCount, anonymousAttemptCount);
     }
 }

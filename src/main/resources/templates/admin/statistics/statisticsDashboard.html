@@ -90,7 +90,7 @@
             </div>
             <div th:unless="${dashboard.summary.totalCount == 0}"
                  id="trendChartWrap"
-                 th:data-labels="${trendLabelsCsv}"
+                 th:data-labels="${trendLabelsJson}"
                  th:data-counts="${trendCountsCsv}"
                  class="chart-box">
                 <canvas id="trendChart"></canvas>
@@ -112,7 +112,7 @@
                     </div>
                     <div th:unless="${#lists.isEmpty(dashboard.topSubjects)}">
                         <div id="subjectChartWrap"
-                             th:data-labels="${subjectLabelsCsv}"
+                             th:data-labels="${subjectLabelsJson}"
                              th:data-counts="${subjectCountsCsv}"
                              class="chart-box chart-box-sm">
                             <canvas id="subjectChart"></canvas>
@@ -151,6 +151,67 @@
                             <span class="rank-count" th:text="${e.attemptCount} + '회'">0회</span>
                         </li>
                     </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 회원 현황 -->
+    <div class="card stats-card mb-4">
+        <div class="card-header stats-card-header">
+            <i class="bi bi-people"></i> 회원 현황
+        </div>
+        <div class="card-body">
+            <div th:if="${memberStats.totalMembers == 0}" class="stats-empty">
+                <i class="bi bi-inboxes"></i>
+                <p>아직 가입한 회원이 없어요.</p>
+            </div>
+            <div th:unless="${memberStats.totalMembers == 0}">
+                <div class="stats-row d-flex flex-wrap gap-2 mb-3">
+                    <span class="stat-badge"><i class="bi bi-person-check"></i> 전체 가입자
+                        <strong th:text="${memberStats.totalMembers}"></strong>명</span>
+                    <span class="stat-badge"><i class="bi bi-calendar-plus"></i> 오늘 가입
+                        <strong th:text="${memberStats.todaySignups}"></strong>명</span>
+                    <span class="stat-badge"><i class="bi bi-calendar-week"></i> 최근 7일 가입
+                        <strong th:text="${memberStats.last7DaysSignups}"></strong>명</span>
+                </div>
+
+                <div id="signupTrendChartWrap"
+                     th:data-labels="${signupTrendLabelsJson}"
+                     th:data-counts="${signupTrendCountsCsv}"
+                     class="chart-box chart-box-sm mb-4">
+                    <canvas id="signupTrendChart"></canvas>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-lg-6">
+                        <h6 class="fw-bold mb-2">로그인 수단별 비율</h6>
+                        <ul class="rank-list">
+                            <li class="rank-item" th:each="p : ${memberStats.providerBreakdown}">
+                                <span class="rank-name" th:text="${p.provider.description}">수단</span>
+                                <span class="rank-accuracy"
+                                      th:text="${#numbers.formatDecimal(memberStats.providerRate(p), 1, 1)} + '%'">0.0%</span>
+                                <span class="rank-count" th:text="${p.count} + '명'">0명</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6">
+                        <h6 class="fw-bold mb-2">회원 / 비회원 응시 비율</h6>
+                        <ul class="rank-list">
+                            <li class="rank-item">
+                                <span class="rank-name">회원 응시</span>
+                                <span class="rank-accuracy"
+                                      th:text="${#numbers.formatDecimal(memberStats.memberAttemptRate(), 1, 1)} + '%'">0.0%</span>
+                                <span class="rank-count" th:text="${memberStats.memberAttemptCount} + '회'">0회</span>
+                            </li>
+                            <li class="rank-item">
+                                <span class="rank-name">비회원 응시</span>
+                                <span class="rank-accuracy"
+                                      th:text="${#numbers.formatDecimal(100 - memberStats.memberAttemptRate(), 1, 1)} + '%'">0.0%</span>
+                                <span class="rank-count" th:text="${memberStats.anonymousAttemptCount} + '회'">0회</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

@@ -124,4 +124,37 @@
         LIMIT 20
     </select>
 
+    <select id="countMembersTotal" resultType="long">
+        SELECT COUNT(*) FROM member
+    </select>
+
+    <select id="countMembersSince" resultType="long">
+        SELECT COUNT(*) FROM member WHERE created_at >= #{since}
+    </select>
+
+    <select id="findDailySignupCounts" resultType="knou.cbt.domain.statistics.dto.DailySignupCountResponse">
+        SELECT DATE(created_at) AS date,
+               COUNT(*)         AS signup_count
+        FROM member
+        WHERE created_at >= #{since}
+        GROUP BY DATE(created_at)
+        ORDER BY DATE(created_at)
+    </select>
+
+    <select id="countMembersByProvider" resultType="knou.cbt.domain.statistics.dto.ProviderCountResponse">
+        SELECT provider AS provider,
+               COUNT(*)  AS count
+        FROM member
+        GROUP BY provider
+        ORDER BY COUNT(*) DESC
+    </select>
+
+    <select id="countAttemptsWithMember" resultType="long">
+        SELECT COUNT(*) FROM exam_attempt_log WHERE user_id IS NOT NULL
+    </select>
+
+    <select id="countAttemptsWithoutMember" resultType="long">
+        SELECT COUNT(*) FROM exam_attempt_log WHERE user_id IS NULL
+    </select>
+
 </mapper>
