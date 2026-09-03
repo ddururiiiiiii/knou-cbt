@@ -13,10 +13,10 @@
 
 ## 반영 대상 체크리스트
 
-1. [ ] `src/main/resources/templates/faq.html` — faq2, faq7 수정 + 신규 항목 추가
-2. [ ] `src/main/resources/templates/about.html` — "무엇을 할 수 있나요" 목록에 항목 추가
-3. [ ] `src/main/resources/templates/privacy.html` — 수집 항목/목적/보유기간/제3자/탈퇴 절차 반영, 시행일 갱신
-4. [ ] `src/main/resources/templates/index.html` — "서비스 소개" 카드 문구 한 줄 추가
+1. [x] `src/main/resources/templates/faq.html` — faq2, faq7 수정 + 신규 항목 추가 (커밋 `0f86ceb`)
+2. [x] `src/main/resources/templates/about.html` — "무엇을 할 수 있나요" 목록에 항목 추가 (커밋 `0f86ceb`)
+3. [x] `src/main/resources/templates/privacy.html` — 수집 항목/목적/보유기간/제3자/탈퇴 절차 반영, 시행일 갱신 (커밋 `0f86ceb`)
+4. [x] `src/main/resources/templates/index.html` — "서비스 소개" 카드 문구 한 줄 추가 (커밋 `0f86ceb`)
 5. [ ] 공지사항 게시글 "KNOU CBT 이용 가이드" — 본문 수정 (아래 초안, 사용자가 직접 웹 에디터에 반영)
 6. [ ] 공지사항 게시글 "KNOU CBT, 처음 오셨다면 읽어주세요" — 본문 수정 (아래 초안, 사용자가 직접 웹 에디터에 반영)
 7. [ ] 공지사항 신규 게시글 등록 — 제목/본문 아래 초안대로, **상단 고정(pinned) 체크** (메인화면 자동 노출용)
