@@ -42,10 +42,12 @@ public record OAuthAttributes(String providerId, String email, String nickname) 
     private static OAuthAttributes ofNaver(Map<String, Object> attributes) {
         Map<String, Object> response = (Map<String, Object>) attributes.getOrDefault("response", Map.of());
 
+        // 네이버는 "이름(실명, name)"과 "닉네임(별명, nickname)"이 서로 다른 필드/동의항목이라
+        // 실명이 아니라 닉네임 쪽을 읽어야 한다.
         return new OAuthAttributes(
                 (String) response.get("id"),
                 (String) response.get("email"),
-                (String) response.getOrDefault("name", "네이버회원")
+                (String) response.getOrDefault("nickname", "네이버회원")
         );
     }
 }
