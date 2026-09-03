@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="py-3 text-center">
+        <h2>마이페이지</h2>
+    </div>
+
+    <!-- 내 정보 -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3">내 정보</h5>
+            <form th:action="@{/mypage/profile}" method="post" class="row g-2 align-items-end">
+                <div class="col-12 col-md-4">
+                    <label class="form-label small text-muted">닉네임</label>
+                    <input type="text" class="form-control" name="nickname" th:value="${member.nickname}" required maxlength="100">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label class="form-label small text-muted">학과</label>
+                    <select class="form-select" name="departmentId">
+                        <option value="">선택 안 함</option>
+                        <option th:each="dept : ${departments}"
+                                th:value="${dept.id}"
+                                th:text="${dept.departmentName}"
+                                th:selected="${member.departmentId != null and member.departmentId == dept.id}"></option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="form-label small text-muted">이메일</label>
+                    <input type="text" class="form-control" th:value="${member.email ?: '(제공 안 함)'}" disabled>
+                </div>
+                <div class="col-12 col-md-1">
+                    <button type="submit" class="btn btn-primary w-100">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 응시 이력 -->
+    <span style="font-weight: bold;" th:text="|내 응시 기록 총 ${pagination.totalElements} 건|"></span>
+    <div>
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+            <tr style="text-align: center;">
+                <th>제출일시</th>
+                <th>과목</th>
+                <th>시험</th>
+                <th>점수</th>
+                <th>소요시간</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="attempt : ${pagination.content}" style="text-align: center;">
+                <td th:text="${#temporals.format(attempt.submittedAt, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${attempt.subjectName}"></td>
+                <td th:text="|${attempt.year}년도 ${attempt.examType.description}|"></td>
+                <td th:text="|${attempt.score} / ${attempt.totalCount}|"></td>
+                <td th:text="${attempt.elapsedSeconds != null ? attempt.elapsedSeconds + '초' : '-'}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(pagination.content)}">
+                <td colspan="5" class="text-center text-muted">아직 응시 기록이 없어요. 시험을 풀어보세요!</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <nav aria-label="Page navigation" th:if="${pagination.totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, pagination.totalPages)}"
+                th:classappend="${i == pagination.currentPage} ? 'active'">
+                <a class="page-link" th:href="@{/mypage(page=${i})}" th:text="${i}"></a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- 회원 탈퇴 -->
+    <div class="text-end mt-4">
+        <form th:action="@{/mypage/withdraw}" method="post" data-confirm="정말 탈퇴하시겠습니까? 계정 정보는 삭제되고 되돌릴 수 없습니다.">
+            <button type="submit" class="btn btn-outline-danger btn-sm">회원 탈퇴</button>
+        </form>
+    </div>
+</div>
+</body>
+<th:block layout:fragment="script">
+    <script src="/js/confirm-delete.js"></script>
+</th:block>
+</html>

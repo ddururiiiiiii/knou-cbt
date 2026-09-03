@@ -51,6 +51,19 @@
                     <a class="nav-link" th:href="@{/faq}">자주 묻는 질문</a>
                 </li>
 
+                <!-- 회원 로그인/마이페이지 (feature flag로 노출 제어) -->
+                <li class="nav-item" th:if="${memberLoginEnabled}" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" th:href="@{/login}">로그인</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('USER')">
+                    <a class="nav-link" th:href="@{/mypage}">마이페이지</a>
+                </li>
+                <li class="nav-item d-flex align-items-center" sec:authorize="hasRole('USER')">
+                    <form th:action="@{/logout}" method="post" class="d-flex ms-lg-2">
+                        <button class="nav-logout-btn">로그아웃</button>
+                    </form>
+                </li>
+
                 <!-- 관리자 전용 메뉴 -->
 
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
@@ -61,6 +74,9 @@
                 </li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link nav-link-admin" th:href="@{/admin/statistics}">통계</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link nav-link-admin" th:href="@{/admin/members}">회원관리</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link nav-link-admin" th:href="@{/admin/maintenance}">배포/점검관리</a>

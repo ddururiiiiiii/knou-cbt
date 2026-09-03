@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인 : KNOU - CBT</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css">
+    <link href="/css/app.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        html, body { height: 100%; }
+        body {
+            background: linear-gradient(160deg, var(--kcbt-accent-soft) 0%, var(--kcbt-bg) 55%);
+            display: flex;
+            align-items: center;
+        }
+        .login-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background-color: var(--kcbt-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.28);
+        }
+        .login-icon i { font-size: 1.5rem; color: #fff; }
+        .login-card { border: none; border-radius: 1.25rem; box-shadow: 0 20px 48px rgba(31, 34, 48, 0.10); }
+        .login-brand { font-weight: 800; font-size: 1.75rem; letter-spacing: -0.02em; color: var(--kcbt-accent-dark); }
+        .login-brand .login-dot { color: var(--kcbt-accent); }
+        .social-login-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            width: 100%;
+            padding: .65rem 1rem;
+            border-radius: .6rem;
+            border: 1px solid var(--kcbt-border, #dcdfe6);
+            font-weight: 600;
+            position: relative;
+        }
+        .social-login-btn.google { background: #fff; color: #1f2937; }
+        .social-login-btn.kakao { background: #FEE500; color: #191600; border-color: #FEE500; }
+        .social-login-btn.naver { background: #03C75A; color: #fff; border-color: #03C75A; }
+        .recent-badge {
+            position: absolute;
+            right: .75rem;
+            font-size: .7rem;
+            font-weight: 700;
+            padding: .1rem .5rem;
+            border-radius: 999px;
+            background: rgba(0,0,0,0.12);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-11 col-sm-8 col-md-5 col-lg-4">
+
+            <div class="text-center mb-3">
+                <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                    <div class="login-icon"><i class="bi bi-mortarboard-fill"></i></div>
+                    <div class="login-brand">KNOU<span class="login-dot">·</span>CBT</div>
+                </div>
+                <p class="text-muted small mb-0">로그인하면 내가 푼 시험 기록을 확인할 수 있어요</p>
+            </div>
+
+            <div class="card login-card">
+                <div class="card-body p-4 p-md-5 d-flex flex-column gap-2">
+                    <a class="social-login-btn google" data-provider="google" th:href="@{/oauth2/authorization/google}">
+                        <i class="bi bi-google"></i> 구글로 시작하기
+                        <span class="recent-badge" hidden>최근 로그인</span>
+                    </a>
+                    <a class="social-login-btn kakao" data-provider="kakao" th:href="@{/oauth2/authorization/kakao}">
+                        <i class="bi bi-chat-fill"></i> 카카오로 시작하기
+                        <span class="recent-badge" hidden>최근 로그인</span>
+                    </a>
+                    <a class="social-login-btn naver" data-provider="naver" th:href="@{/oauth2/authorization/naver}">
+                        <span style="font-weight:800;">N</span> 네이버로 시작하기
+                        <span class="recent-badge" hidden>최근 로그인</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <small class="text-muted">&copy; 2026 KNOU-CBT</small>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/member-login.js"></script>
+</body>
+</html>

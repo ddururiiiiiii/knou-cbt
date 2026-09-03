@@ -6,10 +6,37 @@
 
     <insert id="insertAttemptLog" parameterType="knou.cbt.domain.statistics.model.ExamAttemptLog">
         INSERT INTO exam_attempt_log
-            (exam_id, subject_id, subject_name, exam_type, year, score, total_count, elapsed_seconds)
+            (exam_id, subject_id, subject_name, exam_type, year, score, total_count, elapsed_seconds, user_id)
         VALUES
-            (#{examId}, #{subjectId}, #{subjectName}, #{examType}, #{year}, #{score}, #{totalCount}, #{elapsedSeconds})
+            (#{examId}, #{subjectId}, #{subjectName}, #{examType}, #{year}, #{score}, #{totalCount}, #{elapsedSeconds}, #{userId})
     </insert>
+
+    <select id="findAttemptsByUserId" resultType="knou.cbt.domain.statistics.dto.AttemptHistoryResponse">
+        SELECT exam_id       AS exam_id,
+               subject_name  AS subject_name,
+               exam_type     AS exam_type,
+               year          AS year,
+               score         AS score,
+               total_count   AS total_count,
+               elapsed_seconds AS elapsed_seconds,
+               submitted_at  AS submitted_at
+        FROM exam_attempt_log
+        WHERE user_id = #{userId}
+        ORDER BY submitted_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countAttemptsByUserId" resultType="long">
+        SELECT COUNT(*)
+        FROM exam_attempt_log
+        WHERE user_id = #{userId}
+    </select>
+
+    <update id="anonymizeAttemptLogsByUserId">
+        UPDATE exam_attempt_log
+        SET user_id = NULL
+        WHERE user_id = #{userId}
+    </update>
 
     <select id="countAttemptsSince" resultType="long">
         SELECT COUNT(*)
