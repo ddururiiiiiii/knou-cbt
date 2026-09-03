@@ -73,6 +73,8 @@ public class MyPageController {
         model.addAttribute("correctAnswersList", correctAnswersList);
         model.addAttribute("score", attempt.score());
         model.addAttribute("elapsedSeconds", attempt.elapsedSeconds() != null ? attempt.elapsedSeconds() : 0);
+        model.addAttribute("backUrl", "/mypage");
+        model.addAttribute("backLabel", "마이페이지로");
 
         return "exam/review";
     }

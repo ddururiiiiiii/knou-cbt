@@ -79,7 +79,9 @@
                 <h3 class="fw-bold mb-0" th:text="|${exam.subjectName} (${exam.examType.description})|"></h3>
             </div>
         </div>
-        <a th:href="@{/exams}" class="btn btn-secondary btn-sm"><i class="bi bi-list"></i> 목록으로</a>
+        <a th:href="@{${backUrl} ?: '/exams'}" class="btn btn-secondary btn-sm">
+            <i class="bi bi-list"></i> <span th:text="${backLabel} ?: '목록으로'"></span>
+        </a>
     </div>
 
     <!-- 점수 요약 -->
@@ -162,7 +164,9 @@
     </div>
 
     <div class="text-center my-4">
-        <a th:href="@{/exams}" class="btn btn-secondary"><i class="bi bi-list"></i> 목록으로</a>
+        <a th:href="@{${backUrl} ?: '/exams'}" class="btn btn-secondary">
+            <i class="bi bi-list"></i> <span th:text="${backLabel} ?: '목록으로'"></span>
+        </a>
     </div>
 </div>
 </body>
