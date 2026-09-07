@@ -9,6 +9,7 @@ import knou.cbt.domain.statistics.dto.ContentCoverageResponse;
 import knou.cbt.domain.statistics.dto.DailyAttemptCountResponse;
 import knou.cbt.domain.statistics.dto.ExamRankingResponse;
 import knou.cbt.domain.statistics.dto.MemberStatsResponse;
+import knou.cbt.domain.statistics.dto.MonthlyAttemptCountResponse;
 import knou.cbt.domain.statistics.dto.StatisticsDashboardResponse;
 import knou.cbt.domain.statistics.dto.SubjectRankingResponse;
 import knou.cbt.domain.statistics.exception.AttemptNotFoundException;
@@ -18,13 +19,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
 public class StatisticsServiceImpl implements StatisticsService {
 
     private static final int RECENT_TREND_DAYS = 14;
+    private static final int RECENT_TREND_MONTHS = 12;
     private static final int TOP_N = 10;
 
     private final StatisticsMapper statisticsMapper;
@@ -82,6 +89,10 @@ public class StatisticsServiceImpl implements StatisticsService {
         List<DailyAttemptCountResponse> dailyTrend =
                 statisticsMapper.findDailyAttemptCounts(today.minusDays(RECENT_TREND_DAYS - 1L));
 
+        List<MonthlyAttemptCountResponse> monthlyTrend = fillMissingMonths(
+                statisticsMapper.findMonthlyAttemptCounts(today.withDayOfMonth(1).minusMonths(RECENT_TREND_MONTHS - 1L)),
+                YearMonth.from(today));
+
         List<SubjectRankingResponse> topSubjects = statisticsMapper.findTopSubjects(TOP_N);
         List<ExamRankingResponse> topExams = statisticsMapper.findTopExams(TOP_N);
 
@@ -93,7 +104,24 @@ public class StatisticsServiceImpl implements StatisticsService {
                 statisticsMapper.findExamsWithoutQuestions()
         );
 
-        return new StatisticsDashboardResponse(summary, dailyTrend, topSubjects, topExams, contentCoverage);
+        return new StatisticsDashboardResponse(summary, dailyTrend, monthlyTrend, topSubjects, topExams, contentCoverage);
+    }
+
+    // 데이터 없는 달은 집계 쿼리 결과에서 빠지므로, 월별 비교 차트에서 공백 없이 12개월이
+    // 전부 보이도록 0건으로 채워준다.
+    private List<MonthlyAttemptCountResponse> fillMissingMonths(List<MonthlyAttemptCountResponse> counts,
+                                                                  YearMonth currentMonth) {
+        Map<String, Long> countsByMonth = counts.stream()
+                .collect(Collectors.toMap(MonthlyAttemptCountResponse::yearMonth, MonthlyAttemptCountResponse::attemptCount));
+
+        DateTimeFormatter yearMonthFormat = DateTimeFormatter.ofPattern("yyyy-MM");
+        return IntStream.range(0, RECENT_TREND_MONTHS)
+                .mapToObj(i -> currentMonth.minusMonths(RECENT_TREND_MONTHS - 1L - i))
+                .map(ym -> {
+                    String key = ym.format(yearMonthFormat);
+                    return new MonthlyAttemptCountResponse(key, countsByMonth.getOrDefault(key, 0L));
+                })
+                .toList();
     }
 
     @Override

@@ -69,6 +69,15 @@
         ORDER BY DATE(submitted_at)
     </select>
 
+    <select id="findMonthlyAttemptCounts" resultType="knou.cbt.domain.statistics.dto.MonthlyAttemptCountResponse">
+        SELECT TO_CHAR(submitted_at, 'YYYY-MM') AS year_month,
+               COUNT(*)                         AS attempt_count
+        FROM exam_attempt_log
+        WHERE submitted_at >= #{since}
+        GROUP BY TO_CHAR(submitted_at, 'YYYY-MM')
+        ORDER BY TO_CHAR(submitted_at, 'YYYY-MM')
+    </select>
+
     <select id="findTopSubjects" resultType="knou.cbt.domain.statistics.dto.SubjectRankingResponse">
         SELECT subject_id                                                AS subject_id,
                subject_name                                              AS subject_name,

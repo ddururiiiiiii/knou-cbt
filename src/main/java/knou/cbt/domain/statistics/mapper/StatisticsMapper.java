@@ -4,6 +4,7 @@ import knou.cbt.domain.statistics.dto.AttemptHistoryResponse;
 import knou.cbt.domain.statistics.dto.DailyAttemptCountResponse;
 import knou.cbt.domain.statistics.dto.DailySignupCountResponse;
 import knou.cbt.domain.statistics.dto.ExamRankingResponse;
+import knou.cbt.domain.statistics.dto.MonthlyAttemptCountResponse;
 import knou.cbt.domain.statistics.dto.ProviderCountResponse;
 import knou.cbt.domain.statistics.dto.SubjectRankingResponse;
 import knou.cbt.domain.statistics.model.ExamAttemptLog;
@@ -33,6 +34,8 @@ public interface StatisticsMapper {
     long countAttemptsTotal();
 
     List<DailyAttemptCountResponse> findDailyAttemptCounts(@Param("since") LocalDate since);
+
+    List<MonthlyAttemptCountResponse> findMonthlyAttemptCounts(@Param("since") LocalDate since);
 
     List<SubjectRankingResponse> findTopSubjects(@Param("limit") int limit);
 

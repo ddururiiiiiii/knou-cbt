@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 public class StatisticsViewController {
 
     private static final DateTimeFormatter TREND_DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd");
+    private static final DateTimeFormatter MONTH_LABEL_FORMAT = DateTimeFormatter.ofPattern("yy.MM");
 
     private final StatisticsService statisticsService;
     private final ObjectMapper objectMapper;
@@ -47,6 +49,12 @@ public class StatisticsViewController {
                 .toList()));
         model.addAttribute("trendCountsCsv", dashboard.dailyTrend().stream()
                 .map(d -> String.valueOf(d.attemptCount()))
+                .collect(Collectors.joining(",")));
+        model.addAttribute("monthlyLabelsJson", toJson(dashboard.monthlyTrend().stream()
+                .map(m -> YearMonth.parse(m.yearMonth()).format(MONTH_LABEL_FORMAT))
+                .toList()));
+        model.addAttribute("monthlyCountsCsv", dashboard.monthlyTrend().stream()
+                .map(m -> String.valueOf(m.attemptCount()))
                 .collect(Collectors.joining(",")));
         model.addAttribute("subjectLabelsJson", toJson(dashboard.topSubjects().stream()
                 .map(SubjectRankingResponse::subjectName)

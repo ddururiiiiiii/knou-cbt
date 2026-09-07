@@ -69,6 +69,51 @@
         });
     }
 
+    function initMonthlyChart() {
+        const wrap = document.getElementById('monthlyChartWrap');
+        const canvas = document.getElementById('monthlyChart');
+        if (!wrap || !canvas) return;
+
+        const labels = parseLabelsJson(wrap.dataset.labels);
+        const counts = parseCsvNumbers(wrap.dataset.counts);
+
+        new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '응시 수',
+                    data: counts,
+                    backgroundColor: ACCENT,
+                    borderRadius: 6,
+                    maxBarThickness: 36
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        titleFont: baseFont,
+                        bodyFont: baseFont
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: MUTED, font: baseFont },
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: MUTED, font: baseFont, precision: 0 },
+                        grid: { color: '#f0f1f5' }
+                    }
+                }
+            }
+        });
+    }
+
     function initSubjectChart() {
         const wrap = document.getElementById('subjectChartWrap');
         const canvas = document.getElementById('subjectChart');
@@ -163,6 +208,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof Chart === 'undefined') return;
         initTrendChart();
+        initMonthlyChart();
         initSubjectChart();
         initSignupTrendChart();
     });
