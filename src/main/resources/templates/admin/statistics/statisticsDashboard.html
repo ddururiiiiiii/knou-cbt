@@ -98,6 +98,26 @@
         </div>
     </div>
 
+    <!-- 월별 응시 비교 -->
+    <div class="card stats-card mb-4">
+        <div class="card-header stats-card-header">
+            <i class="bi bi-bar-chart-steps"></i> 월별 응시 횟수 비교 (최근 12개월)
+        </div>
+        <div class="card-body">
+            <div th:if="${dashboard.summary.totalCount == 0}" class="stats-empty">
+                <i class="bi bi-inboxes"></i>
+                <p>아직 쌓인 응시 데이터가 없어요. 첫 시험 제출부터 여기에 표시됩니다.</p>
+            </div>
+            <div th:unless="${dashboard.summary.totalCount == 0}"
+                 id="monthlyChartWrap"
+                 th:data-labels="${monthlyLabelsJson}"
+                 th:data-counts="${monthlyCountsCsv}"
+                 class="chart-box">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+    </div>
+
     <div class="row g-3 mb-4">
         <!-- 인기 과목 TOP 10 -->
         <div class="col-lg-6">
